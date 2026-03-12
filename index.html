@@ -862,5 +862,14 @@ function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t
 // INIT
 renderCart();renderOrders();renderMsgs();renderPrices([]);
 </script>
+<script>
+if('serviceWorker' in navigator){
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/agrotrade/sw.js')
+      .then(() => console.log('AgroTrade PWA ready! 🌿'))
+      .catch(e => console.log('SW error:', e));
+  });
+}
+</script>
 </body>
 </html>
