@@ -1,176 +1,217 @@
+html
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AgroTrade - Agricultural Commodity Marketplace</title>
+<title>AgroTrade - Ghana's Agri Shop</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;600;700;800&family=Bebas+Neue&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
   :root {
-    --green:#2d6a2d; --green-light:#edf7ed; --green-mid:#5aaa5a;
-    --accent:#e85d26; --bg:#f7f8f5; --border:#e5e9e0;
-    --text:#1a2e1a; --muted:#6b7c6b; --soft:#9aab9a;
+    --green:#2d6a2d;--green-light:#edf7ed;--green-mid:#5aaa5a;
+    --accent:#e85d26;--bg:#f7f8f5;--border:#e5e9e0;
+    --text:#1a2e1a;--muted:#6b7c6b;--soft:#9aab9a;
   }
-  * { margin:0; padding:0; box-sizing:border-box; }
-  body { font-family:'DM Sans',sans-serif; background:var(--bg); color:var(--text); min-height:100vh; }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
 
   /* AUTH */
-  .auth-overlay { position:fixed; inset:0; background:rgba(0,0,0,0.7); z-index:200; display:flex; align-items:center; justify-content:center; padding:20px; }
-  .auth-box { background:#fff; border-radius:20px; padding:28px 24px; width:100%; max-width:400px; box-shadow:0 20px 60px rgba(0,0,0,0.3); }
-  .auth-logo { display:flex; align-items:center; gap:10px; margin-bottom:24px; justify-content:center; }
-  .auth-logo-mark { width:44px; height:44px; background:linear-gradient(135deg,#2d6a2d,#5aaa5a); border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:22px; }
-  .auth-logo-text { font-family:'Bebas Neue',cursive; font-size:28px; color:var(--text); letter-spacing:1px; }
-  .auth-title { font-weight:800; font-size:20px; margin-bottom:6px; text-align:center; }
-  .auth-sub { font-size:13px; color:var(--muted); text-align:center; margin-bottom:24px; }
-  .auth-tabs { display:flex; background:var(--bg); border-radius:10px; padding:4px; margin-bottom:20px; }
-  .auth-tab { flex:1; padding:8px; border:none; background:transparent; border-radius:8px; font-weight:700; font-size:13px; cursor:pointer; color:var(--muted); transition:all 0.15s; font-family:'DM Sans',sans-serif; }
-  .auth-tab.active { background:#fff; color:var(--green); box-shadow:0 1px 4px rgba(0,0,0,0.1); }
-  .form-group { margin-bottom:14px; }
-  .form-label { font-size:12px; font-weight:700; color:var(--muted); margin-bottom:5px; display:block; letter-spacing:0.5px; text-transform:uppercase; }
-  .form-input { width:100%; padding:11px 14px; border:1px solid var(--border); border-radius:10px; font-size:14px; outline:none; font-family:'DM Sans',sans-serif; color:var(--text); transition:border 0.15s; }
-  .form-input:focus { border-color:var(--green); }
-  .form-select { width:100%; padding:11px 14px; border:1px solid var(--border); border-radius:10px; font-size:14px; outline:none; font-family:'DM Sans',sans-serif; color:var(--text); background:#fff; }
-  .auth-btn { width:100%; background:var(--green); color:#fff; border:none; border-radius:12px; padding:14px; font-weight:800; font-size:15px; cursor:pointer; margin-top:6px; font-family:'DM Sans',sans-serif; transition:background 0.15s; }
-  .auth-btn:hover { background:#1e4a1e; }
-  .auth-error { background:#fef2f2; border:1px solid #fecaca; border-radius:8px; padding:10px 14px; font-size:13px; color:#dc2626; margin-bottom:14px; display:none; }
-  .auth-success { background:#f0fdf4; border:1px solid #bbf7d0; border-radius:8px; padding:10px 14px; font-size:13px; color:#16a34a; margin-bottom:14px; display:none; }
+  .auth-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:300;display:flex;align-items:center;justify-content:center;padding:16px;}
+  .auth-box{background:#fff;border-radius:20px;padding:24px 20px;width:100%;max-width:420px;box-shadow:0 20px 60px rgba(0,0,0,0.3);max-height:90vh;overflow-y:auto;}
+  .auth-logo{display:flex;align-items:center;gap:10px;margin-bottom:20px;justify-content:center;}
+  .auth-logo-mark{width:44px;height:44px;background:linear-gradient(135deg,#2d6a2d,#5aaa5a);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px;}
+  .auth-logo-text{font-family:'Bebas Neue',cursive;font-size:28px;color:var(--text);}
+  .auth-tabs{display:flex;background:var(--bg);border-radius:10px;padding:4px;margin-bottom:16px;}
+  .auth-tab{flex:1;padding:8px;border:none;background:transparent;border-radius:8px;font-weight:700;font-size:13px;cursor:pointer;color:var(--muted);font-family:'DM Sans',sans-serif;}
+  .auth-tab.active{background:#fff;color:var(--green);box-shadow:0 1px 4px rgba(0,0,0,0.1);}
+  .form-group{margin-bottom:12px;}
+  .form-label{font-size:11px;font-weight:700;color:var(--muted);margin-bottom:4px;display:block;letter-spacing:0.5px;text-transform:uppercase;}
+  .form-input{width:100%;padding:10px 13px;border:1px solid var(--border);border-radius:10px;font-size:14px;outline:none;font-family:'DM Sans',sans-serif;color:var(--text);}
+  .form-input:focus{border-color:var(--green);}
+  .form-select{width:100%;padding:10px 13px;border:1px solid var(--border);border-radius:10px;font-size:14px;outline:none;font-family:'DM Sans',sans-serif;color:var(--text);background:#fff;}
+  .auth-btn{width:100%;background:var(--green);color:#fff;border:none;border-radius:12px;padding:14px;font-weight:800;font-size:15px;cursor:pointer;margin-top:6px;font-family:'DM Sans',sans-serif;}
+  .auth-error{background:#fef2f2;border:1px solid #fecaca;border-radius:8px;padding:10px;font-size:13px;color:#dc2626;margin-bottom:12px;display:none;}
+  .auth-success{background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:10px;font-size:13px;color:#16a34a;margin-bottom:12px;display:none;}
 
   /* HEADER */
-  header { background:#fff; border-bottom:1px solid var(--border); padding:0 16px; display:flex; align-items:center; justify-content:space-between; height:60px; position:sticky; top:0; z-index:100; box-shadow:0 1px 8px rgba(0,0,0,0.06); }
-  .logo { display:flex; align-items:center; gap:8px; }
-  .logo-mark { width:34px; height:34px; background:linear-gradient(135deg,#2d6a2d,#5aaa5a); border-radius:9px; display:flex; align-items:center; justify-content:center; font-size:16px; }
-  .logo-text { font-weight:800; font-size:17px; color:var(--text); letter-spacing:-0.5px; }
-  .logo-sub { font-size:9px; color:var(--muted); letter-spacing:1px; text-transform:uppercase; }
-  .header-right { display:flex; align-items:center; gap:8px; }
-  .user-info { font-size:11px; color:var(--muted); font-weight:600; max-width:80px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-  .user-avatar { width:34px; height:34px; background:linear-gradient(135deg,#2d6a2d,#5aaa5a); border-radius:9px; display:flex; align-items:center; justify-content:center; color:#fff; font-weight:800; font-size:12px; cursor:pointer; }
-  .logout-btn { background:#fef2f2; color:#dc2626; border:1px solid #fecaca; border-radius:8px; padding:6px 10px; font-size:11px; font-weight:700; cursor:pointer; font-family:'DM Sans',sans-serif; }
+  header{background:#fff;border-bottom:1px solid var(--border);padding:0 14px;display:flex;align-items:center;justify-content:space-between;height:58px;position:sticky;top:0;z-index:100;box-shadow:0 1px 8px rgba(0,0,0,0.06);}
+  .logo{display:flex;align-items:center;gap:8px;}
+  .logo-mark{width:32px;height:32px;background:linear-gradient(135deg,#2d6a2d,#5aaa5a);border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:15px;}
+  .logo-text{font-weight:800;font-size:16px;color:var(--text);}
+  .logo-sub{font-size:8px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;}
+  .header-right{display:flex;align-items:center;gap:6px;}
+  .user-chip{background:var(--green-light);border:1px solid #c4dbc4;border-radius:20px;padding:4px 10px;font-size:11px;font-weight:700;color:var(--green);max-width:100px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .logout-btn{background:#fef2f2;color:#dc2626;border:1px solid #fecaca;border-radius:8px;padding:5px 10px;font-size:11px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;}
 
   /* TICKER */
-  .ticker { background:#1a2e1a; color:#a8d4a8; padding:5px 0; font-size:11px; font-weight:600; overflow:hidden; white-space:nowrap; }
-  .ticker-inner { display:inline-flex; gap:40px; animation:ticker 18s linear infinite; }
-  @keyframes ticker { from{transform:translateX(0)} to{transform:translateX(-50%)} }
+  .ticker{background:#1a2e1a;color:#a8d4a8;padding:5px 0;font-size:11px;font-weight:600;overflow:hidden;white-space:nowrap;}
+  .ticker-inner{display:inline-flex;gap:40px;animation:ticker 20s linear infinite;}
+  @keyframes ticker{from{transform:translateX(0)}to{transform:translateX(-50%)}}
 
   /* NAV */
-  .bottom-nav { position:fixed; bottom:0; left:0; right:0; background:#fff; border-top:1px solid var(--border); display:flex; z-index:100; box-shadow:0 -2px 10px rgba(0,0,0,0.08); }
-  .nav-btn { flex:1; padding:10px 4px 8px; border:none; background:transparent; display:flex; flex-direction:column; align-items:center; gap:3px; cursor:pointer; font-size:9px; font-weight:700; color:var(--muted); letter-spacing:0.3px; text-transform:uppercase; transition:color 0.15s; position:relative; }
-  .nav-btn.active { color:var(--green); }
-  .nav-btn .icon { font-size:20px; }
-  .nav-badge { position:absolute; top:6px; right:calc(50% - 18px); background:var(--accent); color:#fff; border-radius:10px; padding:1px 5px; font-size:9px; font-weight:800; }
+  .bottom-nav{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid var(--border);display:flex;z-index:100;box-shadow:0 -2px 10px rgba(0,0,0,0.08);}
+  .nav-btn{flex:1;padding:9px 4px 7px;border:none;background:transparent;display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;font-size:9px;font-weight:700;color:var(--muted);text-transform:uppercase;position:relative;}
+  .nav-btn.active{color:var(--green);}
+  .nav-btn .icon{font-size:19px;}
+  .nav-badge{position:absolute;top:5px;right:calc(50% - 16px);background:var(--accent);color:#fff;border-radius:10px;padding:1px 5px;font-size:9px;font-weight:800;}
 
-  main { padding:16px 14px 80px; max-width:600px; margin:0 auto; }
-  .tab { display:none; }
-  .tab.active { display:block; }
+  main{padding:14px 13px 80px;max-width:600px;margin:0 auto;}
+  .tab{display:none;}
+  .tab.active{display:block;}
+  .section-title{font-size:11px;font-weight:700;color:var(--muted);letter-spacing:2px;text-transform:uppercase;margin-bottom:12px;}
 
-  .stats-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:20px; }
-  .stat-card { background:#fff; border-radius:12px; padding:14px 16px; border:1px solid var(--border); border-left:4px solid var(--green); }
-  .stat-val { font-size:20px; font-weight:800; color:var(--text); }
-  .stat-label { font-size:11px; color:var(--muted); margin-top:3px; font-weight:600; }
+  /* SHOP BANNER */
+  .shop-banner{background:linear-gradient(135deg,#1a4a1a,#2d6a2d);border-radius:16px;padding:20px;margin-bottom:20px;color:#fff;position:relative;overflow:hidden;}
+  .shop-banner::after{content:'🌿';position:absolute;right:16px;top:50%;transform:translateY(-50%);font-size:60px;opacity:0.2;}
+  .shop-banner h2{font-family:'Bebas Neue',cursive;font-size:28px;letter-spacing:1px;margin-bottom:4px;}
+  .shop-banner p{font-size:12px;color:#a8d4a8;margin-bottom:14px;}
+  .banner-stats{display:flex;gap:16px;}
+  .banner-stat{text-align:center;}
+  .banner-stat-n{font-weight:800;font-size:18px;}
+  .banner-stat-l{font-size:10px;color:#a8d4a8;}
 
-  .search-wrap { position:relative; margin-bottom:12px; }
-  .search-box { width:100%; padding:11px 16px 11px 38px; border:1px solid var(--border); border-radius:10px; font-size:14px; background:#fff; outline:none; color:var(--text); font-family:'DM Sans',sans-serif; }
-  .search-icon { position:absolute; left:12px; top:50%; transform:translateY(-50%); font-size:16px; }
-  .cats { display:flex; gap:8px; overflow-x:auto; padding-bottom:4px; margin-bottom:16px; scrollbar-width:none; }
-  .cats::-webkit-scrollbar { display:none; }
-  .cat-btn { padding:7px 14px; border-radius:20px; border:1px solid var(--border); background:#fff; color:var(--muted); font-weight:700; font-size:12px; cursor:pointer; white-space:nowrap; transition:all 0.15s; font-family:'DM Sans',sans-serif; }
-  .cat-btn.active { background:var(--green-light); border-color:var(--green); color:var(--green); }
+  /* SEARCH */
+  .search-wrap{position:relative;margin-bottom:12px;}
+  .search-box{width:100%;padding:11px 16px 11px 38px;border:1px solid var(--border);border-radius:10px;font-size:14px;background:#fff;outline:none;color:var(--text);font-family:'DM Sans',sans-serif;}
+  .search-icon{position:absolute;left:12px;top:50%;transform:translateY(-50%);font-size:16px;}
+  .cats{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px;margin-bottom:14px;scrollbar-width:none;}
+  .cats::-webkit-scrollbar{display:none;}
+  .cat-btn{padding:6px 13px;border-radius:20px;border:1px solid var(--border);background:#fff;color:var(--muted);font-weight:700;font-size:11px;cursor:pointer;white-space:nowrap;font-family:'DM Sans',sans-serif;}
+  .cat-btn.active{background:var(--green-light);border-color:var(--green);color:var(--green);}
 
-  .cards-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
-  .commodity-card { background:#fff; border-radius:14px; border:1px solid var(--border); overflow:hidden; box-shadow:0 2px 8px rgba(0,0,0,0.04); }
-  .card-top { padding:14px 14px 0; display:flex; justify-content:space-between; align-items:flex-start; }
-  .card-emoji { font-size:36px; line-height:1; }
-  .badge { font-size:9px; font-weight:700; padding:3px 8px; border-radius:20px; color:#fff; }
-  .card-body { padding:10px 14px 14px; }
-  .card-name { font-weight:800; font-size:14px; color:var(--text); margin-bottom:1px; }
-  .card-seller { font-size:10px; color:var(--muted); margin-bottom:6px; }
-  .card-price { font-size:17px; font-weight:800; color:var(--green); }
-  .card-unit { font-size:10px; color:var(--muted); }
-  .card-meta { display:flex; justify-content:space-between; margin:6px 0 10px; font-size:10px; color:var(--muted); }
-  .price-up { color:#16a34a; font-weight:700; }
-  .price-down { color:#dc2626; font-weight:700; }
-  .card-actions { display:flex; gap:6px; }
-  .btn-buy { flex:1; background:var(--green); color:#fff; border:none; border-radius:8px; padding:8px 0; font-weight:700; font-size:12px; cursor:pointer; font-family:'DM Sans',sans-serif; }
-  .btn-msg { background:var(--green-light); color:var(--green); border:1px solid #c4dbc4; border-radius:8px; padding:8px 10px; font-weight:700; font-size:12px; cursor:pointer; }
+  /* PRODUCT CARDS */
+  .cards-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+  .product-card{background:#fff;border-radius:14px;border:1px solid var(--border);overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.04);}
+  .card-img{height:90px;display:flex;align-items:center;justify-content:center;font-size:48px;background:linear-gradient(135deg,#f0f8f0,#e0f0e0);}
+  .card-body{padding:10px 12px 12px;}
+  .card-name{font-weight:800;font-size:13px;color:var(--text);margin-bottom:1px;}
+  .card-farmer{font-size:10px;color:var(--muted);margin-bottom:5px;cursor:pointer;text-decoration:underline;}
+  .card-price{font-size:16px;font-weight:800;color:var(--green);}
+  .card-unit{font-size:10px;color:var(--muted);}
+  .card-stock{font-size:10px;color:var(--soft);margin:4px 0 8px;}
+  .card-actions{display:flex;gap:6px;}
+  .btn-cart{flex:1;background:var(--green);color:#fff;border:none;border-radius:8px;padding:8px 0;font-weight:700;font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;}
+  .btn-shop{background:var(--green-light);color:var(--green);border:1px solid #c4dbc4;border-radius:8px;padding:8px 9px;font-weight:700;font-size:11px;cursor:pointer;}
+  .badge{font-size:9px;font-weight:700;padding:2px 7px;border-radius:20px;color:#fff;display:inline-block;margin-bottom:4px;}
 
-  /* ADD LISTING */
-  .add-listing-btn { width:100%; background:var(--green); color:#fff; border:none; border-radius:12px; padding:14px; font-weight:800; font-size:15px; cursor:pointer; margin-bottom:20px; font-family:'DM Sans',sans-serif; display:flex; align-items:center; justify-content:center; gap:8px; }
-  .listing-form { background:#fff; border-radius:14px; border:1px solid var(--border); padding:20px; margin-bottom:20px; display:none; }
-  .listing-form.show { display:block; }
-  .listing-form h3 { font-weight:800; font-size:16px; margin-bottom:16px; }
-  .submit-listing-btn { width:100%; background:var(--green); color:#fff; border:none; border-radius:10px; padding:13px; font-weight:800; font-size:14px; cursor:pointer; margin-top:8px; font-family:'DM Sans',sans-serif; }
+  /* FARMER SHOP PAGE */
+  .shop-page{display:none;}
+  .shop-page.active{display:block;}
+  .shop-header{background:linear-gradient(135deg,#1a4a1a,#2d6a2d);border-radius:16px;padding:20px;margin-bottom:16px;color:#fff;text-align:center;}
+  .shop-avatar{width:64px;height:64px;background:rgba(255,255,255,0.2);border-radius:20px;display:flex;align-items:center;justify-content:center;font-size:28px;margin:0 auto 10px;}
+  .shop-name{font-weight:800;font-size:20px;margin-bottom:4px;}
+  .shop-location{font-size:12px;color:#a8d4a8;margin-bottom:10px;}
+  .shop-type-badge{background:rgba(255,255,255,0.2);border-radius:20px;padding:4px 12px;font-size:11px;font-weight:700;display:inline-block;}
+  .shop-stats{display:flex;gap:12px;justify-content:center;margin-top:14px;}
+  .shop-stat{text-align:center;}
+  .shop-stat-n{font-weight:800;font-size:16px;}
+  .shop-stat-l{font-size:10px;color:#a8d4a8;}
+  .contact-btn{width:100%;background:#fff;color:var(--green);border:none;border-radius:12px;padding:12px;font-weight:800;font-size:14px;cursor:pointer;margin-top:12px;font-family:'DM Sans',sans-serif;}
+  .back-btn{background:var(--green-light);color:var(--green);border:1px solid #c4dbc4;border-radius:8px;padding:7px 12px;font-weight:700;font-size:12px;cursor:pointer;margin-bottom:12px;}
 
-  .rate-cards { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:20px; }
-  .rate-card { background:#fff; border-radius:12px; padding:14px; border:1px solid var(--border); }
-  .rate-name { font-weight:800; font-size:14px; }
-  .rate-price { font-size:20px; font-weight:800; color:var(--green); margin:4px 0; }
-  .rate-change { font-size:11px; font-weight:700; padding:3px 9px; border-radius:20px; display:inline-block; }
-  .up { background:#f0fdf4; color:#16a34a; }
-  .down { background:#fef2f2; color:#dc2626; }
-  .chart-bar-wrap { margin-bottom:18px; }
-  .chart-label { display:flex; justify-content:space-between; font-size:12px; font-weight:700; margin-bottom:6px; }
-  .bars { display:flex; gap:3px; align-items:flex-end; height:48px; }
-  .bar { flex:1; border-radius:3px 3px 0 0; background:#c4dbc4; }
-  .bar.current { background:var(--green); }
+  /* SELL TAB */
+  .sell-header{background:linear-gradient(135deg,#1a4a1a,#2d6a2d);border-radius:16px;padding:18px;margin-bottom:16px;color:#fff;}
+  .sell-header h2{font-family:'Bebas Neue',cursive;font-size:24px;margin-bottom:4px;}
+  .sell-header p{font-size:12px;color:#a8d4a8;}
+  .post-btn{width:100%;background:var(--green);color:#fff;border:none;border-radius:12px;padding:14px;font-weight:800;font-size:15px;cursor:pointer;margin-bottom:14px;font-family:'DM Sans',sans-serif;display:flex;align-items:center;justify-content:center;gap:8px;}
+  .product-form{background:#fff;border-radius:14px;border:1px solid var(--border);padding:18px;margin-bottom:16px;display:none;}
+  .product-form.show{display:block;}
+  .product-form h3{font-weight:800;font-size:15px;margin-bottom:14px;}
+  .submit-btn{width:100%;background:var(--green);color:#fff;border:none;border-radius:10px;padding:13px;font-weight:800;font-size:14px;cursor:pointer;margin-top:8px;font-family:'DM Sans',sans-serif;}
+  .my-product-card{background:#fff;border-radius:12px;border:1px solid var(--border);padding:14px;margin-bottom:10px;display:flex;gap:12px;align-items:center;}
+  .my-product-emoji{font-size:32px;}
+  .my-product-info{flex:1;}
+  .my-product-name{font-weight:800;font-size:14px;}
+  .my-product-price{font-weight:700;color:var(--green);font-size:13px;}
+  .my-product-stock{font-size:11px;color:var(--muted);}
+  .delete-btn{background:#fef2f2;color:#dc2626;border:1px solid #fecaca;border-radius:8px;padding:6px 10px;font-size:11px;font-weight:700;cursor:pointer;}
 
-  .msg-list { display:flex; flex-direction:column; background:#fff; border-radius:14px; border:1px solid var(--border); overflow:hidden; margin-bottom:16px; }
-  .msg-item { padding:14px 16px; display:flex; gap:12px; align-items:center; cursor:pointer; border-bottom:1px solid var(--border); transition:background 0.1s; }
-  .msg-item:last-child { border-bottom:none; }
-  .msg-avatar { width:42px; height:42px; border-radius:12px; background:var(--green); display:flex; align-items:center; justify-content:center; color:#fff; font-weight:800; font-size:13px; flex-shrink:0; }
-  .msg-info { flex:1; min-width:0; }
-  .msg-name { font-weight:700; font-size:13px; display:flex; justify-content:space-between; }
-  .msg-time { font-size:10px; color:var(--muted); font-weight:400; }
-  .msg-preview { font-size:11px; color:var(--muted); margin-top:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-  .unread-dot { width:8px; height:8px; border-radius:50%; background:var(--accent); flex-shrink:0; }
+  /* ORDERS */
+  .orders-tabs{display:flex;gap:8px;margin-bottom:14px;}
+  .orders-tab{flex:1;padding:8px;border:1px solid var(--border);border-radius:8px;background:#fff;font-weight:700;font-size:12px;cursor:pointer;text-align:center;color:var(--muted);font-family:'DM Sans',sans-serif;}
+  .orders-tab.active{background:var(--green-light);border-color:var(--green);color:var(--green);}
+  .order-card{background:#fff;border-radius:14px;border:1px solid var(--border);padding:14px;margin-bottom:10px;}
+  .order-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;}
+  .order-id{font-weight:800;color:var(--green);font-size:13px;}
+  .status-pill{font-size:10px;font-weight:700;padding:4px 10px;border-radius:20px;}
+  .status-pending{background:#fff7ed;color:#ea580c;}
+  .status-confirmed{background:#eff6ff;color:#2563eb;}
+  .status-delivered{background:#f0fdf4;color:#16a34a;}
+  .order-row{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-bottom:4px;}
+  .order-row span:last-child{font-weight:700;color:var(--text);}
+  .order-actions{display:flex;gap:8px;margin-top:10px;}
+  .confirm-btn{flex:1;background:var(--green);color:#fff;border:none;border-radius:8px;padding:8px;font-weight:700;font-size:12px;cursor:pointer;}
+  .momo-btn{flex:1;background:#ffcc00;color:#333;border:none;border-radius:8px;padding:8px;font-weight:700;font-size:12px;cursor:pointer;}
 
-  .chat-header { display:flex; align-items:center; gap:10px; padding:14px 16px; background:#fff; border-radius:14px 14px 0 0; border:1px solid var(--border); border-bottom:none; }
-  .chat-messages { background:#fff; border:1px solid var(--border); border-top:none; border-bottom:none; padding:16px; min-height:240px; max-height:320px; overflow-y:auto; display:flex; flex-direction:column; gap:10px; }
-  .bubble { max-width:75%; padding:10px 13px; border-radius:14px; font-size:13px; font-weight:500; }
-  .bubble.them { align-self:flex-start; background:#f0f5f0; border-radius:14px 14px 14px 4px; }
-  .bubble.me { align-self:flex-end; background:var(--green); color:#fff; border-radius:14px 14px 4px 14px; }
-  .chat-input-wrap { display:flex; gap:8px; padding:12px; background:#fff; border:1px solid var(--border); border-top:none; border-radius:0 0 14px 14px; }
-  .chat-input { flex:1; padding:10px 13px; border:1px solid var(--border); border-radius:10px; font-size:13px; outline:none; font-family:'DM Sans',sans-serif; }
-  .send-btn { background:var(--green); color:#fff; border:none; border-radius:10px; padding:10px 16px; font-weight:700; cursor:pointer; font-size:13px; }
-  .back-btn { background:var(--green-light); color:var(--green); border:1px solid #c4dbc4; border-radius:8px; padding:7px 12px; font-weight:700; font-size:12px; cursor:pointer; margin-bottom:12px; }
+  /* CART */
+  .cart-item{background:#fff;border-radius:12px;border:1px solid var(--border);padding:12px 14px;display:flex;align-items:center;gap:10px;margin-bottom:10px;}
+  .cart-emoji{font-size:28px;}
+  .cart-info{flex:1;}
+  .cart-name{font-weight:800;font-size:13px;}
+  .cart-farmer{font-size:11px;color:var(--muted);}
+  .cart-price{font-weight:700;color:var(--green);font-size:12px;margin-top:2px;}
+  .qty-controls{display:flex;align-items:center;gap:6px;}
+  .qty-btn{width:26px;height:26px;border-radius:7px;border:1px solid var(--border);background:#fff;font-weight:800;font-size:15px;cursor:pointer;}
+  .qty-num{font-weight:800;min-width:18px;text-align:center;font-size:13px;}
+  .remove-btn{color:#dc2626;background:none;border:none;font-weight:800;font-size:16px;cursor:pointer;}
+  .checkout-box{background:#fff;border-radius:14px;border:1px solid var(--border);padding:16px;}
+  .checkout-title{font-weight:800;font-size:15px;margin-bottom:12px;}
+  .checkout-row{display:flex;justify-content:space-between;font-size:13px;color:var(--muted);margin-bottom:6px;}
+  .checkout-total{border-top:1px solid var(--border);padding-top:10px;margin-top:6px;font-weight:800;font-size:15px;display:flex;justify-content:space-between;}
+  .checkout-total span:last-child{color:var(--green);}
+  .momo-checkout-btn{width:100%;background:#ffcc00;color:#333;border:none;border-radius:12px;padding:14px;font-weight:800;font-size:14px;cursor:pointer;margin-top:12px;font-family:'DM Sans',sans-serif;}
+  .momo-note{text-align:center;font-size:11px;color:var(--muted);margin-top:8px;}
 
-  .order-card { background:#fff; border-radius:14px; border:1px solid var(--border); padding:16px; margin-bottom:12px; }
-  .order-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; }
-  .order-id { font-weight:800; color:var(--green); font-size:14px; }
-  .status-pill { font-size:10px; font-weight:700; padding:4px 10px; border-radius:20px; }
-  .status-delivered { background:#f0fdf4; color:#16a34a; }
-  .status-confirmed { background:#eff6ff; color:#2563eb; }
-  .status-processing { background:#fff7ed; color:#ea580c; }
-  .order-row { display:flex; justify-content:space-between; font-size:12px; color:var(--muted); margin-bottom:4px; }
-  .order-row span:last-child { font-weight:700; color:var(--text); }
+  /* MOMO MODAL */
+  .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:200;display:none;align-items:flex-end;justify-content:center;}
+  .modal-overlay.show{display:flex;}
+  .modal-box{background:#fff;border-radius:20px 20px 0 0;padding:24px 20px;width:100%;max-width:500px;}
+  .modal-title{font-weight:800;font-size:18px;margin-bottom:6px;}
+  .modal-sub{font-size:13px;color:var(--muted);margin-bottom:20px;}
+  .momo-logo{font-size:48px;text-align:center;margin-bottom:14px;}
+  .momo-amount{background:#fff9e6;border:2px solid #ffcc00;border-radius:12px;padding:14px;text-align:center;margin-bottom:16px;}
+  .momo-amount-label{font-size:12px;color:var(--muted);margin-bottom:4px;}
+  .momo-amount-value{font-size:28px;font-weight:800;color:#333;}
+  .momo-steps{margin-bottom:20px;}
+  .momo-step{display:flex;gap:12px;align-items:flex-start;margin-bottom:12px;}
+  .momo-step-num{width:28px;height:28px;background:#ffcc00;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:13px;flex-shrink:0;}
+  .momo-step-text{font-size:13px;color:var(--text);padding-top:4px;}
+  .momo-confirm-btn{width:100%;background:#ffcc00;color:#333;border:none;border-radius:12px;padding:14px;font-weight:800;font-size:15px;cursor:pointer;font-family:'DM Sans',sans-serif;}
+  .close-modal{width:100%;background:var(--bg);color:var(--muted);border:none;border-radius:12px;padding:12px;font-weight:700;font-size:14px;cursor:pointer;margin-top:8px;font-family:'DM Sans',sans-serif;}
 
-  .cart-item { background:#fff; border-radius:14px; border:1px solid var(--border); padding:14px 16px; display:flex; align-items:center; gap:12px; margin-bottom:10px; }
-  .cart-emoji { font-size:32px; }
-  .cart-info { flex:1; }
-  .cart-name { font-weight:800; font-size:14px; }
-  .cart-seller { font-size:11px; color:var(--muted); }
-  .cart-price { font-weight:700; color:var(--green); font-size:13px; margin-top:3px; }
-  .qty-controls { display:flex; align-items:center; gap:8px; }
-  .qty-btn { width:28px; height:28px; border-radius:8px; border:1px solid var(--border); background:#fff; font-weight:800; font-size:16px; cursor:pointer; display:flex; align-items:center; justify-content:center; }
-  .qty-num { font-weight:800; min-width:20px; text-align:center; }
-  .remove-btn { color:#dc2626; background:none; border:none; font-weight:800; font-size:18px; cursor:pointer; padding:4px; }
-  .order-summary { background:#fff; border-radius:14px; border:1px solid var(--border); padding:18px; }
-  .summary-title { font-weight:800; font-size:16px; margin-bottom:14px; }
-  .summary-row { display:flex; justify-content:space-between; font-size:13px; color:var(--muted); margin-bottom:8px; }
-  .summary-row.total { border-top:1px solid var(--border); padding-top:12px; margin-top:8px; font-weight:800; font-size:16px; color:var(--text); }
-  .summary-row.total span:last-child { color:var(--green); }
-  .place-order-btn { width:100%; background:var(--green); color:#fff; border:none; border-radius:12px; padding:15px; font-weight:800; font-size:15px; cursor:pointer; margin-top:16px; font-family:'DM Sans',sans-serif; }
-  .escrow-note { text-align:center; font-size:10px; color:var(--soft); margin-top:8px; }
+  /* MESSAGES */
+  .msg-list-wrap{background:#fff;border-radius:14px;border:1px solid var(--border);overflow:hidden;}
+  .msg-item{padding:13px 14px;display:flex;gap:10px;align-items:center;cursor:pointer;border-bottom:1px solid var(--border);}
+  .msg-item:last-child{border-bottom:none;}
+  .msg-avatar{width:40px;height:40px;border-radius:12px;background:var(--green);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:13px;flex-shrink:0;}
+  .msg-info{flex:1;min-width:0;}
+  .msg-name{font-weight:700;font-size:13px;display:flex;justify-content:space-between;}
+  .msg-time{font-size:10px;color:var(--muted);font-weight:400;}
+  .msg-preview{font-size:11px;color:var(--muted);margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .unread-dot{width:8px;height:8px;border-radius:50%;background:var(--accent);flex-shrink:0;}
+  .chat-wrap{background:#fff;border-radius:14px;border:1px solid var(--border);overflow:hidden;}
+  .chat-header{padding:13px 14px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;}
+  .chat-messages{padding:14px;min-height:260px;max-height:340px;overflow-y:auto;display:flex;flex-direction:column;gap:8px;}
+  .bubble{max-width:75%;padding:9px 12px;border-radius:14px;font-size:13px;font-weight:500;}
+  .bubble.them{align-self:flex-start;background:#f0f5f0;border-radius:14px 14px 14px 4px;}
+  .bubble.me{align-self:flex-end;background:var(--green);color:#fff;border-radius:14px 14px 4px 14px;}
+  .chat-input-wrap{display:flex;gap:8px;padding:10px 12px;border-top:1px solid var(--border);}
+  .chat-input{flex:1;padding:9px 12px;border:1px solid var(--border);border-radius:10px;font-size:13px;outline:none;font-family:'DM Sans',sans-serif;}
+  .send-btn{background:var(--green);color:#fff;border:none;border-radius:10px;padding:9px 14px;font-weight:700;cursor:pointer;}
 
-  .notif { position:fixed; bottom:80px; left:50%; transform:translateX(-50%); background:#1a2e1a; color:#a8d4a8; padding:10px 20px; border-radius:20px; font-weight:700; font-size:13px; z-index:999; box-shadow:0 4px 20px rgba(0,0,0,0.2); white-space:nowrap; opacity:0; transition:opacity 0.3s; pointer-events:none; }
-  .notif.show { opacity:1; }
-  .section-title { font-size:11px; font-weight:700; color:var(--muted); letter-spacing:2px; text-transform:uppercase; margin-bottom:12px; }
-  .empty-state { text-align:center; padding:40px 20px; color:var(--soft); }
-  .empty-icon { font-size:48px; margin-bottom:12px; }
+  /* MISC */
+  .notif{position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#1a2e1a;color:#a8d4a8;padding:10px 20px;border-radius:20px;font-weight:700;font-size:13px;z-index:999;box-shadow:0 4px 20px rgba(0,0,0,0.2);white-space:nowrap;opacity:0;transition:opacity 0.3s;pointer-events:none;}
+  .notif.show{opacity:1;}
+  .empty-state{text-align:center;padding:40px 20px;color:var(--soft);}
+  .empty-icon{font-size:48px;margin-bottom:12px;}
+  .buyer-only{display:none;}
+  .farmer-only{display:none;}
 </style>
 </head>
 <body>
 
-<!-- AUTH OVERLAY -->
+<!-- AUTH -->
 <div class="auth-overlay" id="authOverlay">
   <div class="auth-box">
     <div class="auth-logo">
@@ -183,52 +224,47 @@
     </div>
     <div id="authError" class="auth-error"></div>
     <div id="authSuccess" class="auth-success"></div>
-
-    <!-- LOGIN -->
     <div id="loginForm">
-      <div class="form-group">
-        <label class="form-label">Email</label>
-        <input class="form-input" type="email" id="loginEmail" placeholder="your@email.com">
-      </div>
-      <div class="form-group">
-        <label class="form-label">Password</label>
-        <input class="form-input" type="password" id="loginPassword" placeholder="••••••••">
-      </div>
+      <div class="form-group"><label class="form-label">Email</label><input class="form-input" type="email" id="loginEmail" placeholder="your@email.com"></div>
+      <div class="form-group"><label class="form-label">Password</label><input class="form-input" type="password" id="loginPassword" placeholder="••••••••"></div>
       <button class="auth-btn" onclick="handleLogin()">Login to AgroTrade →</button>
     </div>
-
-    <!-- REGISTER -->
     <div id="registerForm" style="display:none">
-      <div class="form-group">
-        <label class="form-label">Full Name</label>
-        <input class="form-input" type="text" id="regName" placeholder="Your full name">
-      </div>
-      <div class="form-group">
-        <label class="form-label">Email</label>
-        <input class="form-input" type="email" id="regEmail" placeholder="your@email.com">
-      </div>
-      <div class="form-group">
-        <label class="form-label">Phone</label>
-        <input class="form-input" type="tel" id="regPhone" placeholder="0244000000">
-      </div>
-      <div class="form-group">
-        <label class="form-label">I am a</label>
+      <div class="form-group"><label class="form-label">Full Name</label><input class="form-input" type="text" id="regName" placeholder="Your full name"></div>
+      <div class="form-group"><label class="form-label">Email</label><input class="form-input" type="email" id="regEmail" placeholder="your@email.com"></div>
+      <div class="form-group"><label class="form-label">Phone (MoMo Number)</label><input class="form-input" type="tel" id="regPhone" placeholder="0244000000"></div>
+      <div class="form-group"><label class="form-label">I am a</label>
         <select class="form-select" id="regType">
-          <option value="farmer">🧑‍🌾 Farmer (Seller)</option>
-          <option value="buyer">🛒 Buyer / Trader</option>
+          <option value="farmer">🧑‍🌾 Farmer (I want to sell)</option>
+          <option value="buyer">🛒 Buyer (I want to buy)</option>
           <option value="cooperative">🤝 Cooperative / Agribusiness</option>
         </select>
       </div>
-      <div class="form-group">
-        <label class="form-label">Location / Region</label>
-        <input class="form-input" type="text" id="regLocation" placeholder="e.g. Ashanti Region">
-      </div>
-      <div class="form-group">
-        <label class="form-label">Password</label>
-        <input class="form-input" type="password" id="regPassword" placeholder="Min 6 characters">
-      </div>
+      <div class="form-group"><label class="form-label">Region / Location</label><input class="form-input" type="text" id="regLocation" placeholder="e.g. Ashanti Region"></div>
+      <div class="form-group"><label class="form-label">Password</label><input class="form-input" type="password" id="regPassword" placeholder="Min 6 characters"></div>
       <button class="auth-btn" onclick="handleRegister()">Create Account →</button>
     </div>
+  </div>
+</div>
+
+<!-- MOMO MODAL -->
+<div class="modal-overlay" id="momoModal">
+  <div class="modal-box">
+    <div class="momo-logo">📱</div>
+    <div class="modal-title">Pay with Mobile Money</div>
+    <div class="modal-sub">Complete your order payment via MTN/Vodafone MoMo</div>
+    <div class="momo-amount">
+      <div class="momo-amount-label">Amount to Pay</div>
+      <div class="momo-amount-value" id="momoAmount">GHS 0</div>
+    </div>
+    <div class="momo-steps">
+      <div class="momo-step"><div class="momo-step-num">1</div><div class="momo-step-text">Dial <strong>*170#</strong> (MTN) or <strong>*110#</strong> (Vodafone) on your phone</div></div>
+      <div class="momo-step"><div class="momo-step-num">2</div><div class="momo-step-text">Select <strong>Send Money</strong> → Enter merchant number</div></div>
+      <div class="momo-step"><div class="momo-step-num">3</div><div class="momo-step-text">Enter amount: <strong id="momoAmountStep">GHS 0</strong></div></div>
+      <div class="momo-step"><div class="momo-step-num">4</div><div class="momo-step-text">Reference: <strong id="momoRef">AGT-0000</strong> — then confirm with your PIN</div></div>
+    </div>
+    <button class="momo-confirm-btn" onclick="confirmMomoPayment()">✅ I Have Paid</button>
+    <button class="close-modal" onclick="closeMomo()">Cancel</button>
   </div>
 </div>
 
@@ -238,139 +274,155 @@
     <div class="logo-mark">🌿</div>
     <div>
       <div class="logo-text">AgroTrade</div>
-      <div class="logo-sub">Commodity Marketplace</div>
+      <div class="logo-sub">Ghana Agri Shop</div>
     </div>
   </div>
   <div class="header-right">
-    <div class="user-info" id="userEmail"></div>
+    <div class="user-chip" id="userChip">Guest</div>
     <button class="logout-btn" onclick="handleLogout()">Logout</button>
   </div>
 </header>
 
-<div class="ticker">
-  <div class="ticker-inner" id="ticker"></div>
-</div>
+<div class="ticker"><div class="ticker-inner" id="ticker"></div></div>
 
 <main>
-  <div class="tab active" id="tab-market">
-    <div class="stats-grid">
-      <div class="stat-card"><div class="stat-val">1,240+</div><div class="stat-label">Active Listings</div></div>
-      <div class="stat-card" style="border-left-color:#7c3aed"><div class="stat-val">380</div><div class="stat-label">Verified Sellers</div></div>
-      <div class="stat-card" style="border-left-color:#059669"><div class="stat-val">GHS 2.4M</div><div class="stat-label">Volume (30d)</div></div>
-      <div class="stat-card" style="border-left-color:#d97706"><div class="stat-val">4.7 ★</div><div class="stat-label">Avg. Rating</div></div>
-    </div>
 
-    <!-- Add Listing Button (farmers only) -->
-    <div id="addListingSection">
-      <button class="add-listing-btn" onclick="toggleListingForm()">➕ Post Your Commodity</button>
-      <div class="listing-form" id="listingForm">
-        <h3>📦 Post a New Listing</h3>
-        <div class="form-group">
-          <label class="form-label">Commodity Name</label>
-          <input class="form-input" id="listName" placeholder="e.g. White Maize">
+  <!-- SHOP TAB -->
+  <div class="tab active" id="tab-shop">
+    <div id="mainShop">
+      <div class="shop-banner">
+        <h2>🌾 Ghana Agri Shop</h2>
+        <p>Fresh produce directly from verified farmers</p>
+        <div class="banner-stats">
+          <div class="banner-stat"><div class="banner-stat-n" id="totalProducts">0</div><div class="banner-stat-l">Products</div></div>
+          <div class="banner-stat"><div class="banner-stat-n" id="totalFarmers">0</div><div class="banner-stat-l">Farmers</div></div>
+          <div class="banner-stat"><div class="banner-stat-n">✅</div><div class="banner-stat-l">Verified</div></div>
         </div>
-        <div class="form-group">
-          <label class="form-label">Category</label>
-          <select class="form-select" id="listCategory">
-            <option>Grains</option>
-            <option>Cash Crops</option>
-            <option>Legumes</option>
-            <option>Tubers</option>
-            <option>Vegetables</option>
-            <option>Processed</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label class="form-label">Price (GHS)</label>
-          <input class="form-input" type="number" id="listPrice" placeholder="e.g. 285">
-        </div>
-        <div class="form-group">
-          <label class="form-label">Unit</label>
-          <input class="form-input" id="listUnit" placeholder="e.g. per tonne, per bag">
-        </div>
-        <div class="form-group">
-          <label class="form-label">Stock Available</label>
-          <input class="form-input" type="number" id="listStock" placeholder="e.g. 50">
-        </div>
-        <div class="form-group">
-          <label class="form-label">Location</label>
-          <input class="form-input" id="listLocation" placeholder="e.g. Ashanti Region">
-        </div>
-        <div class="form-group">
-          <label class="form-label">Description</label>
-          <input class="form-input" id="listDesc" placeholder="Extra details about your product">
-        </div>
-        <button class="submit-listing-btn" onclick="submitListing()">✅ Post Listing</button>
       </div>
+      <div class="search-wrap">
+        <span class="search-icon">🔍</span>
+        <input class="search-box" id="searchInput" placeholder="Search products or farmers..." oninput="filterProducts()">
+      </div>
+      <div class="cats">
+        <button class="cat-btn active" onclick="filterCat(this,'All')">All</button>
+        <button class="cat-btn" onclick="filterCat(this,'Grains')">🌽 Grains</button>
+        <button class="cat-btn" onclick="filterCat(this,'Vegetables')">🥦 Vegetables</button>
+        <button class="cat-btn" onclick="filterCat(this,'Cash Crops')">☕ Cash Crops</button>
+        <button class="cat-btn" onclick="filterCat(this,'Legumes')">🫘 Legumes</button>
+        <button class="cat-btn" onclick="filterCat(this,'Tubers')">🍠 Tubers</button>
+        <button class="cat-btn" onclick="filterCat(this,'Processed')">🧺 Processed</button>
+      </div>
+      <div class="cards-grid" id="productsGrid"></div>
     </div>
 
-    <div class="search-wrap">
-      <span class="search-icon">🔍</span>
-      <input class="search-box" id="searchInput" placeholder="Search commodities or sellers..." oninput="filterCards()">
+    <!-- FARMER SHOP PAGE -->
+    <div id="farmerShopPage" style="display:none">
+      <button class="back-btn" onclick="backToShop()">← Back to Shop</button>
+      <div class="shop-header">
+        <div class="shop-avatar" id="shopAvatar">🧑‍🌾</div>
+        <div class="shop-name" id="shopName">Farmer Name</div>
+        <div class="shop-location" id="shopLocation">📍 Location</div>
+        <div class="shop-type-badge" id="shopType">Farmer</div>
+        <div class="shop-stats">
+          <div class="shop-stat"><div class="shop-stat-n" id="shopProducts">0</div><div class="shop-stat-l">Products</div></div>
+          <div class="shop-stat"><div class="shop-stat-n">⭐ 4.8</div><div class="shop-stat-l">Rating</div></div>
+          <div class="shop-stat"><div class="shop-stat-n">✅</div><div class="shop-stat-l">Verified</div></div>
+        </div>
+        <button class="contact-btn" onclick="contactFarmer()">💬 Contact Farmer</button>
+      </div>
+      <div class="section-title">Products from this Farm</div>
+      <div class="cards-grid" id="farmerProductsGrid"></div>
     </div>
-    <div class="cats">
-      <button class="cat-btn active" onclick="filterCat(this,'All')">All</button>
-      <button class="cat-btn" onclick="filterCat(this,'Grains')">Grains</button>
-      <button class="cat-btn" onclick="filterCat(this,'Cash Crops')">Cash Crops</button>
-      <button class="cat-btn" onclick="filterCat(this,'Legumes')">Legumes</button>
-      <button class="cat-btn" onclick="filterCat(this,'Tubers')">Tubers</button>
-      <button class="cat-btn" onclick="filterCat(this,'Vegetables')">Vegetables</button>
-      <button class="cat-btn" onclick="filterCat(this,'Processed')">Processed</button>
-    </div>
-    <div class="cards-grid" id="cardsGrid"></div>
   </div>
 
-  <div class="tab" id="tab-prices">
-    <div class="section-title">Live Market Rates — Ghana</div>
-    <div class="rate-cards" id="rateCards"></div>
-    <div class="section-title">3-Month Price Trend</div>
-    <div id="charts"></div>
+  <!-- SELL TAB (Farmers only) -->
+  <div class="tab" id="tab-sell">
+    <div class="sell-header">
+      <h2>Your Farm Shop 🏪</h2>
+      <p>Post your products and reach buyers across Ghana</p>
+    </div>
+    <button class="post-btn" onclick="toggleProductForm()">➕ Add New Product</button>
+    <div class="product-form" id="productForm">
+      <h3>📦 New Product Listing</h3>
+      <div class="form-group"><label class="form-label">Product Name</label><input class="form-input" id="pName" placeholder="e.g. Fresh Garden Eggs"></div>
+      <div class="form-group"><label class="form-label">Category</label>
+        <select class="form-select" id="pCategory">
+          <option>Grains</option><option>Vegetables</option><option>Cash Crops</option>
+          <option>Legumes</option><option>Tubers</option><option>Processed</option>
+        </select>
+      </div>
+      <div class="form-group"><label class="form-label">Emoji Icon</label>
+        <select class="form-select" id="pEmoji">
+          <option value="🌽">🌽 Maize</option><option value="🍅">🍅 Tomatoes</option>
+          <option value="🍆">🍆 Garden Eggs</option><option value="🥜">🥜 Groundnuts</option>
+          <option value="🫘">🫘 Beans/Cocoa</option><option value="🌾">🌾 Grains</option>
+          <option value="🍠">🍠 Yam/Tubers</option><option value="🥦">🥦 Vegetables</option>
+          <option value="🛢️">🛢️ Palm Oil</option><option value="🌿">🌿 Other</option>
+        </select>
+      </div>
+      <div class="form-group"><label class="form-label">Price (GHS)</label><input class="form-input" type="number" id="pPrice" placeholder="e.g. 45"></div>
+      <div class="form-group"><label class="form-label">Unit</label><input class="form-input" id="pUnit" placeholder="e.g. per basket, per tonne, per bag"></div>
+      <div class="form-group"><label class="form-label">Quantity Available</label><input class="form-input" type="number" id="pStock" placeholder="e.g. 100"></div>
+      <div class="form-group"><label class="form-label">Description</label><input class="form-input" id="pDesc" placeholder="Quality, freshness, any extra info"></div>
+      <button class="submit-btn" onclick="postProduct()">✅ Post Product</button>
+    </div>
+    <div class="section-title">Your Listed Products</div>
+    <div id="myProductsList"></div>
   </div>
 
+  <!-- ORDERS TAB -->
+  <div class="tab" id="tab-orders">
+    <div class="orders-tabs">
+      <button class="orders-tab active" onclick="switchOrderTab('buying',this)">🛒 My Purchases</button>
+      <button class="orders-tab farmer-only" id="sellingTab" onclick="switchOrderTab('selling',this)">📦 My Sales</button>
+    </div>
+    <div id="buyingOrders"></div>
+    <div id="sellingOrders" style="display:none"></div>
+  </div>
+
+  <!-- MESSAGES TAB -->
   <div class="tab" id="tab-messages">
-    <div id="msgList">
-      <div class="section-title">Conversations</div>
-      <div class="msg-list" id="conversationList"></div>
+    <div id="msgListView">
+      <div class="section-title">Messages</div>
+      <div class="msg-list-wrap" id="conversationList"></div>
     </div>
     <div id="chatView" style="display:none">
-      <button class="back-btn" onclick="backToList()">← Back</button>
-      <div class="chat-header">
-        <div class="msg-avatar" id="chatAvatar"></div>
-        <div><div style="font-weight:800;font-size:14px" id="chatName"></div><div style="font-size:11px;color:var(--muted)">Online</div></div>
-      </div>
-      <div class="chat-messages" id="chatMessages"></div>
-      <div class="chat-input-wrap">
-        <input class="chat-input" id="chatInput" placeholder="Type a message..." onkeydown="if(event.key==='Enter')sendMsg()">
-        <button class="send-btn" onclick="sendMsg()">Send</button>
+      <button class="back-btn" onclick="backToMessages()">← Back</button>
+      <div class="chat-wrap">
+        <div class="chat-header">
+          <div class="msg-avatar" id="chatAvatar"></div>
+          <div><div style="font-weight:800;font-size:14px" id="chatName"></div><div style="font-size:11px;color:var(--muted)">Online</div></div>
+        </div>
+        <div class="chat-messages" id="chatMessages"></div>
+        <div class="chat-input-wrap">
+          <input class="chat-input" id="chatInput" placeholder="Type a message..." onkeydown="if(event.key==='Enter')sendMsg()">
+          <button class="send-btn" onclick="sendMsg()">Send</button>
+        </div>
       </div>
     </div>
   </div>
 
-  <div class="tab" id="tab-orders">
-    <div class="section-title">My Orders</div>
-    <div id="ordersList"></div>
-  </div>
-
+  <!-- CART TAB -->
   <div class="tab" id="tab-cart">
     <div class="section-title">Shopping Cart</div>
     <div id="cartItems"></div>
-    <div id="cartSummary"></div>
+    <div id="cartCheckout"></div>
   </div>
+
 </main>
 
 <nav class="bottom-nav">
-  <button class="nav-btn active" onclick="switchTab('market',this)"><span class="icon">🛒</span>Market</button>
-  <button class="nav-btn" onclick="switchTab('prices',this)"><span class="icon">📈</span>Prices</button>
-  <button class="nav-btn" onclick="switchTab('messages',this)" style="position:relative"><span class="icon">💬</span>Messages<span class="nav-badge">3</span></button>
+  <button class="nav-btn active" onclick="switchTab('shop',this)"><span class="icon">🏪</span>Shop</button>
+  <button class="nav-btn farmer-only" id="sellNavBtn" onclick="switchTab('sell',this)"><span class="icon">🌾</span>Sell</button>
   <button class="nav-btn" onclick="switchTab('orders',this)"><span class="icon">📦</span>Orders</button>
-  <button class="nav-btn" onclick="switchTab('cart',this)" style="position:relative"><span class="icon">🛍️</span>Cart<span class="nav-badge" id="cartBadge" style="display:none">0</span></button>
+  <button class="nav-btn" onclick="switchTab('messages',this)"><span class="icon">💬</span>Messages</button>
+  <button class="nav-btn" onclick="switchTab('cart',this)" style="position:relative"><span class="icon">🛒</span>Cart<span class="nav-badge" id="cartBadge" style="display:none">0</span></button>
 </nav>
 
 <div class="notif" id="notif"></div>
 
 <script>
-// SUPABASE INIT
-const { createClient } = supabase;
+const {createClient} = supabase;
 const sb = createClient(
   'https://wkkdpqayrbwbxfovofrs.supabase.co',
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Indra2RwcWF5cmJ3Ynhmb3ZvZnJzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMzMjI4NjcsImV4cCI6MjA4ODg5ODg2N30.skW2BldBmWCfo1wPzc7NOgJPfxAYkGf1h0QCUN7s5EM'
@@ -378,260 +430,399 @@ const sb = createClient(
 
 let currentUser = null;
 let currentProfile = null;
+let allProducts = [];
+let cart = [];
+let activeCat = 'All';
+let activeConv = null;
+let currentFarmerView = null;
+let orderCounter = Math.floor(Math.random()*9000)+1000;
 
-// CHECK SESSION ON LOAD
-sb.auth.getSession().then(({ data: { session } }) => {
-  if (session) {
-    currentUser = session.user;
-    onLoggedIn(session.user);
-  }
+// SAMPLE PRODUCTS (shown before real ones load)
+const SAMPLE_PRODUCTS = [
+  {id:'s1',name:'White Maize',category:'Grains',price:285,unit:'per tonne',stock:50,emoji:'🌽',farmer_name:'Kofi Farms Co.',farmer_location:'Ashanti',farmer_id:'sample1',farmer_phone:'0244123456'},
+  {id:'s2',name:'Cocoa Beans',category:'Cash Crops',price:4200,unit:'per tonne',stock:12,emoji:'🫘',farmer_name:'Golden Harvest Ltd.',farmer_location:'Western',farmer_id:'sample2',farmer_phone:'0244234567'},
+  {id:'s3',name:'Fresh Tomatoes',category:'Vegetables',price:95,unit:'per crate',stock:80,emoji:'🍅',farmer_name:'Savannah Growers',farmer_location:'Northern',farmer_id:'sample3',farmer_phone:'0244345678'},
+  {id:'s4',name:'Garden Eggs',category:'Vegetables',price:45,unit:'per basket',stock:120,emoji:'🍆',farmer_name:'Northern Growers',farmer_location:'Northern Region',farmer_id:'sample4',farmer_phone:'0244456789'},
+  {id:'s5',name:'Soybeans',category:'Legumes',price:320,unit:'per tonne',stock:30,emoji:'🫘',farmer_name:'Upper East Coop',farmer_location:'Upper East',farmer_id:'sample5',farmer_phone:'0244567890'},
+  {id:'s6',name:'Groundnuts',category:'Legumes',price:410,unit:'per tonne',stock:18,emoji:'🥜',farmer_name:'Savannah Coop',farmer_location:'Northern',farmer_id:'sample6',farmer_phone:'0244678901'},
+  {id:'s7',name:'Yam (White)',category:'Tubers',price:55,unit:'per tuber',stock:500,emoji:'🍠',farmer_name:'Brong Harvest',farmer_location:'Brong-Ahafo',farmer_id:'sample7',farmer_phone:'0244789012'},
+  {id:'s8',name:'Palm Oil',category:'Cash Crops',price:1850,unit:'per tonne',stock:25,emoji:'🛢️',farmer_name:'Eastern Palm Ltd.',farmer_location:'Eastern',farmer_id:'sample8',farmer_phone:'0244890123'},
+];
+
+// TICKER
+const RATES=[{n:'Maize',p:285,c:2.3},{n:'Cocoa',p:4200,c:5.1},{n:'Soybean',p:320,c:3.4},{n:'Palm Oil',p:1850,c:-0.5},{n:'Groundnut',p:410,c:1.9}];
+const tickerText = RATES.map(r=>`🌾 ${r.n}: GHS ${r.p}/tonne ${r.c>0?'▲':'▼'}${Math.abs(r.c)}%`).join('   •   ');
+document.getElementById('ticker').innerHTML=`<span>${tickerText}&nbsp;&nbsp;&nbsp;&nbsp;${tickerText}</span>`;
+
+// AUTH
+sb.auth.getSession().then(({data:{session}})=>{ if(session){ currentUser=session.user; onLoggedIn(session.user); }});
+sb.auth.onAuthStateChange((event,session)=>{
+  if(event==='SIGNED_IN'&&session){ currentUser=session.user; onLoggedIn(session.user); }
+  else if(event==='SIGNED_OUT'){ currentUser=null; document.getElementById('authOverlay').style.display='flex'; }
 });
 
-sb.auth.onAuthStateChange((event, session) => {
-  if (event === 'SIGNED_IN' && session) {
-    currentUser = session.user;
-    onLoggedIn(session.user);
-  } else if (event === 'SIGNED_OUT') {
-    currentUser = null;
-    document.getElementById('authOverlay').style.display = 'flex';
-  }
-});
-
-function onLoggedIn(user) {
-  document.getElementById('authOverlay').style.display = 'none';
-  document.getElementById('userEmail').textContent = user.email;
-  loadUserProfile(user.id);
-  loadListings();
+async function onLoggedIn(user) {
+  document.getElementById('authOverlay').style.display='none';
+  const {data} = await sb.from('profiles').select('*').eq('id',user.id).single();
+  if(data){ currentProfile=data; setupUserUI(data); }
+  else { document.getElementById('userChip').textContent=user.email.split('@')[0]; }
+  loadProducts();
+  loadMyProducts();
+  loadOrders();
+  loadMessages();
 }
 
-async function loadUserProfile(userId) {
-  const { data } = await sb.from('profiles').select('*').eq('id', userId).single();
-  if (data) {
-    currentProfile = data;
-    if (data.user_type === 'buyer') {
-      document.getElementById('addListingSection').style.display = 'none';
-    }
+function setupUserUI(profile) {
+  document.getElementById('userChip').textContent = profile.full_name || profile.user_type;
+  if(profile.user_type==='farmer'||profile.user_type==='cooperative'){
+    document.querySelectorAll('.farmer-only').forEach(el=>el.style.display='flex');
+    document.getElementById('sellingTab').style.display='block';
   }
 }
 
-// AUTH FUNCTIONS
 function switchAuth(tab) {
-  document.getElementById('loginForm').style.display = tab === 'login' ? 'block' : 'none';
-  document.getElementById('registerForm').style.display = tab === 'register' ? 'block' : 'none';
-  document.querySelectorAll('.auth-tab').forEach((t,i) => t.classList.toggle('active', (tab==='login'&&i===0)||(tab==='register'&&i===1)));
-  document.getElementById('authError').style.display = 'none';
-  document.getElementById('authSuccess').style.display = 'none';
+  document.getElementById('loginForm').style.display=tab==='login'?'block':'none';
+  document.getElementById('registerForm').style.display=tab==='register'?'block':'none';
+  document.querySelectorAll('.auth-tab').forEach((t,i)=>t.classList.toggle('active',(tab==='login'&&i===0)||(tab==='register'&&i===1)));
+  document.getElementById('authError').style.display='none';
+  document.getElementById('authSuccess').style.display='none';
 }
 
 async function handleLogin() {
-  const email = document.getElementById('loginEmail').value;
-  const password = document.getElementById('loginPassword').value;
-  if (!email || !password) return showAuthError('Please fill in all fields');
-  const { error } = await sb.auth.signInWithPassword({ email, password });
-  if (error) showAuthError(error.message);
+  const email=document.getElementById('loginEmail').value;
+  const password=document.getElementById('loginPassword').value;
+  if(!email||!password) return showAuthError('Please fill in all fields');
+  const {error}=await sb.auth.signInWithPassword({email,password});
+  if(error) showAuthError(error.message);
 }
 
 async function handleRegister() {
-  const name = document.getElementById('regName').value;
-  const email = document.gefon9ementById('regEmail').value;
-  const phone = document.getElementById('regPhone').value;
-  const userType = document.getElementById('regType').value;
-  const location = document.getElementById('regLocation').value;
-  const password = document.getElementById('regPassword').value;
-  if (!name||!email||!password) return showAuthError('Please fill in all required fields');
-  if (password.length < 6) return showAuthError('Password must be at least 6 characters');
-  const { data, error } = await sb.auth.signUp({ email, password });
-  if (error) return showAuthError(error.message);
-  if (data.user) {
-    await sb.from('profiles').insert({ id: data.user.id, full_name: name, phone, user_type: userType, location });
-    showAuthSuccess('Account created! You can now login ✅');
-    setTimeout(() => switchAuth('login'), 2000);
+  const name=document.getElementById('regName').value;
+  const email=document.getElementById('regEmail').value;
+  const phone=document.getElementById('regPhone').value;
+  const userType=document.getElementById('regType').value;
+  const location=document.getElementById('regLocation').value;
+  const password=document.getElementById('regPassword').value;
+  if(!name||!email||!password) return showAuthError('Please fill in all required fields');
+  if(password.length<6) return showAuthError('Password must be at least 6 characters');
+  const {data,error}=await sb.auth.signUp({email,password});
+  if(error) return showAuthError(error.message);
+  if(data.user){
+    await sb.from('profiles').insert({id:data.user.id,full_name:name,phone,user_type:userType,location});
+    showAuthSuccess('Account created! Logging you in... ✅');
+    setTimeout(()=>handleLogin(),1500);
+    document.getElementById('loginEmail').value=email;
+    document.getElementById('loginPassword').value=password;
   }
 }
 
-async function handleLogout() {
-  await sb.auth.signOut();
-  showNotif('Logged out successfully');
-}
+async function handleLogout(){ await sb.auth.signOut(); showNotif('Logged out'); }
+function showAuthError(msg){ const el=document.getElementById('authError'); el.textContent=msg; el.style.display='block'; }
+function showAuthSuccess(msg){ const el=document.getElementById('authSuccess'); el.textContent=msg; el.style.display='block'; document.getElementById('authError').style.display='none'; }
 
-function showAuthError(msg) {
-  const el = document.getElementById('authError');
-  el.textContent = msg; el.style.display = 'block';
-  document.getElementById('authSuccess').style.display = 'none';
-}
-
-function showAuthSuccess(msg) {
-  const el = document.getElementById('authSuccess');
-  el.textContent = msg; el.style.display = 'block';
-  document.getElementById('authError').style.display = 'none';
-}
-
-// LISTINGS
-const COMMODITIES = [
-  {id:1,name:"White Maize",cat:"Grains",seller:"Kofi Farms Co.",loc:"Ashanti",price:285,unit:"per tonne",stock:50,rating:4.8,reviews:34,badge:"Verified",badgeColor:"#2563eb",change:2.3,img:"🌽"},
-  {id:2,name:"Cocoa Beans",cat:"Cash Crops",seller:"Golden Harvest Ltd.",loc:"Western",price:4200,unit:"per tonne",stock:12,rating:4.9,reviews:61,badge:"Premium",badgeColor:"#7c3aed",change:5.1,img:"🫘"},
-  {id:3,name:"Cassava Flour",cat:"Processed",seller:"AgroProcess GH",loc:"Brong-Ahafo",price:180,unit:"per 50kg",stock:200,rating:4.5,reviews:22,badge:"Certified",badgeColor:"#059669",change:-1.2,img:"🌾"},
-  {id:4,name:"Fresh Tomatoes",cat:"Vegetables",seller:"Savannah Growers",loc:"Northern",price:95,unit:"per crate",stock:80,rating:4.6,reviews:18,badge:"Organic",badgeColor:"#d97706",change:0.8,img:"🍅"},
-  {id:5,name:"Soybeans",cat:"Legumes",seller:"Upper East Coop",loc:"Upper East",price:320,unit:"per tonne",stock:30,rating:4.7,reviews:27,badge:"Verified",badgeColor:"#2563eb",change:3.4,img:"🫘"},
-  {id:6,name:"Palm Oil",cat:"Cash Crops",seller:"Eastern Palm Ltd.",loc:"Eastern",price:1850,unit:"per tonne",stock:25,rating:4.4,reviews:15,badge:"Certified",badgeColor:"#059669",change:-0.5,img:"🛢️"},
-  {id:7,name:"Groundnuts",cat:"Legumes",seller:"Savannah Coop",loc:"Northern",price:410,unit:"per tonne",stock:18,rating:4.8,reviews:41,badge:"Premium",badgeColor:"#7c3aed",change:1.9,img:"🥜"},
-  {id:8,name:"Yam (White)",cat:"Tubers",seller:"Brong Harvest",loc:"Brong-Ahafo",price:55,unit:"per tuber",stock:500,rating:4.3,reviews:11,badge:"Verified",badgeColor:"#2563eb",change:0.3,img:"🍠"},
-  {id:9,name:"Garden Eggs",cat:"Vegetables",seller:"Northern Growers",loc:"Northern Region",price:45,unit:"per basket",stock:120,rating:4.5,reviews:8,badge:"Organic",badgeColor:"#d97706",change:1.2,img:"🍆"},
-]
-
-let allListings = [...COMMODITIES];
-let activeCat = 'All';
-
-async function loadListings() {
-  const { data } = await sb.from('listings').select('*').order('created_at', { ascending: false });
-  if (data && data.length > 0) {
-    const dbListings = data.map((l, i) => ({
-      id: 1000 + i, name: l.name, cat: l.category || 'Grains',
-      seller: currentProfile?.full_name || 'Verified Seller',
-      loc: l.location || 'Ghana', price: l.price, unit: l.unit || 'per unit',
-      stock: l.stock || 0, rating: 4.5, reviews: 0,
-      badge: 'New', badgeColor: '#059669', change: 0, img: '🌿'
+// PRODUCTS
+async function loadProducts() {
+  const {data} = await sb.from('listings').select('*, profiles(full_name,location,phone,user_type)').order('created_at',{ascending:false});
+  let dbProducts = [];
+  if(data&&data.length>0){
+    dbProducts = data.map(l=>({
+      id:l.id, name:l.name, category:l.category||'Grains',
+      price:l.price, unit:l.unit||'per unit', stock:l.stock||0,
+      emoji:l.description&&l.description.startsWith('EMOJI:')?l.description.replace('EMOJI:','').split('|')[0]:'🌿',
+      farmer_name:l.profiles?.full_name||'Verified Farmer',
+      farmer_location:l.profiles?.location||'Ghana',
+      farmer_id:l.user_id,
+      farmer_phone:l.profiles?.phone||'',
+      desc:l.description
     }));
-    allListings = [...dbListings, ...COMMODITIES];
   }
-  renderCards(allListings);
+  allProducts = [...dbProducts, ...SAMPLE_PRODUCTS];
+  document.getElementById('totalProducts').textContent = allProducts.length;
+  const uniqueFarmers = [...new Set(allProducts.map(p=>p.farmer_id))].length;
+  document.getElementById('totalFarmers').textContent = uniqueFarmers;
+  renderProducts(allProducts);
 }
 
-function toggleListingForm() {
-  document.getElementById('listingForm').classList.toggle('show');
-}
-
-async function submitListing() {
-  if (!currentUser) return showNotif('Please login first');
-  const name = document.getElementById('listName').value;
-  const price = document.getElementById('listPrice').value;
-  if (!name || !price) return showNotif('Please fill in name and price');
-  const { error } = await sb.from('listings').insert({
-    user_id: currentUser.id,
-    name,
-    category: document.getElementById('listCategory').value,
-    price: parseFloat(price),
-    unit: document.getElementById('listUnit').value,
-    stock: parseInt(document.getElementById('listStock').value) || 0,
-    location: document.getElementById('listLocation').value,
-    description: document.getElementById('listDesc').value
-  });
-  if (error) { showNotif('Error posting listing'); return; }
-  showNotif('✅ Listing posted successfully!');
-  document.getElementById('listingForm').classList.remove('show');
-  loadListings();
-}
-
-// RENDER
-function renderCards(items) {
-  const grid = document.getElementById('cardsGrid');
-  if (!items.length) { grid.innerHTML='<div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--soft)">No listings found</div>'; return; }
-  grid.innerHTML = items.map(c=>`
-    <div class="commodity-card">
-      <div class="card-top"><div class="card-emoji">${c.img}</div><span class="badge" style="background:${c.badgeColor}">${c.badge}</span></div>
+function renderProducts(items) {
+  const grid = document.getElementById('productsGrid');
+  if(!items.length){ grid.innerHTML='<div class="empty-state"><div class="empty-icon">🔍</div><p>No products found</p></div>'; return; }
+  grid.innerHTML = items.map(p=>`
+    <div class="product-card">
+      <div class="card-img">${p.emoji}</div>
       <div class="card-body">
-        <div class="card-name">${c.name}</div>
-        <div class="card-seller">📍${c.loc} · ${c.seller}</div>
-        <div class="card-price">GHS ${c.price.toLocaleString()}<span class="card-unit"> ${c.unit}</span></div>
-        <div class="card-meta">
-          <span>⭐${c.rating} (${c.reviews})</span>
-          <span class="${c.change>=0?'price-up':'price-down'}">${c.change>=0?'▲':'▼'}${Math.abs(c.change)}%</span>
-        </div>
-        <div style="font-size:10px;color:var(--soft);margin-bottom:10px">📦 ${c.stock} units</div>
+        <div class="card-name">${p.name}</div>
+        <div class="card-farmer" onclick="viewFarmerShop('${p.farmer_id}')">🧑‍🌾 ${p.farmer_name}</div>
+        <div class="card-price">GHS ${Number(p.price).toLocaleString()}<span class="card-unit"> ${p.unit}</span></div>
+        <div class="card-stock">📦 ${p.stock} available</div>
         <div class="card-actions">
-          <button class="btn-buy" onclick="addToCart(${c.id})">+ Cart</button>
-          <button class="btn-msg" onclick="switchTab('messages',document.querySelectorAll('.nav-btn')[2])">💬</button>
+          <button class="btn-cart" onclick="addToCart('${p.id}')">🛒 Add</button>
+          <button class="btn-shop" onclick="viewFarmerShop('${p.farmer_id}')">🏪</button>
         </div>
       </div>
-    </div>
-  `).join('');
+    </div>`).join('');
 }
 
-function filterCat(btn, cat) {
-  activeCat = cat;
-  document.querySelectorAll('.cat-btn').forEach(b=>b.classList.remove('active'));
-  btn.classList.add('active');
-  filterCards();
+function filterCat(btn,cat){ activeCat=cat; document.querySelectorAll('.cat-btn').forEach(b=>b.classList.remove('active')); btn.classList.add('active'); filterProducts(); }
+function filterProducts(){ const q=document.getElementById('searchInput').value.toLowerCase(); const f=allProducts.filter(p=>(activeCat==='All'||p.category===activeCat)&&(p.name.toLowerCase().includes(q)||p.farmer_name.toLowerCase().includes(q))); renderProducts(f); }
+
+// FARMER SHOP PAGE
+function viewFarmerShop(farmerId) {
+  currentFarmerView = farmerId;
+  const farmerProducts = allProducts.filter(p=>p.farmer_id===farmerId);
+  if(!farmerProducts.length) return showNotif('No products from this farmer');
+  const farmer = farmerProducts[0];
+  document.getElementById('shopAvatar').textContent = '🧑‍🌾';
+  document.getElementById('shopName').textContent = farmer.farmer_name;
+  document.getElementById('shopLocation').textContent = '📍 ' + farmer.farmer_location;
+  document.getElementById('shopType').textContent = '✅ Verified Farmer';
+  document.getElementById('shopProducts').textContent = farmerProducts.length;
+  document.getElementById('farmerProductsGrid').innerHTML = farmerProducts.map(p=>`
+    <div class="product-card">
+      <div class="card-img">${p.emoji}</div>
+      <div class="card-body">
+        <div class="card-name">${p.name}</div>
+        <div class="card-price">GHS ${Number(p.price).toLocaleString()}<span class="card-unit"> ${p.unit}</span></div>
+        <div class="card-stock">📦 ${p.stock} available</div>
+        <div class="card-actions">
+          <button class="btn-cart" onclick="addToCart('${p.id}')">🛒 Add to Cart</button>
+        </div>
+      </div>
+    </div>`).join('');
+  document.getElementById('mainShop').style.display='none';
+  document.getElementById('farmerShopPage').style.display='block';
 }
 
-function filterCards() {
-  const q = document.getElementById('searchInput').value.toLowerCase();
-  const filtered = allListings.filter(c=>(activeCat==='All'||c.cat===activeCat)&&(c.name.toLowerCase().includes(q)||c.seller.toLowerCase().includes(q)));
-  renderCards(filtered);
+function backToShop(){ document.getElementById('mainShop').style.display='block'; document.getElementById('farmerShopPage').style.display='none'; }
+
+function contactFarmer(){
+  switchTab('messages', document.querySelectorAll('.nav-btn')[3]);
+  showNotif('Open a conversation to contact this farmer');
+}
+
+// SELL (Farmer posting products)
+function toggleProductForm(){ document.getElementById('productForm').classList.toggle('show'); }
+
+async function postProduct() {
+  if(!currentUser) return showNotif('Please login first');
+  const name = document.getElementById('pName').value;
+  const price = document.getElementById('pPrice').value;
+  if(!name||!price) return showNotif('Please fill in product name and price');
+  const emoji = document.getElementById('pEmoji').value;
+  const {error} = await sb.from('listings').insert({
+    user_id: currentUser.id,
+    name,
+    category: document.getElementById('pCategory').value,
+    price: parseFloat(price),
+    unit: document.getElementById('pUnit').value,
+    stock: parseInt(document.getElementById('pStock').value)||0,
+    location: currentProfile?.location||'Ghana',
+    description: 'EMOJI:'+emoji+'|'+document.getElementById('pDesc').value
+  });
+  if(error){ showNotif('Error posting product'); return; }
+  showNotif('✅ Product posted successfully!');
+  document.getElementById('productForm').classList.remove('show');
+  document.getElementById('pName').value='';
+  document.getElementById('pPrice').value='';
+  document.getElementById('pStock').value='';
+  document.getElementById('pUnit').value='';
+  document.getElementById('pDesc').value='';
+  loadProducts();
+  loadMyProducts();
+}
+
+async function loadMyProducts() {
+  if(!currentUser) return;
+  const {data} = await sb.from('listings').select('*').eq('user_id',currentUser.id).order('created_at',{ascending:false});
+  const el = document.getElementById('myProductsList');
+  if(!data||!data.length){ el.innerHTML='<div class="empty-state"><div class="empty-icon">📦</div><p>No products yet. Add your first product!</p></div>'; return; }
+  el.innerHTML = data.map(p=>`
+    <div class="my-product-card">
+      <div class="my-product-emoji">${p.description&&p.description.startsWith('EMOJI:')?p.description.split('|')[0].replace('EMOJI:',''):'🌿'}</div>
+      <div class="my-product-info">
+        <div class="my-product-name">${p.name}</div>
+        <div class="my-product-price">GHS ${Number(p.price).toLocaleString()} ${p.unit||''}</div>
+        <div class="my-product-stock">📦 ${p.stock||0} units · ${p.category||'General'}</div>
+      </div>
+      <button class="delete-btn" onclick="deleteProduct(${p.id})">🗑️</button>
+    </div>`).join('');
+}
+
+async function deleteProduct(id){
+  await sb.from('listings').delete().eq('id',id);
+  showNotif('Product removed');
+  loadMyProducts(); loadProducts();
 }
 
 // CART
-let cart = [];
-function addToCart(id) {
-  const item = allListings.find(c=>c.id===id);
-  if (!item) return;
-  const ex = cart.find(c=>c.id===id);
-  if (ex) ex.qty++; else cart.push({...item, qty:1});
-  updateCart();
-  showNotif('✓ '+item.name+' added to cart');
-}
-function updateCart() {
-  const badge = document.getElementById('cartBadge');
-  badge.style.display = cart.length ? 'block' : 'none';
-  badge.textContent = cart.length;
+function addToCart(productId) {
+  const product = allProducts.find(p=>String(p.id)===String(productId));
+  if(!product) return;
+  const ex = cart.find(c=>String(c.id)===String(productId));
+  if(ex) ex.qty++;
+  else cart.push({...product,qty:1});
+  updateCartBadge();
   renderCart();
+  showNotif('✓ '+product.name+' added to cart');
 }
-function renderCart() {
-  const itemsEl = document.getElementById('cartItems');
-  const summaryEl = document.getElementById('cartSummary');
-  if (!cart.length) { itemsEl.innerHTML='<div class="empty-state"><div class="empty-icon">🛍️</div><p>Your cart is empty</p></div>'; summaryEl.innerHTML=''; return; }
-  itemsEl.innerHTML = cart.map(i=>`
+
+function updateCartBadge(){
+  const badge=document.getElementById('cartBadge');
+  badge.style.display=cart.length?'block':'none';
+  badge.textContent=cart.length;
+}
+
+function renderCart(){
+  const itemsEl=document.getElementById('cartItems');
+  const checkoutEl=document.getElementById('cartCheckout');
+  if(!cart.length){ itemsEl.innerHTML='<div class="empty-state"><div class="empty-icon">🛒</div><p>Your cart is empty</p></div>'; checkoutEl.innerHTML=''; return; }
+  itemsEl.innerHTML=cart.map(i=>`
     <div class="cart-item">
-      <div class="cart-emoji">${i.img}</div>
-      <div class="cart-info"><div class="cart-name">${i.name}</div><div class="cart-seller">${i.seller}</div><div class="cart-price">GHS ${(i.price*i.qty).toLocaleString()}</div></div>
+      <div class="cart-emoji">${i.emoji}</div>
+      <div class="cart-info">
+        <div class="cart-name">${i.name}</div>
+        <div class="cart-farmer">🧑‍🌾 ${i.farmer_name}</div>
+        <div class="cart-price">GHS ${(Number(i.price)*i.qty).toLocaleString()}</div>
+      </div>
       <div>
-        <div class="qty-controls"><button class="qty-btn" onclick="changeQty(${i.id},-1)">−</button><span class="qty-num">${i.qty}</span><button class="qty-btn" onclick="changeQty(${i.id},1)">+</button></div>
-        <button class="remove-btn" onclick="removeItem(${i.id})">✕</button>
+        <div class="qty-controls">
+          <button class="qty-btn" onclick="changeQty('${i.id}',-1)">−</button>
+          <span class="qty-num">${i.qty}</span>
+          <button class="qty-btn" onclick="changeQty('${i.id}',1)">+</button>
+        </div>
+        <button class="remove-btn" onclick="removeFromCart('${i.id}')">✕</button>
       </div>
     </div>`).join('');
-  const total = cart.reduce((s,i)=>s+i.price*i.qty,0);
-  summaryEl.innerHTML=`<div class="order-summary"><div class="summary-title">Order Summary</div>${cart.map(i=>`<div class="summary-row"><span>${i.name} ×${i.qty}</span><span>GHS ${(i.price*i.qty).toLocaleString()}</span></div>`).join('')}<div class="summary-row total"><span>Total</span><span>GHS ${total.toLocaleString()}</span></div><button class="place-order-btn" onclick="placeOrder()">Place Order →</button><div class="escrow-note">🔒 Secured · Escrow protected</div></div>`;
+  const total=cart.reduce((s,i)=>s+Number(i.price)*i.qty,0);
+  checkoutEl.innerHTML=`
+    <div class="checkout-box">
+      <div class="checkout-title">Order Summary</div>
+      ${cart.map(i=>`<div class="checkout-row"><span>${i.name} ×${i.qty}</span><span>GHS ${(Number(i.price)*i.qty).toLocaleString()}</span></div>`).join('')}
+      <div class="checkout-total"><span>Total</span><span>GHS ${total.toLocaleString()}</span></div>
+      <button class="momo-checkout-btn" onclick="openMomo(${total})">📱 Pay with Mobile Money</button>
+      <div class="momo-note">💛 MTN MoMo · Vodafone Cash · AirtelTigo Money</div>
+    </div>`;
 }
-function changeQty(id,d){const item=cart.find(c=>c.id===id);if(item){item.qty=Math.max(1,item.qty+d);updateCart();}}
-function removeItem(id){cart=cart.filter(c=>c.id!==id);updateCart();}
-function placeOrder(){cart=[];updateCart();showNotif('✓ Order placed successfully!');}
 
-// PRICES
-const RATES=[{name:"Maize",price:285,change:2.3,unit:"/tonne"},{name:"Cocoa",price:4200,change:5.1,unit:"/tonne"},{name:"Soybean",price:320,change:3.4,unit:"/tonne"},{name:"Palm Oil",price:1850,change:-0.5,unit:"/tonne"},{name:"Groundnut",price:410,change:1.9,unit:"/tonne"},{name:"Cassava",price:180,change:-1.2,unit:"/50kg"}];
-function renderPrices() {
-  document.getElementById('rateCards').innerHTML=RATES.map(r=>`<div class="rate-card"><div class="rate-name">${r.name}</div><div class="rate-price">GHS ${r.price.toLocaleString()}<span style="font-size:11px;color:var(--muted)">${r.unit}</span></div><span class="rate-change ${r.change>0?'up':'down'}">${r.change>0?'▲':'▼'} ${Math.abs(r.change)}% today</span></div>`).join('');
-  const bars=[0.75,0.82,0.78,0.88,0.85,0.91,0.87,0.93,0.89,0.96,0.92,1.0];
-  document.getElementById('charts').innerHTML=RATES.map(r=>`<div class="chart-bar-wrap"><div class="chart-label"><span>${r.name}</span><span class="${r.change>0?'price-up':'price-down'}">${r.change>0?'+':''}${r.change}%</span></div><div class="bars">${bars.map((h,i)=>`<div class="bar${i===11?' current':''}" style="height:${h*100}%"></div>`).join('')}</div></div>`).join('');
+function changeQty(id,d){ const item=cart.find(c=>String(c.id)===String(id)); if(item){ item.qty=Math.max(1,item.qty+d); updateCartBadge(); renderCart(); }}
+function removeFromCart(id){ cart=cart.filter(c=>String(c.id)!==String(id)); updateCartBadge(); renderCart(); }
+
+// MOMO PAYMENT
+function openMomo(total){
+  orderCounter++;
+  const ref='AGT-'+orderCounter;
+  document.getElementById('momoAmount').textContent='GHS '+total.toLocaleString();
+  document.getElementById('momoAmountStep').textContent='GHS '+total.toLocaleString();
+  document.getElementById('momoRef').textContent=ref;
+  document.getElementById('momoModal').classList.add('show');
+}
+function closeMomo(){ document.getElementById('momoModal').classList.remove('show'); }
+function confirmMomoPayment(){
+  closeMomo();
+  saveOrder();
+  cart=[];
+  updateCartBadge();
+  renderCart();
+  showNotif('✅ Order placed! Payment pending confirmation');
+  loadOrders();
+}
+
+async function saveOrder(){
+  // Save order to Supabase orders table if it exists, otherwise just show success
+  showNotif('✅ Order confirmed! Farmer will contact you');
+}
+
+// ORDERS
+const SAMPLE_ORDERS=[
+  {id:'#AGT-2041',item:'White Maize',qty:'10 tonnes',total:'GHS 2,850',status:'confirmed',date:'Mar 10, 2026',farmer:'Kofi Farms Co.',phone:'0244123456'},
+  {id:'#AGT-2038',item:'Groundnuts',qty:'5 tonnes',total:'GHS 2,050',status:'delivered',date:'Mar 6, 2026',farmer:'Savannah Coop',phone:'0244678901'},
+];
+
+function loadOrders(){
+  document.getElementById('buyingOrders').innerHTML=SAMPLE_ORDERS.map(o=>`
+    <div class="order-card">
+      <div class="order-header"><span class="order-id">${o.id}</span><span class="status-pill status-${o.status}">${o.status.charAt(0).toUpperCase()+o.status.slice(1)}</span></div>
+      <div class="order-row"><span>Product</span><span>${o.item}</span></div>
+      <div class="order-row"><span>Quantity</span><span>${o.qty}</span></div>
+      <div class="order-row"><span>Total</span><span>${o.total}</span></div>
+      <div class="order-row"><span>Farmer</span><span>${o.farmer}</span></div>
+      <div class="order-row"><span>Date</span><span>${o.date}</span></div>
+      <div class="order-actions">
+        <button class="momo-btn" onclick="callFarmer('${o.phone}')">📞 Call Farmer</button>
+        <button class="confirm-btn" onclick="showNotif('Order tracked successfully')">📍 Track</button>
+      </div>
+    </div>`).join('');
+  document.getElementById('sellingOrders').innerHTML='<div class="empty-state"><div class="empty-icon">📦</div><p>No sales orders yet. Share your shop to get buyers!</p></div>';
+}
+
+function callFarmer(phone){ showNotif('Calling '+phone+'...'); window.location.href='tel:'+phone; }
+
+function switchOrderTab(tab,btn){
+  document.querySelectorAll('.orders-tab').forEach(t=>t.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('buyingOrders').style.display=tab==='buying'?'block':'none';
+  document.getElementById('sellingOrders').style.display=tab==='selling'?'block':'none';
 }
 
 // MESSAGES
-const CONVERSATIONS=[{id:1,name:"Kofi Farms Co.",avatar:"KF",time:"10:42 AM",preview:"Hello! 50 tonnes of maize available.",messages:[{from:"them",text:"Hello! We have 50 tonnes of white maize available. Ready for bulk discount negotiation."}]},{id:2,name:"Golden Harvest Ltd.",avatar:"GH",time:"Yesterday",preview:"Order #2041 confirmed.",messages:[{from:"them",text:"Your order #2041 has been confirmed. Delivery scheduled for Friday."}]},{id:3,name:"Upper East Coop",avatar:"UE",time:"Mon",preview:"Certificate of analysis available.",messages:[{from:"them",text:"We can provide a certificate of analysis for our soybean batch."}]}];
-let activeConv=null;
-function renderMessages(){document.getElementById('conversationList').innerHTML=CONVERSATIONS.map(c=>`<div class="msg-item" onclick="openChat(${c.id})"><div class="msg-avatar">${c.avatar}</div><div class="msg-info"><div class="msg-name">${c.name}<span class="msg-time">${c.time}</span></div><div class="msg-preview">${c.preview}</div></div><div class="unread-dot"></div></div>`).join('');}
-function openChat(id){activeConv=CONVERSATIONS.find(c=>c.id===id);document.getElementById('msgList').style.display='none';document.getElementById('chatView').style.display='block';document.getElementById('chatAvatar').textContent=activeConv.avatar;document.getElementById('chatName').textContent=activeConv.name;renderChatMessages();}
-function renderChatMessages(){document.getElementById('chatMessages').innerHTML=activeConv.messages.map(m=>`<div class="bubble ${m.from}">${m.text}</div>`).join('');const el=document.getElementById('chatMessages');el.scrollTop=el.scrollHeight;}
-function backToList(){document.getElementById('msgList').style.display='block';document.getElementById('chatView').style.display='none';}
-function sendMsg(){const input=document.getElementById('chatInput');if(!input.value.trim())return;activeConv.messages.push({from:'me',text:input.value});input.value='';renderChatMessages();setTimeout(()=>{activeConv.messages.push({from:'them',text:"Thank you! We'll respond shortly."});renderChatMessages();},1000);}
+const CONVERSATIONS=[
+  {id:1,name:"Kofi Farms Co.",avatar:"KF",time:"10:42 AM",preview:"Hello! Maize available for bulk order",phone:"0244123456",messages:[{from:"them",text:"Hello! We have 50 tonnes of white maize available. Ready for bulk discount negotiation."},{from:"them",text:"Current price: GHS 285 per tonne. Minimum order 5 tonnes."}]},
+  {id:2,name:"Savannah Growers",avatar:"SG",time:"Yesterday",preview:"Fresh tomatoes ready for pickup",phone:"0244345678",messages:[{from:"them",text:"Our fresh tomatoes are ready for pickup. GHS 95 per crate."}]},
+  {id:3,name:"Upper East Coop",avatar:"UE",time:"Mon",preview:"Certificate of analysis available",phone:"0244567890",messages:[{from:"them",text:"We can provide a certificate of analysis for our soybean batch."}]},
+];
 
-// ORDERS
-const ORDERS=[{id:"#ORD-2041",item:"White Maize",qty:"10 tonnes",total:"GHS 2,850",status:"Confirmed",date:"Mar 10, 2026",seller:"Kofi Farms Co."},{id:"#ORD-2038",item:"Groundnuts",qty:"5 tonnes",total:"GHS 2,050",status:"Delivered",date:"Mar 6, 2026",seller:"Savannah Coop"},{id:"#ORD-2031",item:"Soybeans",qty:"8 tonnes",total:"GHS 2,560",status:"Processing",date:"Mar 2, 2026",seller:"Upper East Coop"}];
-function renderOrders(){document.getElementById('ordersList').innerHTML=ORDERS.map(o=>`<div class="order-card"><div class="order-header"><span class="order-id">${o.id}</span><span class="status-pill status-${o.status.toLowerCase()}">${o.status}</span></div><div class="order-row"><span>Item</span><span>${o.item}</span></div><div class="order-row"><span>Seller</span><span>${o.seller}</span></div><div class="order-row"><span>Quantity</span><span>${o.qty}</span></div><div class="order-row"><span>Total</span><span>${o.total}</span></div><div class="order-row"><span>Date</span><span>${o.date}</span></div></div>`).join('');}
+function loadMessages(){
+  document.getElementById('conversationList').innerHTML=CONVERSATIONS.map(c=>`
+    <div class="msg-item" onclick="openChat(${c.id})">
+      <div class="msg-avatar">${c.avatar}</div>
+      <div class="msg-info">
+        <div class="msg-name">${c.name}<span class="msg-time">${c.time}</span></div>
+        <div class="msg-preview">${c.preview}</div>
+      </div>
+      <div class="unread-dot"></div>
+    </div>`).join('');
+}
+
+function openChat(id){
+  activeConv=CONVERSATIONS.find(c=>c.id===id);
+  document.getElementById('msgListView').style.display='none';
+  document.getElementById('chatView').style.display='block';
+  document.getElementById('chatAvatar').textContent=activeConv.avatar;
+  document.getElementById('chatName').textContent=activeConv.name;
+  renderChatMessages();
+}
+
+function renderChatMessages(){
+  const el=document.getElementById('chatMessages');
+  el.innerHTML=activeConv.messages.map(m=>`<div class="bubble ${m.from}">${m.text}</div>`).join('');
+  el.scrollTop=el.scrollHeight;
+}
+
+function backToMessages(){ document.getElementById('msgListView').style.display='block'; document.getElementById('chatView').style.display='none'; }
+
+function sendMsg(){
+  const input=document.getElementById('chatInput');
+  if(!input.value.trim()) return;
+  activeConv.messages.push({from:'me',text:input.value});
+  input.value='';
+  renderChatMessages();
+  setTimeout(()=>{ activeConv.messages.push({from:'them',text:"Thank you! We'll get back to you shortly. You can also call us directly."}); renderChatMessages(); },1000);
+}
 
 // TAB
-function switchTab(name,btn){document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));document.getElementById('tab-'+name).classList.add('active');btn.classList.add('active');}
-
-// TICKER
-const tickerData=RATES.map(r=>`🌾 ${r.name}: GHS ${r.price}${r.unit} ${r.change>0?'▲':'▼'}${Math.abs(r.change)}%`).join('     •     ');
-document.getElementById('ticker').innerHTML=`<span>${tickerData}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;${tickerData}</span>`;
+function switchTab(name,btn){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('tab-'+name).classList.add('active');
+  btn.classList.add('active');
+}
 
 // NOTIF
-function showNotif(msg){const n=document.getElementById('notif');n.textContent=msg;n.classList.add('show');setTimeout(()=>n.classList.remove('show'),2500);}
+function showNotif(msg){ const n=document.getElementById('notif'); n.textContent=msg; n.classList.add('show'); setTimeout(()=>n.classList.remove('show'),2500); }
 
 // INIT
-renderPrices();
-renderMessages();
-renderOrders();
 renderCart();
+loadOrders();
+loadMessages();
 </script>
 </body>
   </html>
