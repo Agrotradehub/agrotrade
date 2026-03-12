@@ -1,700 +1,755 @@
-html
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AgroTrade - Ghana's Agri Shop</title>
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;600;700;800&family=Bebas+Neue&display=swap" rel="stylesheet">
+<title>AgroTrade — Ghana's Agri Marketplace</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Bebas+Neue&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
-  :root {
-    --green:#2d6a2d;--green-light:#edf7ed;--green-mid:#5aaa5a;
-    --accent:#e85d26;--bg:#f7f8f5;--border:#e5e9e0;
-    --text:#1a2e1a;--muted:#6b7c6b;--soft:#9aab9a;
-  }
-  *{margin:0;padding:0;box-sizing:border-box;}
-  body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
+:root {
+  --green:#1e5c1e;--green2:#2d7a2d;--green3:#4caf50;
+  --lime:#a8e063;--gold:#f5c842;--accent:#e8521a;
+  --bg:#f4f7f2;--card:#ffffff;--border:#dde8d8;
+  --text:#141f14;--muted:#5a7055;--soft:#a0b89a;
+  --dark:#0d1a0d;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{font-family:'Sora',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;}
 
-  /* AUTH */
-  .auth-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:300;display:flex;align-items:center;justify-content:center;padding:16px;}
-  .auth-box{background:#fff;border-radius:20px;padding:24px 20px;width:100%;max-width:420px;box-shadow:0 20px 60px rgba(0,0,0,0.3);max-height:90vh;overflow-y:auto;}
-  .auth-logo{display:flex;align-items:center;gap:10px;margin-bottom:20px;justify-content:center;}
-  .auth-logo-mark{width:44px;height:44px;background:linear-gradient(135deg,#2d6a2d,#5aaa5a);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px;}
-  .auth-logo-text{font-family:'Bebas Neue',cursive;font-size:28px;color:var(--text);}
-  .auth-tabs{display:flex;background:var(--bg);border-radius:10px;padding:4px;margin-bottom:16px;}
-  .auth-tab{flex:1;padding:8px;border:none;background:transparent;border-radius:8px;font-weight:700;font-size:13px;cursor:pointer;color:var(--muted);font-family:'DM Sans',sans-serif;}
-  .auth-tab.active{background:#fff;color:var(--green);box-shadow:0 1px 4px rgba(0,0,0,0.1);}
-  .form-group{margin-bottom:12px;}
-  .form-label{font-size:11px;font-weight:700;color:var(--muted);margin-bottom:4px;display:block;letter-spacing:0.5px;text-transform:uppercase;}
-  .form-input{width:100%;padding:10px 13px;border:1px solid var(--border);border-radius:10px;font-size:14px;outline:none;font-family:'DM Sans',sans-serif;color:var(--text);}
-  .form-input:focus{border-color:var(--green);}
-  .form-select{width:100%;padding:10px 13px;border:1px solid var(--border);border-radius:10px;font-size:14px;outline:none;font-family:'DM Sans',sans-serif;color:var(--text);background:#fff;}
-  .auth-btn{width:100%;background:var(--green);color:#fff;border:none;border-radius:12px;padding:14px;font-weight:800;font-size:15px;cursor:pointer;margin-top:6px;font-family:'DM Sans',sans-serif;}
-  .auth-error{background:#fef2f2;border:1px solid #fecaca;border-radius:8px;padding:10px;font-size:13px;color:#dc2626;margin-bottom:12px;display:none;}
-  .auth-success{background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:10px;font-size:13px;color:#16a34a;margin-bottom:12px;display:none;}
+/* ── SPLASH ── */
+.splash{position:fixed;inset:0;background:var(--dark);z-index:999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;transition:opacity 0.6s ease,visibility 0.6s ease;}
+.splash.hide{opacity:0;visibility:hidden;}
+.splash-logo{font-family:'Bebas Neue',cursive;font-size:52px;color:#fff;letter-spacing:3px;}
+.splash-sub{font-size:13px;color:var(--lime);letter-spacing:4px;text-transform:uppercase;}
+.splash-bar{width:120px;height:3px;background:rgba(255,255,255,0.1);border-radius:10px;overflow:hidden;margin-top:12px;}
+.splash-fill{height:100%;background:var(--lime);border-radius:10px;animation:fillbar 1.6s ease forwards;}
+@keyframes fillbar{from{width:0}to{width:100%}}
 
-  /* HEADER */
-  header{background:#fff;border-bottom:1px solid var(--border);padding:0 14px;display:flex;align-items:center;justify-content:space-between;height:58px;position:sticky;top:0;z-index:100;box-shadow:0 1px 8px rgba(0,0,0,0.06);}
-  .logo{display:flex;align-items:center;gap:8px;}
-  .logo-mark{width:32px;height:32px;background:linear-gradient(135deg,#2d6a2d,#5aaa5a);border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:15px;}
-  .logo-text{font-weight:800;font-size:16px;color:var(--text);}
-  .logo-sub{font-size:8px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;}
-  .header-right{display:flex;align-items:center;gap:6px;}
-  .user-chip{background:var(--green-light);border:1px solid #c4dbc4;border-radius:20px;padding:4px 10px;font-size:11px;font-weight:700;color:var(--green);max-width:100px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
-  .logout-btn{background:#fef2f2;color:#dc2626;border:1px solid #fecaca;border-radius:8px;padding:5px 10px;font-size:11px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;}
+/* ── AUTH ── */
+.auth-overlay{position:fixed;inset:0;background:rgba(13,26,13,0.88);z-index:300;display:flex;align-items:center;justify-content:center;padding:16px;backdrop-filter:blur(4px);}
+.auth-card{background:#fff;border-radius:24px;padding:28px 22px;width:100%;max-width:420px;max-height:92vh;overflow-y:auto;box-shadow:0 32px 80px rgba(0,0,0,0.35);}
+.auth-brand{text-align:center;margin-bottom:22px;}
+.auth-icon{width:56px;height:56px;background:linear-gradient(135deg,var(--green),var(--green3));border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:26px;margin:0 auto 10px;}
+.auth-brand-name{font-family:'Bebas Neue',cursive;font-size:32px;letter-spacing:2px;color:var(--dark);}
+.auth-brand-tag{font-size:11px;color:var(--muted);letter-spacing:2px;text-transform:uppercase;}
+.tab-switcher{display:flex;background:var(--bg);border-radius:12px;padding:4px;margin-bottom:20px;}
+.tab-sw-btn{flex:1;padding:9px;border:none;background:transparent;border-radius:9px;font-weight:700;font-size:13px;cursor:pointer;color:var(--muted);font-family:'Sora',sans-serif;transition:all 0.2s;}
+.tab-sw-btn.active{background:#fff;color:var(--green);box-shadow:0 2px 8px rgba(0,0,0,0.1);}
+.field{margin-bottom:13px;}
+.field label{display:block;font-size:11px;font-weight:700;color:var(--muted);letter-spacing:0.8px;text-transform:uppercase;margin-bottom:5px;}
+.field input,.field select{width:100%;padding:11px 14px;border:1.5px solid var(--border);border-radius:11px;font-size:14px;outline:none;font-family:'Sora',sans-serif;color:var(--text);background:#fff;transition:border 0.2s;}
+.field input:focus,.field select:focus{border-color:var(--green3);}
+.auth-submit{width:100%;background:linear-gradient(135deg,var(--green),var(--green2));color:#fff;border:none;border-radius:13px;padding:14px;font-weight:800;font-size:15px;cursor:pointer;font-family:'Sora',sans-serif;margin-top:4px;transition:transform 0.15s,box-shadow 0.15s;}
+.auth-submit:hover{transform:translateY(-1px);box-shadow:0 8px 24px rgba(30,92,30,0.35);}
+.msg-box{border-radius:10px;padding:10px 13px;font-size:13px;margin-bottom:13px;display:none;}
+.msg-error{background:#fef2f2;border:1px solid #fecaca;color:#dc2626;}
+.msg-success{background:#f0fdf4;border:1px solid #bbf7d0;color:#16a34a;}
 
-  /* TICKER */
-  .ticker{background:#1a2e1a;color:#a8d4a8;padding:5px 0;font-size:11px;font-weight:600;overflow:hidden;white-space:nowrap;}
-  .ticker-inner{display:inline-flex;gap:40px;animation:ticker 20s linear infinite;}
-  @keyframes ticker{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+/* ── HEADER ── */
+header{background:#fff;border-bottom:1px solid var(--border);padding:0 16px;height:60px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;box-shadow:0 2px 12px rgba(0,0,0,0.06);}
+.brand{display:flex;align-items:center;gap:9px;}
+.brand-mark{width:36px;height:36px;background:linear-gradient(135deg,var(--green),var(--green3));border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:17px;}
+.brand-name{font-family:'Bebas Neue',cursive;font-size:22px;letter-spacing:1px;color:var(--dark);}
+.brand-tag{font-size:8px;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;display:block;line-height:1;}
+.hdr-right{display:flex;align-items:center;gap:7px;}
+.user-pill{background:var(--bg);border:1.5px solid var(--border);border-radius:20px;padding:5px 12px;font-size:11px;font-weight:700;color:var(--green);max-width:110px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.logout-btn{background:#fef2f2;color:#dc2626;border:1px solid #fecaca;border-radius:9px;padding:6px 11px;font-size:11px;font-weight:700;cursor:pointer;font-family:'Sora',sans-serif;}
 
-  /* NAV */
-  .bottom-nav{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid var(--border);display:flex;z-index:100;box-shadow:0 -2px 10px rgba(0,0,0,0.08);}
-  .nav-btn{flex:1;padding:9px 4px 7px;border:none;background:transparent;display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;font-size:9px;font-weight:700;color:var(--muted);text-transform:uppercase;position:relative;}
-  .nav-btn.active{color:var(--green);}
-  .nav-btn .icon{font-size:19px;}
-  .nav-badge{position:absolute;top:5px;right:calc(50% - 16px);background:var(--accent);color:#fff;border-radius:10px;padding:1px 5px;font-size:9px;font-weight:800;}
+/* ── TICKER ── */
+.ticker{background:var(--dark);color:var(--lime);padding:6px 0;font-size:11px;font-weight:600;overflow:hidden;white-space:nowrap;}
+.ticker-track{display:inline-flex;animation:tick 24s linear infinite;}
+@keyframes tick{from{transform:translateX(0)}to{transform:translateX(-50%)}}
 
-  main{padding:14px 13px 80px;max-width:600px;margin:0 auto;}
-  .tab{display:none;}
-  .tab.active{display:block;}
-  .section-title{font-size:11px;font-weight:700;color:var(--muted);letter-spacing:2px;text-transform:uppercase;margin-bottom:12px;}
+/* ── BOTTOM NAV ── */
+.bnav{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1.5px solid var(--border);display:flex;z-index:100;box-shadow:0 -4px 16px rgba(0,0,0,0.07);}
+.bnav-btn{flex:1;padding:10px 4px 8px;border:none;background:transparent;display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;font-size:9px;font-weight:700;color:var(--soft);text-transform:uppercase;letter-spacing:0.3px;position:relative;transition:color 0.15s;}
+.bnav-btn.active{color:var(--green);}
+.bnav-btn .ico{font-size:20px;line-height:1;}
+.nbadge{position:absolute;top:6px;right:calc(50% - 18px);background:var(--accent);color:#fff;border-radius:10px;padding:1px 5px;font-size:9px;font-weight:800;}
 
-  /* SHOP BANNER */
-  .shop-banner{background:linear-gradient(135deg,#1a4a1a,#2d6a2d);border-radius:16px;padding:20px;margin-bottom:20px;color:#fff;position:relative;overflow:hidden;}
-  .shop-banner::after{content:'🌿';position:absolute;right:16px;top:50%;transform:translateY(-50%);font-size:60px;opacity:0.2;}
-  .shop-banner h2{font-family:'Bebas Neue',cursive;font-size:28px;letter-spacing:1px;margin-bottom:4px;}
-  .shop-banner p{font-size:12px;color:#a8d4a8;margin-bottom:14px;}
-  .banner-stats{display:flex;gap:16px;}
-  .banner-stat{text-align:center;}
-  .banner-stat-n{font-weight:800;font-size:18px;}
-  .banner-stat-l{font-size:10px;color:#a8d4a8;}
+/* ── LAYOUT ── */
+main{padding:16px 14px 84px;max-width:600px;margin:0 auto;}
+.tab{display:none;animation:fadein 0.2s ease;}
+.tab.active{display:block;}
+@keyframes fadein{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+.sec-title{font-size:10px;font-weight:700;color:var(--soft);letter-spacing:2.5px;text-transform:uppercase;margin-bottom:14px;}
 
-  /* SEARCH */
-  .search-wrap{position:relative;margin-bottom:12px;}
-  .search-box{width:100%;padding:11px 16px 11px 38px;border:1px solid var(--border);border-radius:10px;font-size:14px;background:#fff;outline:none;color:var(--text);font-family:'DM Sans',sans-serif;}
-  .search-icon{position:absolute;left:12px;top:50%;transform:translateY(-50%);font-size:16px;}
-  .cats{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px;margin-bottom:14px;scrollbar-width:none;}
-  .cats::-webkit-scrollbar{display:none;}
-  .cat-btn{padding:6px 13px;border-radius:20px;border:1px solid var(--border);background:#fff;color:var(--muted);font-weight:700;font-size:11px;cursor:pointer;white-space:nowrap;font-family:'DM Sans',sans-serif;}
-  .cat-btn.active{background:var(--green-light);border-color:var(--green);color:var(--green);}
+/* ── HERO BANNER ── */
+.hero{background:linear-gradient(135deg,var(--dark) 0%,var(--green) 100%);border-radius:20px;padding:24px 20px;margin-bottom:20px;color:#fff;position:relative;overflow:hidden;}
+.hero::before{content:'';position:absolute;right:-20px;top:-20px;width:140px;height:140px;background:rgba(168,224,99,0.12);border-radius:50%;}
+.hero::after{content:'🌾';position:absolute;right:20px;bottom:10px;font-size:64px;opacity:0.15;}
+.hero-label{font-size:10px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--lime);margin-bottom:8px;}
+.hero-title{font-family:'Bebas Neue',cursive;font-size:34px;letter-spacing:1px;line-height:1;margin-bottom:6px;}
+.hero-sub{font-size:12px;color:rgba(255,255,255,0.7);margin-bottom:18px;line-height:1.5;}
+.hero-stats{display:flex;gap:20px;}
+.hstat{text-align:left;}
+.hstat-n{font-weight:800;font-size:20px;color:#fff;}
+.hstat-l{font-size:10px;color:var(--lime);font-weight:600;}
 
-  /* PRODUCT CARDS */
-  .cards-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
-  .product-card{background:#fff;border-radius:14px;border:1px solid var(--border);overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.04);}
-  .card-img{height:90px;display:flex;align-items:center;justify-content:center;font-size:48px;background:linear-gradient(135deg,#f0f8f0,#e0f0e0);}
-  .card-body{padding:10px 12px 12px;}
-  .card-name{font-weight:800;font-size:13px;color:var(--text);margin-bottom:1px;}
-  .card-farmer{font-size:10px;color:var(--muted);margin-bottom:5px;cursor:pointer;text-decoration:underline;}
-  .card-price{font-size:16px;font-weight:800;color:var(--green);}
-  .card-unit{font-size:10px;color:var(--muted);}
-  .card-stock{font-size:10px;color:var(--soft);margin:4px 0 8px;}
-  .card-actions{display:flex;gap:6px;}
-  .btn-cart{flex:1;background:var(--green);color:#fff;border:none;border-radius:8px;padding:8px 0;font-weight:700;font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;}
-  .btn-shop{background:var(--green-light);color:var(--green);border:1px solid #c4dbc4;border-radius:8px;padding:8px 9px;font-weight:700;font-size:11px;cursor:pointer;}
-  .badge{font-size:9px;font-weight:700;padding:2px 7px;border-radius:20px;color:#fff;display:inline-block;margin-bottom:4px;}
+/* ── EMPTY STATE ── */
+.empty-hero{background:linear-gradient(135deg,#f0f7ee,#e8f4e5);border-radius:16px;padding:32px 20px;text-align:center;margin-bottom:20px;border:2px dashed var(--border);}
+.empty-hero .eico{font-size:56px;margin-bottom:14px;}
+.empty-hero h3{font-weight:800;font-size:18px;margin-bottom:8px;color:var(--dark);}
+.empty-hero p{font-size:13px;color:var(--muted);line-height:1.6;margin-bottom:18px;}
+.empty-cta{display:inline-block;background:var(--green);color:#fff;border:none;border-radius:12px;padding:12px 24px;font-weight:700;font-size:14px;cursor:pointer;font-family:'Sora',sans-serif;}
 
-  /* FARMER SHOP PAGE */
-  .shop-page{display:none;}
-  .shop-page.active{display:block;}
-  .shop-header{background:linear-gradient(135deg,#1a4a1a,#2d6a2d);border-radius:16px;padding:20px;margin-bottom:16px;color:#fff;text-align:center;}
-  .shop-avatar{width:64px;height:64px;background:rgba(255,255,255,0.2);border-radius:20px;display:flex;align-items:center;justify-content:center;font-size:28px;margin:0 auto 10px;}
-  .shop-name{font-weight:800;font-size:20px;margin-bottom:4px;}
-  .shop-location{font-size:12px;color:#a8d4a8;margin-bottom:10px;}
-  .shop-type-badge{background:rgba(255,255,255,0.2);border-radius:20px;padding:4px 12px;font-size:11px;font-weight:700;display:inline-block;}
-  .shop-stats{display:flex;gap:12px;justify-content:center;margin-top:14px;}
-  .shop-stat{text-align:center;}
-  .shop-stat-n{font-weight:800;font-size:16px;}
-  .shop-stat-l{font-size:10px;color:#a8d4a8;}
-  .contact-btn{width:100%;background:#fff;color:var(--green);border:none;border-radius:12px;padding:12px;font-weight:800;font-size:14px;cursor:pointer;margin-top:12px;font-family:'DM Sans',sans-serif;}
-  .back-btn{background:var(--green-light);color:var(--green);border:1px solid #c4dbc4;border-radius:8px;padding:7px 12px;font-weight:700;font-size:12px;cursor:pointer;margin-bottom:12px;}
+/* ── SEARCH & FILTERS ── */
+.search-row{position:relative;margin-bottom:12px;}
+.search-input{width:100%;padding:12px 16px 12px 40px;border:1.5px solid var(--border);border-radius:12px;font-size:14px;background:#fff;outline:none;font-family:'Sora',sans-serif;color:var(--text);transition:border 0.2s;}
+.search-input:focus{border-color:var(--green3);}
+.search-ico{position:absolute;left:13px;top:50%;transform:translateY(-50%);font-size:16px;}
+.filters{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px;margin-bottom:16px;scrollbar-width:none;}
+.filters::-webkit-scrollbar{display:none;}
+.filter-btn{padding:7px 14px;border-radius:20px;border:1.5px solid var(--border);background:#fff;color:var(--muted);font-weight:700;font-size:11px;cursor:pointer;white-space:nowrap;font-family:'Sora',sans-serif;transition:all 0.15s;}
+.filter-btn.active{background:var(--green);border-color:var(--green);color:#fff;}
 
-  /* SELL TAB */
-  .sell-header{background:linear-gradient(135deg,#1a4a1a,#2d6a2d);border-radius:16px;padding:18px;margin-bottom:16px;color:#fff;}
-  .sell-header h2{font-family:'Bebas Neue',cursive;font-size:24px;margin-bottom:4px;}
-  .sell-header p{font-size:12px;color:#a8d4a8;}
-  .post-btn{width:100%;background:var(--green);color:#fff;border:none;border-radius:12px;padding:14px;font-weight:800;font-size:15px;cursor:pointer;margin-bottom:14px;font-family:'DM Sans',sans-serif;display:flex;align-items:center;justify-content:center;gap:8px;}
-  .product-form{background:#fff;border-radius:14px;border:1px solid var(--border);padding:18px;margin-bottom:16px;display:none;}
-  .product-form.show{display:block;}
-  .product-form h3{font-weight:800;font-size:15px;margin-bottom:14px;}
-  .submit-btn{width:100%;background:var(--green);color:#fff;border:none;border-radius:10px;padding:13px;font-weight:800;font-size:14px;cursor:pointer;margin-top:8px;font-family:'DM Sans',sans-serif;}
-  .my-product-card{background:#fff;border-radius:12px;border:1px solid var(--border);padding:14px;margin-bottom:10px;display:flex;gap:12px;align-items:center;}
-  .my-product-emoji{font-size:32px;}
-  .my-product-info{flex:1;}
-  .my-product-name{font-weight:800;font-size:14px;}
-  .my-product-price{font-weight:700;color:var(--green);font-size:13px;}
-  .my-product-stock{font-size:11px;color:var(--muted);}
-  .delete-btn{background:#fef2f2;color:#dc2626;border:1px solid #fecaca;border-radius:8px;padding:6px 10px;font-size:11px;font-weight:700;cursor:pointer;}
+/* ── PRODUCT CARDS ── */
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.pcard{background:#fff;border-radius:16px;border:1.5px solid var(--border);overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,0.05);transition:transform 0.15s,box-shadow 0.15s;}
+.pcard:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,0.1);}
+.pcard-img{height:96px;display:flex;align-items:center;justify-content:center;font-size:52px;background:linear-gradient(135deg,#f0f9ee,#e2f0de);}
+.pcard-body{padding:11px 12px 13px;}
+.pcard-name{font-weight:800;font-size:13px;color:var(--dark);margin-bottom:2px;}
+.pcard-farmer{font-size:10px;color:var(--muted);margin-bottom:6px;cursor:pointer;}
+.pcard-farmer:hover{color:var(--green);text-decoration:underline;}
+.pcard-price{font-size:17px;font-weight:800;color:var(--green);}
+.pcard-unit{font-size:10px;color:var(--soft);}
+.pcard-stock{font-size:10px;color:var(--soft);margin:4px 0 9px;}
+.pcard-loc{font-size:10px;color:var(--muted);margin-bottom:8px;}
+.pcard-actions{display:flex;gap:6px;}
+.btn-add{flex:1;background:var(--green);color:#fff;border:none;border-radius:9px;padding:9px 0;font-weight:700;font-size:11px;cursor:pointer;font-family:'Sora',sans-serif;transition:background 0.15s;}
+.btn-add:hover{background:var(--green2);}
+.btn-view{background:var(--bg);color:var(--green);border:1.5px solid var(--border);border-radius:9px;padding:9px 10px;font-weight:700;font-size:11px;cursor:pointer;}
 
-  /* ORDERS */
-  .orders-tabs{display:flex;gap:8px;margin-bottom:14px;}
-  .orders-tab{flex:1;padding:8px;border:1px solid var(--border);border-radius:8px;background:#fff;font-weight:700;font-size:12px;cursor:pointer;text-align:center;color:var(--muted);font-family:'DM Sans',sans-serif;}
-  .orders-tab.active{background:var(--green-light);border-color:var(--green);color:var(--green);}
-  .order-card{background:#fff;border-radius:14px;border:1px solid var(--border);padding:14px;margin-bottom:10px;}
-  .order-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;}
-  .order-id{font-weight:800;color:var(--green);font-size:13px;}
-  .status-pill{font-size:10px;font-weight:700;padding:4px 10px;border-radius:20px;}
-  .status-pending{background:#fff7ed;color:#ea580c;}
-  .status-confirmed{background:#eff6ff;color:#2563eb;}
-  .status-delivered{background:#f0fdf4;color:#16a34a;}
-  .order-row{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-bottom:4px;}
-  .order-row span:last-child{font-weight:700;color:var(--text);}
-  .order-actions{display:flex;gap:8px;margin-top:10px;}
-  .confirm-btn{flex:1;background:var(--green);color:#fff;border:none;border-radius:8px;padding:8px;font-weight:700;font-size:12px;cursor:pointer;}
-  .momo-btn{flex:1;background:#ffcc00;color:#333;border:none;border-radius:8px;padding:8px;font-weight:700;font-size:12px;cursor:pointer;}
+/* ── FARMER SHOP ── */
+.farmer-shop-page{display:none;}
+.fshop-header{background:linear-gradient(135deg,var(--dark),var(--green));border-radius:20px;padding:22px;margin-bottom:16px;color:#fff;text-align:center;}
+.fshop-avatar{width:68px;height:68px;background:rgba(255,255,255,0.15);border-radius:20px;display:flex;align-items:center;justify-content:center;font-size:30px;margin:0 auto 12px;border:2px solid rgba(255,255,255,0.2);}
+.fshop-name{font-weight:800;font-size:20px;margin-bottom:4px;}
+.fshop-loc{font-size:12px;color:var(--lime);margin-bottom:10px;}
+.fshop-badge{background:rgba(255,255,255,0.15);border-radius:20px;padding:4px 14px;font-size:11px;font-weight:700;display:inline-block;border:1px solid rgba(255,255,255,0.2);}
+.fshop-stats{display:flex;gap:12px;justify-content:center;margin-top:16px;}
+.fshop-stat-n{font-weight:800;font-size:18px;}
+.fshop-stat-l{font-size:10px;color:var(--lime);}
+.contact-farmer-btn{width:100%;background:#fff;color:var(--green);border:none;border-radius:13px;padding:13px;font-weight:800;font-size:14px;cursor:pointer;margin-top:14px;font-family:'Sora',sans-serif;}
+.back-btn{background:var(--bg);color:var(--green);border:1.5px solid var(--border);border-radius:10px;padding:8px 14px;font-weight:700;font-size:12px;cursor:pointer;margin-bottom:14px;font-family:'Sora',sans-serif;}
 
-  /* CART */
-  .cart-item{background:#fff;border-radius:12px;border:1px solid var(--border);padding:12px 14px;display:flex;align-items:center;gap:10px;margin-bottom:10px;}
-  .cart-emoji{font-size:28px;}
-  .cart-info{flex:1;}
-  .cart-name{font-weight:800;font-size:13px;}
-  .cart-farmer{font-size:11px;color:var(--muted);}
-  .cart-price{font-weight:700;color:var(--green);font-size:12px;margin-top:2px;}
-  .qty-controls{display:flex;align-items:center;gap:6px;}
-  .qty-btn{width:26px;height:26px;border-radius:7px;border:1px solid var(--border);background:#fff;font-weight:800;font-size:15px;cursor:pointer;}
-  .qty-num{font-weight:800;min-width:18px;text-align:center;font-size:13px;}
-  .remove-btn{color:#dc2626;background:none;border:none;font-weight:800;font-size:16px;cursor:pointer;}
-  .checkout-box{background:#fff;border-radius:14px;border:1px solid var(--border);padding:16px;}
-  .checkout-title{font-weight:800;font-size:15px;margin-bottom:12px;}
-  .checkout-row{display:flex;justify-content:space-between;font-size:13px;color:var(--muted);margin-bottom:6px;}
-  .checkout-total{border-top:1px solid var(--border);padding-top:10px;margin-top:6px;font-weight:800;font-size:15px;display:flex;justify-content:space-between;}
-  .checkout-total span:last-child{color:var(--green);}
-  .momo-checkout-btn{width:100%;background:#ffcc00;color:#333;border:none;border-radius:12px;padding:14px;font-weight:800;font-size:14px;cursor:pointer;margin-top:12px;font-family:'DM Sans',sans-serif;}
-  .momo-note{text-align:center;font-size:11px;color:var(--muted);margin-top:8px;}
+/* ── SELL TAB ── */
+.sell-banner{background:linear-gradient(135deg,var(--dark),var(--green2));border-radius:20px;padding:20px;margin-bottom:18px;color:#fff;}
+.sell-banner h2{font-family:'Bebas Neue',cursive;font-size:26px;letter-spacing:1px;margin-bottom:4px;}
+.sell-banner p{font-size:12px;color:rgba(255,255,255,0.7);}
+.add-product-btn{width:100%;background:var(--green);color:#fff;border:none;border-radius:13px;padding:14px;font-weight:800;font-size:15px;cursor:pointer;margin-bottom:14px;font-family:'Sora',sans-serif;display:flex;align-items:center;justify-content:center;gap:8px;transition:background 0.15s;}
+.add-product-btn:hover{background:var(--green2);}
+.product-form{background:#fff;border-radius:16px;border:1.5px solid var(--border);padding:20px;margin-bottom:16px;display:none;}
+.product-form.open{display:block;}
+.product-form h3{font-weight:800;font-size:15px;margin-bottom:16px;color:var(--dark);}
+.form-submit{width:100%;background:var(--green);color:#fff;border:none;border-radius:11px;padding:13px;font-weight:800;font-size:14px;cursor:pointer;margin-top:8px;font-family:'Sora',sans-serif;}
+.my-listing{background:#fff;border-radius:13px;border:1.5px solid var(--border);padding:14px;margin-bottom:10px;display:flex;gap:12px;align-items:center;}
+.my-listing-ico{font-size:34px;}
+.my-listing-info{flex:1;}
+.my-listing-name{font-weight:800;font-size:14px;color:var(--dark);}
+.my-listing-price{font-weight:700;color:var(--green);font-size:13px;margin-top:2px;}
+.my-listing-meta{font-size:11px;color:var(--muted);margin-top:2px;}
+.del-btn{background:#fef2f2;color:#dc2626;border:1px solid #fecaca;border-radius:9px;padding:7px 11px;font-size:11px;font-weight:700;cursor:pointer;}
 
-  /* MOMO MODAL */
-  .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:200;display:none;align-items:flex-end;justify-content:center;}
-  .modal-overlay.show{display:flex;}
-  .modal-box{background:#fff;border-radius:20px 20px 0 0;padding:24px 20px;width:100%;max-width:500px;}
-  .modal-title{font-weight:800;font-size:18px;margin-bottom:6px;}
-  .modal-sub{font-size:13px;color:var(--muted);margin-bottom:20px;}
-  .momo-logo{font-size:48px;text-align:center;margin-bottom:14px;}
-  .momo-amount{background:#fff9e6;border:2px solid #ffcc00;border-radius:12px;padding:14px;text-align:center;margin-bottom:16px;}
-  .momo-amount-label{font-size:12px;color:var(--muted);margin-bottom:4px;}
-  .momo-amount-value{font-size:28px;font-weight:800;color:#333;}
-  .momo-steps{margin-bottom:20px;}
-  .momo-step{display:flex;gap:12px;align-items:flex-start;margin-bottom:12px;}
-  .momo-step-num{width:28px;height:28px;background:#ffcc00;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:13px;flex-shrink:0;}
-  .momo-step-text{font-size:13px;color:var(--text);padding-top:4px;}
-  .momo-confirm-btn{width:100%;background:#ffcc00;color:#333;border:none;border-radius:12px;padding:14px;font-weight:800;font-size:15px;cursor:pointer;font-family:'DM Sans',sans-serif;}
-  .close-modal{width:100%;background:var(--bg);color:var(--muted);border:none;border-radius:12px;padding:12px;font-weight:700;font-size:14px;cursor:pointer;margin-top:8px;font-family:'DM Sans',sans-serif;}
+/* ── ORDERS ── */
+.order-tabs{display:flex;gap:8px;margin-bottom:16px;}
+.order-tab{flex:1;padding:9px;border:1.5px solid var(--border);border-radius:10px;background:#fff;font-weight:700;font-size:12px;cursor:pointer;text-align:center;color:var(--muted);font-family:'Sora',sans-serif;transition:all 0.15s;}
+.order-tab.active{background:var(--green);border-color:var(--green);color:#fff;}
+.ocard{background:#fff;border-radius:16px;border:1.5px solid var(--border);padding:16px;margin-bottom:12px;}
+.ocard-hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;}
+.ocard-id{font-weight:800;color:var(--green);font-size:13px;}
+.spill{font-size:10px;font-weight:700;padding:4px 11px;border-radius:20px;}
+.s-pending{background:#fff7ed;color:#ea580c;}
+.s-confirmed{background:#eff6ff;color:#2563eb;}
+.s-delivered{background:#f0fdf4;color:#16a34a;}
+.orow{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-bottom:5px;}
+.orow span:last-child{font-weight:700;color:var(--dark);}
+.ocard-actions{display:flex;gap:8px;margin-top:12px;}
+.oact-btn{flex:1;border:none;border-radius:9px;padding:9px;font-weight:700;font-size:12px;cursor:pointer;font-family:'Sora',sans-serif;}
+.oact-green{background:var(--green);color:#fff;}
+.oact-gold{background:var(--gold);color:#333;}
 
-  /* MESSAGES */
-  .msg-list-wrap{background:#fff;border-radius:14px;border:1px solid var(--border);overflow:hidden;}
-  .msg-item{padding:13px 14px;display:flex;gap:10px;align-items:center;cursor:pointer;border-bottom:1px solid var(--border);}
-  .msg-item:last-child{border-bottom:none;}
-  .msg-avatar{width:40px;height:40px;border-radius:12px;background:var(--green);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:13px;flex-shrink:0;}
-  .msg-info{flex:1;min-width:0;}
-  .msg-name{font-weight:700;font-size:13px;display:flex;justify-content:space-between;}
-  .msg-time{font-size:10px;color:var(--muted);font-weight:400;}
-  .msg-preview{font-size:11px;color:var(--muted);margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-  .unread-dot{width:8px;height:8px;border-radius:50%;background:var(--accent);flex-shrink:0;}
-  .chat-wrap{background:#fff;border-radius:14px;border:1px solid var(--border);overflow:hidden;}
-  .chat-header{padding:13px 14px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;}
-  .chat-messages{padding:14px;min-height:260px;max-height:340px;overflow-y:auto;display:flex;flex-direction:column;gap:8px;}
-  .bubble{max-width:75%;padding:9px 12px;border-radius:14px;font-size:13px;font-weight:500;}
-  .bubble.them{align-self:flex-start;background:#f0f5f0;border-radius:14px 14px 14px 4px;}
-  .bubble.me{align-self:flex-end;background:var(--green);color:#fff;border-radius:14px 14px 4px 14px;}
-  .chat-input-wrap{display:flex;gap:8px;padding:10px 12px;border-top:1px solid var(--border);}
-  .chat-input{flex:1;padding:9px 12px;border:1px solid var(--border);border-radius:10px;font-size:13px;outline:none;font-family:'DM Sans',sans-serif;}
-  .send-btn{background:var(--green);color:#fff;border:none;border-radius:10px;padding:9px 14px;font-weight:700;cursor:pointer;}
+/* ── MOMO MODAL ── */
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,0.65);z-index:250;display:none;align-items:flex-end;justify-content:center;backdrop-filter:blur(3px);}
+.modal-bg.open{display:flex;}
+.modal-sheet{background:#fff;border-radius:24px 24px 0 0;padding:28px 22px 32px;width:100%;max-width:500px;}
+.modal-pill{width:40px;height:4px;background:var(--border);border-radius:4px;margin:0 auto 20px;}
+.momo-icon{font-size:52px;text-align:center;margin-bottom:14px;}
+.modal-title{font-weight:800;font-size:20px;margin-bottom:4px;}
+.modal-sub{font-size:13px;color:var(--muted);margin-bottom:20px;}
+.momo-amt-box{background:#fffbeb;border:2px solid var(--gold);border-radius:14px;padding:16px;text-align:center;margin-bottom:18px;}
+.momo-amt-lbl{font-size:11px;color:var(--muted);margin-bottom:4px;font-weight:600;}
+.momo-amt-val{font-size:32px;font-weight:800;color:var(--dark);}
+.momo-steps{margin-bottom:22px;}
+.mstep{display:flex;gap:13px;align-items:flex-start;margin-bottom:13px;}
+.mstep-n{width:30px;height:30px;background:var(--gold);border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:13px;flex-shrink:0;color:#333;}
+.mstep-t{font-size:13px;color:var(--text);padding-top:5px;line-height:1.5;}
+.momo-pay-btn{width:100%;background:var(--gold);color:#333;border:none;border-radius:13px;padding:15px;font-weight:800;font-size:15px;cursor:pointer;font-family:'Sora',sans-serif;}
+.modal-cancel{width:100%;background:var(--bg);color:var(--muted);border:none;border-radius:13px;padding:13px;font-weight:700;font-size:14px;cursor:pointer;margin-top:8px;font-family:'Sora',sans-serif;}
 
-  /* MISC */
-  .notif{position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#1a2e1a;color:#a8d4a8;padding:10px 20px;border-radius:20px;font-weight:700;font-size:13px;z-index:999;box-shadow:0 4px 20px rgba(0,0,0,0.2);white-space:nowrap;opacity:0;transition:opacity 0.3s;pointer-events:none;}
-  .notif.show{opacity:1;}
-  .empty-state{text-align:center;padding:40px 20px;color:var(--soft);}
-  .empty-icon{font-size:48px;margin-bottom:12px;}
-  .buyer-only{display:none;}
-  .farmer-only{display:none;}
+/* ── MESSAGES ── */
+.conv-list{background:#fff;border-radius:16px;border:1.5px solid var(--border);overflow:hidden;}
+.conv-item{padding:14px 16px;display:flex;gap:12px;align-items:center;cursor:pointer;border-bottom:1.5px solid var(--border);transition:background 0.1s;}
+.conv-item:last-child{border-bottom:none;}
+.conv-item:hover{background:var(--bg);}
+.conv-avatar{width:44px;height:44px;border-radius:13px;background:var(--green);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:14px;flex-shrink:0;}
+.conv-info{flex:1;min-width:0;}
+.conv-name{font-weight:700;font-size:13px;display:flex;justify-content:space-between;align-items:center;}
+.conv-time{font-size:10px;color:var(--muted);font-weight:400;}
+.conv-prev{font-size:11px;color:var(--muted);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.unread{width:9px;height:9px;border-radius:50%;background:var(--accent);flex-shrink:0;}
+.chat-box{background:#fff;border-radius:16px;border:1.5px solid var(--border);overflow:hidden;}
+.chat-hdr{padding:14px 16px;border-bottom:1.5px solid var(--border);display:flex;align-items:center;gap:10px;}
+.chat-msgs{padding:16px;min-height:280px;max-height:360px;overflow-y:auto;display:flex;flex-direction:column;gap:10px;}
+.bubble{max-width:78%;padding:10px 14px;border-radius:16px;font-size:13px;line-height:1.5;}
+.bubble.them{align-self:flex-start;background:var(--bg);border-radius:16px 16px 16px 4px;}
+.bubble.me{align-self:flex-end;background:var(--green);color:#fff;border-radius:16px 16px 4px 16px;}
+.chat-footer{display:flex;gap:8px;padding:12px 14px;border-top:1.5px solid var(--border);}
+.chat-inp{flex:1;padding:10px 13px;border:1.5px solid var(--border);border-radius:11px;font-size:13px;outline:none;font-family:'Sora',sans-serif;transition:border 0.2s;}
+.chat-inp:focus{border-color:var(--green3);}
+.send-btn{background:var(--green);color:#fff;border:none;border-radius:11px;padding:10px 16px;font-weight:700;cursor:pointer;font-size:13px;}
+
+/* ── CART ── */
+.cart-item-row{background:#fff;border-radius:13px;border:1.5px solid var(--border);padding:13px 15px;display:flex;align-items:center;gap:11px;margin-bottom:10px;}
+.citem-ico{font-size:30px;}
+.citem-info{flex:1;}
+.citem-name{font-weight:800;font-size:13px;color:var(--dark);}
+.citem-farmer{font-size:11px;color:var(--muted);margin-top:1px;}
+.citem-price{font-weight:700;color:var(--green);font-size:12px;margin-top:3px;}
+.qty-row{display:flex;align-items:center;gap:7px;}
+.qty-b{width:28px;height:28px;border-radius:8px;border:1.5px solid var(--border);background:#fff;font-weight:800;font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+.qty-n{font-weight:800;min-width:20px;text-align:center;font-size:13px;}
+.rm-btn{color:#dc2626;background:none;border:none;font-weight:800;font-size:18px;cursor:pointer;padding:4px;}
+.checkout-card{background:#fff;border-radius:16px;border:1.5px solid var(--border);padding:18px;}
+.checkout-title{font-weight:800;font-size:16px;margin-bottom:14px;color:var(--dark);}
+.checkout-row{display:flex;justify-content:space-between;font-size:13px;color:var(--muted);margin-bottom:7px;}
+.checkout-total{border-top:1.5px solid var(--border);padding-top:13px;margin-top:8px;display:flex;justify-content:space-between;font-weight:800;font-size:16px;}
+.checkout-total span:last-child{color:var(--green);}
+.momo-checkout-btn{width:100%;background:var(--gold);color:#333;border:none;border-radius:13px;padding:15px;font-weight:800;font-size:15px;cursor:pointer;margin-top:14px;font-family:'Sora',sans-serif;}
+.momo-note{text-align:center;font-size:11px;color:var(--muted);margin-top:8px;}
+
+/* ── NOTIF TOAST ── */
+.toast{position:fixed;bottom:88px;left:50%;transform:translateX(-50%);background:var(--dark);color:var(--lime);padding:11px 22px;border-radius:22px;font-weight:700;font-size:13px;z-index:999;white-space:nowrap;opacity:0;transition:opacity 0.3s,transform 0.3s;pointer-events:none;transform:translateX(-50%) translateY(10px);}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+
+/* ── PRICE TABLE ── */
+.price-card{background:#fff;border-radius:14px;border:1.5px solid var(--border);padding:15px;display:flex;align-items:center;gap:12px;margin-bottom:10px;}
+.price-ico{font-size:32px;}
+.price-info{flex:1;}
+.price-name{font-weight:800;font-size:14px;color:var(--dark);}
+.price-loc{font-size:11px;color:var(--muted);margin-top:1px;}
+.price-val{font-weight:800;font-size:18px;color:var(--green);}
+.price-unit{font-size:11px;color:var(--soft);}
+.price-change{font-size:11px;font-weight:700;padding:3px 9px;border-radius:20px;display:inline-block;margin-top:4px;}
+.pc-up{background:#f0fdf4;color:#16a34a;}
+.pc-down{background:#fef2f2;color:#dc2626;}
+.price-note{background:var(--bg);border-radius:12px;padding:14px;font-size:12px;color:var(--muted);margin-bottom:16px;line-height:1.6;border:1.5px dashed var(--border);}
 </style>
 </head>
 <body>
 
+<!-- SPLASH -->
+<div class="splash" id="splash">
+  <div class="splash-logo">AgroTrade</div>
+  <div class="splash-sub">Ghana's Agri Marketplace</div>
+  <div class="splash-bar"><div class="splash-fill"></div></div>
+</div>
+
 <!-- AUTH -->
 <div class="auth-overlay" id="authOverlay">
-  <div class="auth-box">
-    <div class="auth-logo">
-      <div class="auth-logo-mark">🌿</div>
-      <div class="auth-logo-text">AgroTrade</div>
+  <div class="auth-card">
+    <div class="auth-brand">
+      <div class="auth-icon">🌿</div>
+      <div class="auth-brand-name">AgroTrade</div>
+      <div class="auth-brand-tag">Ghana's Agri Marketplace</div>
     </div>
-    <div class="auth-tabs">
-      <button class="auth-tab active" onclick="switchAuth('login')">Login</button>
-      <button class="auth-tab" onclick="switchAuth('register')">Register</button>
+    <div class="tab-switcher">
+      <button class="tab-sw-btn active" onclick="switchAuth('login')">Login</button>
+      <button class="tab-sw-btn" onclick="switchAuth('register')">Register</button>
     </div>
-    <div id="authError" class="auth-error"></div>
-    <div id="authSuccess" class="auth-success"></div>
+    <div id="authErr" class="msg-box msg-error"></div>
+    <div id="authOk" class="msg-box msg-success"></div>
+
     <div id="loginForm">
-      <div class="form-group"><label class="form-label">Email</label><input class="form-input" type="email" id="loginEmail" placeholder="your@email.com"></div>
-      <div class="form-group"><label class="form-label">Password</label><input class="form-input" type="password" id="loginPassword" placeholder="••••••••"></div>
-      <button class="auth-btn" onclick="handleLogin()">Login to AgroTrade →</button>
+      <div class="field"><label>Email</label><input type="email" id="lEmail" placeholder="your@email.com"></div>
+      <div class="field"><label>Password</label><input type="password" id="lPass" placeholder="••••••••"></div>
+      <button class="auth-submit" onclick="doLogin()">Login to AgroTrade →</button>
     </div>
-    <div id="registerForm" style="display:none">
-      <div class="form-group"><label class="form-label">Full Name</label><input class="form-input" type="text" id="regName" placeholder="Your full name"></div>
-      <div class="form-group"><label class="form-label">Email</label><input class="form-input" type="email" id="regEmail" placeholder="your@email.com"></div>
-      <div class="form-group"><label class="form-label">Phone (MoMo Number)</label><input class="form-input" type="tel" id="regPhone" placeholder="0244000000"></div>
-      <div class="form-group"><label class="form-label">I am a</label>
-        <select class="form-select" id="regType">
-          <option value="farmer">🧑‍🌾 Farmer (I want to sell)</option>
-          <option value="buyer">🛒 Buyer (I want to buy)</option>
+
+    <div id="regForm" style="display:none">
+      <div class="field"><label>Full Name</label><input type="text" id="rName" placeholder="Your full name"></div>
+      <div class="field"><label>Email</label><input type="email" id="rEmail" placeholder="your@email.com"></div>
+      <div class="field"><label>MoMo Phone Number</label><input type="tel" id="rPhone" placeholder="0244000000"></div>
+      <div class="field"><label>I am a</label>
+        <select id="rType">
+          <option value="farmer">🧑‍🌾 Farmer — I want to sell</option>
+          <option value="buyer">🛒 Buyer — I want to buy</option>
           <option value="cooperative">🤝 Cooperative / Agribusiness</option>
         </select>
       </div>
-      <div class="form-group"><label class="form-label">Region / Location</label><input class="form-input" type="text" id="regLocation" placeholder="e.g. Ashanti Region"></div>
-      <div class="form-group"><label class="form-label">Password</label><input class="form-input" type="password" id="regPassword" placeholder="Min 6 characters"></div>
-      <button class="auth-btn" onclick="handleRegister()">Create Account →</button>
+      <div class="field"><label>Region / Location</label><input type="text" id="rLoc" placeholder="e.g. Ashanti Region, Accra"></div>
+      <div class="field"><label>Password</label><input type="password" id="rPass" placeholder="Minimum 6 characters"></div>
+      <button class="auth-submit" onclick="doRegister()">Create My Account →</button>
     </div>
   </div>
 </div>
 
 <!-- MOMO MODAL -->
-<div class="modal-overlay" id="momoModal">
-  <div class="modal-box">
-    <div class="momo-logo">📱</div>
+<div class="modal-bg" id="momoModal">
+  <div class="modal-sheet">
+    <div class="modal-pill"></div>
+    <div class="momo-icon">📱</div>
     <div class="modal-title">Pay with Mobile Money</div>
-    <div class="modal-sub">Complete your order payment via MTN/Vodafone MoMo</div>
-    <div class="momo-amount">
-      <div class="momo-amount-label">Amount to Pay</div>
-      <div class="momo-amount-value" id="momoAmount">GHS 0</div>
+    <div class="modal-sub">Complete your payment via MTN MoMo or Vodafone Cash</div>
+    <div class="momo-amt-box">
+      <div class="momo-amt-lbl">Total Amount</div>
+      <div class="momo-amt-val" id="momoAmt">GHS 0</div>
     </div>
     <div class="momo-steps">
-      <div class="momo-step"><div class="momo-step-num">1</div><div class="momo-step-text">Dial <strong>*170#</strong> (MTN) or <strong>*110#</strong> (Vodafone) on your phone</div></div>
-      <div class="momo-step"><div class="momo-step-num">2</div><div class="momo-step-text">Select <strong>Send Money</strong> → Enter merchant number</div></div>
-      <div class="momo-step"><div class="momo-step-num">3</div><div class="momo-step-text">Enter amount: <strong id="momoAmountStep">GHS 0</strong></div></div>
-      <div class="momo-step"><div class="momo-step-num">4</div><div class="momo-step-text">Reference: <strong id="momoRef">AGT-0000</strong> — then confirm with your PIN</div></div>
+      <div class="mstep"><div class="mstep-n">1</div><div class="mstep-t">Dial <strong>*170#</strong> (MTN) or <strong>*110#</strong> (Vodafone) on your phone</div></div>
+      <div class="mstep"><div class="mstep-n">2</div><div class="mstep-t">Select <strong>Transfer Money</strong> → Enter the farmer's number</div></div>
+      <div class="mstep"><div class="mstep-n">3</div><div class="mstep-t">Enter amount: <strong id="momoAmt2">GHS 0</strong></div></div>
+      <div class="mstep"><div class="mstep-n">4</div><div class="mstep-t">Use reference: <strong id="momoRef">AGT-0000</strong> then enter your PIN</div></div>
     </div>
-    <button class="momo-confirm-btn" onclick="confirmMomoPayment()">✅ I Have Paid</button>
-    <button class="close-modal" onclick="closeMomo()">Cancel</button>
+    <button class="momo-pay-btn" onclick="confirmPayment()">✅ I Have Completed Payment</button>
+    <button class="modal-cancel" onclick="closeMomo()">Cancel</button>
   </div>
 </div>
 
 <!-- HEADER -->
 <header>
-  <div class="logo">
-    <div class="logo-mark">🌿</div>
+  <div class="brand">
+    <div class="brand-mark">🌿</div>
     <div>
-      <div class="logo-text">AgroTrade</div>
-      <div class="logo-sub">Ghana Agri Shop</div>
+      <div class="brand-name">AgroTrade</div>
+      <span class="brand-tag">Ghana Agri Marketplace</span>
     </div>
   </div>
-  <div class="header-right">
-    <div class="user-chip" id="userChip">Guest</div>
-    <button class="logout-btn" onclick="handleLogout()">Logout</button>
+  <div class="hdr-right">
+    <div class="user-pill" id="userPill">Guest</div>
+    <button class="logout-btn" onclick="doLogout()">Logout</button>
   </div>
 </header>
 
-<div class="ticker"><div class="ticker-inner" id="ticker"></div></div>
+<div class="ticker"><div class="ticker-track" id="ticker"></div></div>
 
 <main>
 
-  <!-- SHOP TAB -->
+  <!-- SHOP -->
   <div class="tab active" id="tab-shop">
-    <div id="mainShop">
-      <div class="shop-banner">
-        <h2>🌾 Ghana Agri Shop</h2>
-        <p>Fresh produce directly from verified farmers</p>
-        <div class="banner-stats">
-          <div class="banner-stat"><div class="banner-stat-n" id="totalProducts">0</div><div class="banner-stat-l">Products</div></div>
-          <div class="banner-stat"><div class="banner-stat-n" id="totalFarmers">0</div><div class="banner-stat-l">Farmers</div></div>
-          <div class="banner-stat"><div class="banner-stat-n">✅</div><div class="banner-stat-l">Verified</div></div>
+    <div id="shopMain">
+      <div class="hero">
+        <div class="hero-label">Ghana's #1 Agri Platform</div>
+        <div class="hero-title">Fresh From<br>The Farm</div>
+        <div class="hero-sub">Buy directly from verified Ghanaian farmers.<br>No middlemen. Better prices.</div>
+        <div class="hero-stats">
+          <div class="hstat"><div class="hstat-n" id="cntProducts">0</div><div class="hstat-l">Products</div></div>
+          <div class="hstat"><div class="hstat-n" id="cntFarmers">0</div><div class="hstat-l">Farmers</div></div>
+          <div class="hstat"><div class="hstat-n">✅</div><div class="hstat-l">Verified</div></div>
         </div>
       </div>
-      <div class="search-wrap">
-        <span class="search-icon">🔍</span>
-        <input class="search-box" id="searchInput" placeholder="Search products or farmers..." oninput="filterProducts()">
+
+      <div id="shopEmptyState" style="display:none">
+        <div class="empty-hero">
+          <div class="eico">🌱</div>
+          <h3>Be the First Farmer!</h3>
+          <p>No products yet. Register as a farmer and post your first product to start selling across Ghana.</p>
+          <button class="empty-cta" onclick="switchAuth('register');document.getElementById('authOverlay').style.display='flex';">Register as Farmer →</button>
+        </div>
       </div>
-      <div class="cats">
-        <button class="cat-btn active" onclick="filterCat(this,'All')">All</button>
-        <button class="cat-btn" onclick="filterCat(this,'Grains')">🌽 Grains</button>
-        <button class="cat-btn" onclick="filterCat(this,'Vegetables')">🥦 Vegetables</button>
-        <button class="cat-btn" onclick="filterCat(this,'Cash Crops')">☕ Cash Crops</button>
-        <button class="cat-btn" onclick="filterCat(this,'Legumes')">🫘 Legumes</button>
-        <button class="cat-btn" onclick="filterCat(this,'Tubers')">🍠 Tubers</button>
-        <button class="cat-btn" onclick="filterCat(this,'Processed')">🧺 Processed</button>
+
+      <div id="shopProductsSection">
+        <div class="search-row">
+          <span class="search-ico">🔍</span>
+          <input class="search-input" id="searchQ" placeholder="Search products, farmers, regions..." oninput="filterProds()">
+        </div>
+        <div class="filters">
+          <button class="filter-btn active" onclick="setCat(this,'All')">All</button>
+          <button class="filter-btn" onclick="setCat(this,'Grains')">🌽 Grains</button>
+          <button class="filter-btn" onclick="setCat(this,'Vegetables')">🥦 Vegetables</button>
+          <button class="filter-btn" onclick="setCat(this,'Cash Crops')">☕ Cash Crops</button>
+          <button class="filter-btn" onclick="setCat(this,'Legumes')">🫘 Legumes</button>
+          <button class="filter-btn" onclick="setCat(this,'Tubers')">🍠 Tubers</button>
+          <button class="filter-btn" onclick="setCat(this,'Processed')">🧺 Processed</button>
+        </div>
+        <div class="grid2" id="prodsGrid"></div>
       </div>
-      <div class="cards-grid" id="productsGrid"></div>
     </div>
 
-    <!-- FARMER SHOP PAGE -->
+    <!-- Farmer shop page -->
     <div id="farmerShopPage" style="display:none">
       <button class="back-btn" onclick="backToShop()">← Back to Shop</button>
-      <div class="shop-header">
-        <div class="shop-avatar" id="shopAvatar">🧑‍🌾</div>
-        <div class="shop-name" id="shopName">Farmer Name</div>
-        <div class="shop-location" id="shopLocation">📍 Location</div>
-        <div class="shop-type-badge" id="shopType">Farmer</div>
-        <div class="shop-stats">
-          <div class="shop-stat"><div class="shop-stat-n" id="shopProducts">0</div><div class="shop-stat-l">Products</div></div>
-          <div class="shop-stat"><div class="shop-stat-n">⭐ 4.8</div><div class="shop-stat-l">Rating</div></div>
-          <div class="shop-stat"><div class="shop-stat-n">✅</div><div class="shop-stat-l">Verified</div></div>
+      <div class="fshop-header">
+        <div class="fshop-avatar" id="fshopAvatar">🧑‍🌾</div>
+        <div class="fshop-name" id="fshopName">Farmer</div>
+        <div class="fshop-loc" id="fshopLoc">📍 Ghana</div>
+        <div class="fshop-badge">✅ Verified Farmer</div>
+        <div class="fshop-stats">
+          <div><div class="fshop-stat-n" id="fshopCount">0</div><div class="fshop-stat-l">Products</div></div>
+          <div><div class="fshop-stat-n">⭐ 4.8</div><div class="fshop-stat-l">Rating</div></div>
         </div>
-        <button class="contact-btn" onclick="contactFarmer()">💬 Contact Farmer</button>
+        <button class="contact-farmer-btn" onclick="contactFarmerMsg()">💬 Message Farmer</button>
       </div>
-      <div class="section-title">Products from this Farm</div>
-      <div class="cards-grid" id="farmerProductsGrid"></div>
+      <div class="sec-title">Products from this Farm</div>
+      <div class="grid2" id="fshopGrid"></div>
     </div>
   </div>
 
-  <!-- SELL TAB (Farmers only) -->
+  <!-- SELL (Farmers only) -->
   <div class="tab" id="tab-sell">
-    <div class="sell-header">
+    <div class="sell-banner">
       <h2>Your Farm Shop 🏪</h2>
-      <p>Post your products and reach buyers across Ghana</p>
+      <p>Post your products and reach buyers across Ghana instantly</p>
     </div>
-    <button class="post-btn" onclick="toggleProductForm()">➕ Add New Product</button>
-    <div class="product-form" id="productForm">
+    <button class="add-product-btn" onclick="toggleForm()">➕ Add New Product</button>
+    <div class="product-form" id="prodForm">
       <h3>📦 New Product Listing</h3>
-      <div class="form-group"><label class="form-label">Product Name</label><input class="form-input" id="pName" placeholder="e.g. Fresh Garden Eggs"></div>
-      <div class="form-group"><label class="form-label">Category</label>
-        <select class="form-select" id="pCategory">
+      <div class="field"><label>Product Name</label><input id="pName" placeholder="e.g. Fresh Garden Eggs"></div>
+      <div class="field"><label>Category</label>
+        <select id="pCat">
           <option>Grains</option><option>Vegetables</option><option>Cash Crops</option>
           <option>Legumes</option><option>Tubers</option><option>Processed</option>
         </select>
       </div>
-      <div class="form-group"><label class="form-label">Emoji Icon</label>
-        <select class="form-select" id="pEmoji">
-          <option value="🌽">🌽 Maize</option><option value="🍅">🍅 Tomatoes</option>
-          <option value="🍆">🍆 Garden Eggs</option><option value="🥜">🥜 Groundnuts</option>
-          <option value="🫘">🫘 Beans/Cocoa</option><option value="🌾">🌾 Grains</option>
-          <option value="🍠">🍠 Yam/Tubers</option><option value="🥦">🥦 Vegetables</option>
-          <option value="🛢️">🛢️ Palm Oil</option><option value="🌿">🌿 Other</option>
+      <div class="field"><label>Product Icon</label>
+        <select id="pEmoji">
+          <option value="🌽">🌽 Maize / Corn</option>
+          <option value="🍅">🍅 Tomatoes</option>
+          <option value="🍆">🍆 Garden Eggs</option>
+          <option value="🥜">🥜 Groundnuts</option>
+          <option value="🫘">🫘 Beans / Cocoa</option>
+          <option value="🌾">🌾 Grains / Wheat</option>
+          <option value="🍠">🍠 Yam / Tubers</option>
+          <option value="🥦">🥦 Vegetables</option>
+          <option value="🛢️">🛢️ Palm Oil</option>
+          <option value="🍌">🍌 Plantain / Banana</option>
+          <option value="🫑">🫑 Pepper</option>
+          <option value="🧅">🧅 Onion</option>
+          <option value="🌿">🌿 Other</option>
         </select>
       </div>
-      <div class="form-group"><label class="form-label">Price (GHS)</label><input class="form-input" type="number" id="pPrice" placeholder="e.g. 45"></div>
-      <div class="form-group"><label class="form-label">Unit</label><input class="form-input" id="pUnit" placeholder="e.g. per basket, per tonne, per bag"></div>
-      <div class="form-group"><label class="form-label">Quantity Available</label><input class="form-input" type="number" id="pStock" placeholder="e.g. 100"></div>
-      <div class="form-group"><label class="form-label">Description</label><input class="form-input" id="pDesc" placeholder="Quality, freshness, any extra info"></div>
-      <button class="submit-btn" onclick="postProduct()">✅ Post Product</button>
+      <div class="field"><label>Price (GHS)</label><input type="number" id="pPrice" placeholder="e.g. 45"></div>
+      <div class="field"><label>Unit / Per</label><input id="pUnit" placeholder="e.g. per basket, per tonne, per bag, per crate"></div>
+      <div class="field"><label>Quantity Available</label><input type="number" id="pStock" placeholder="e.g. 100"></div>
+      <div class="field"><label>Description (optional)</label><input id="pDesc" placeholder="Grade, quality, freshness details..."></div>
+      <button class="form-submit" onclick="postListing()">✅ Post Product</button>
     </div>
-    <div class="section-title">Your Listed Products</div>
-    <div id="myProductsList"></div>
+    <div class="sec-title">Your Products</div>
+    <div id="myListings"></div>
   </div>
 
-  <!-- ORDERS TAB -->
+  <!-- ORDERS -->
   <div class="tab" id="tab-orders">
-    <div class="orders-tabs">
-      <button class="orders-tab active" onclick="switchOrderTab('buying',this)">🛒 My Purchases</button>
-      <button class="orders-tab farmer-only" id="sellingTab" onclick="switchOrderTab('selling',this)">📦 My Sales</button>
+    <div class="order-tabs">
+      <button class="order-tab active" onclick="switchOrdTab('buy',this)">🛒 My Purchases</button>
+      <button class="order-tab" id="salesTab" onclick="switchOrdTab('sell',this)" style="display:none">📦 My Sales</button>
     </div>
-    <div id="buyingOrders"></div>
-    <div id="sellingOrders" style="display:none"></div>
+    <div id="buyOrders"></div>
+    <div id="sellOrders" style="display:none"></div>
   </div>
 
-  <!-- MESSAGES TAB -->
+  <!-- MESSAGES -->
   <div class="tab" id="tab-messages">
     <div id="msgListView">
-      <div class="section-title">Messages</div>
-      <div class="msg-list-wrap" id="conversationList"></div>
+      <div class="sec-title">Conversations</div>
+      <div class="conv-list" id="convList"></div>
     </div>
     <div id="chatView" style="display:none">
-      <button class="back-btn" onclick="backToMessages()">← Back</button>
-      <div class="chat-wrap">
-        <div class="chat-header">
-          <div class="msg-avatar" id="chatAvatar"></div>
-          <div><div style="font-weight:800;font-size:14px" id="chatName"></div><div style="font-size:11px;color:var(--muted)">Online</div></div>
+      <button class="back-btn" onclick="backToMsgs()">← Back</button>
+      <div class="chat-box">
+        <div class="chat-hdr">
+          <div class="conv-avatar" id="chatAv"></div>
+          <div>
+            <div style="font-weight:800;font-size:14px" id="chatNm"></div>
+            <div style="font-size:11px;color:var(--muted)">AgroTrade Member</div>
+          </div>
         </div>
-        <div class="chat-messages" id="chatMessages"></div>
-        <div class="chat-input-wrap">
-          <input class="chat-input" id="chatInput" placeholder="Type a message..." onkeydown="if(event.key==='Enter')sendMsg()">
+        <div class="chat-msgs" id="chatMsgs"></div>
+        <div class="chat-footer">
+          <input class="chat-inp" id="chatInp" placeholder="Type a message..." onkeydown="if(event.key==='Enter')sendMsg()">
           <button class="send-btn" onclick="sendMsg()">Send</button>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- CART TAB -->
+  <!-- CART -->
   <div class="tab" id="tab-cart">
-    <div class="section-title">Shopping Cart</div>
-    <div id="cartItems"></div>
-    <div id="cartCheckout"></div>
+    <div class="sec-title">Shopping Cart</div>
+    <div id="cartRows"></div>
+    <div id="cartSummary"></div>
+  </div>
+
+  <!-- PRICES -->
+  <div class="tab" id="tab-prices">
+    <div class="sec-title">Live Market Prices — Ghana</div>
+    <div class="price-note">⚠️ Prices below are based on real listings posted by registered farmers on AgroTrade. Register and post your products to update market rates.</div>
+    <div id="priceList"></div>
   </div>
 
 </main>
 
-<nav class="bottom-nav">
-  <button class="nav-btn active" onclick="switchTab('shop',this)"><span class="icon">🏪</span>Shop</button>
-  <button class="nav-btn farmer-only" id="sellNavBtn" onclick="switchTab('sell',this)"><span class="icon">🌾</span>Sell</button>
-  <button class="nav-btn" onclick="switchTab('orders',this)"><span class="icon">📦</span>Orders</button>
-  <button class="nav-btn" onclick="switchTab('messages',this)"><span class="icon">💬</span>Messages</button>
-  <button class="nav-btn" onclick="switchTab('cart',this)" style="position:relative"><span class="icon">🛒</span>Cart<span class="nav-badge" id="cartBadge" style="display:none">0</span></button>
+<nav class="bnav" id="bnav">
+  <button class="bnav-btn active" onclick="goTab('shop',this)"><span class="ico">🏪</span>Shop</button>
+  <button class="bnav-btn" id="sellNavBtn" style="display:none" onclick="goTab('sell',this)"><span class="ico">🌾</span>Sell</button>
+  <button class="bnav-btn" onclick="goTab('orders',this)"><span class="ico">📦</span>Orders</button>
+  <button class="bnav-btn" onclick="goTab('messages',this)"><span class="ico">💬</span>Messages</button>
+  <button class="bnav-btn" onclick="goTab('prices',this)"><span class="ico">📈</span>Prices</button>
+  <button class="bnav-btn" onclick="goTab('cart',this)" style="position:relative"><span class="ico">🛒</span>Cart<span class="nbadge" id="cartBadge" style="display:none">0</span></button>
 </nav>
 
-<div class="notif" id="notif"></div>
+<div class="toast" id="toast"></div>
 
 <script>
-const {createClient} = supabase;
-const sb = createClient(
+const {createClient}=supabase;
+const sb=createClient(
   'https://wkkdpqayrbwbxfovofrs.supabase.co',
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Indra2RwcWF5cmJ3Ynhmb3ZvZnJzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMzMjI4NjcsImV4cCI6MjA4ODg5ODg2N30.skW2BldBmWCfo1wPzc7NOgJPfxAYkGf1h0QCUN7s5EM'
 );
 
-let currentUser = null;
-let currentProfile = null;
-let allProducts = [];
-let cart = [];
-let activeCat = 'All';
-let activeConv = null;
-let currentFarmerView = null;
-let orderCounter = Math.floor(Math.random()*9000)+1000;
+let user=null,profile=null,prods=[],cart=[],activeCat='All',activeConv=null,ordCount=Math.floor(Math.random()*9000)+1000;
 
-// SAMPLE PRODUCTS (shown before real ones load)
-const SAMPLE_PRODUCTS = [
-  {id:'s1',name:'White Maize',category:'Grains',price:285,unit:'per tonne',stock:50,emoji:'🌽',farmer_name:'Kofi Farms Co.',farmer_location:'Ashanti',farmer_id:'sample1',farmer_phone:},
-  {id:'s2',name:'Cocoa Beans',category:'Cash Crops',price:4200,unit:'per tonne',stock:12,emoji:'🫘',farmer_name:'Golden Harvest Ltd.',farmer_location:'Western',farmer_id:'sample2',farmer_phone:''},
-  {id:'s3',name:'Fresh Tomatoes',category:'Vegetables',price:95,unit:'per crate',stock:80,emoji:'🍅',farmer_name:'Savannah Growers',farmer_location:'Northern',farmer_id:'sample3',farmer_phone:''},
-  {id:'s4',name:'Garden Eggs',category:'Vegetables',price:45,unit:'per basket',stock:120,emoji:'🍆',farmer_name:'Northern Growers',farmer_location:'Northern Region',farmer_id:'sample4',farmer_phone:''},
-  {id:'s5',name:'Soybeans',category:'Legumes',price:320,unit:'per tonne',stock:30,emoji:'🫘',farmer_name:'Upper East Coop',farmer_location:'Upper East',farmer_id:'sample5',farmer_phone:''},
-  {id:'s6',name:'Groundnuts',category:'Legumes',price:410,unit:'per tonne',stock:18,emoji:'🥜',farmer_name:'Savannah Coop',farmer_location:'Northern',farmer_id:'sample6',farmer_phone:''},
-  {id:'s7',name:'Yam (White)',category:'Tubers',price:55,unit:'per tuber',stock:500,emoji:'🍠',farmer_name:'Brong Harvest',farmer_location:'Brong-Ahafo',farmer_id:'sample7',farmer_phone:''},
-  {id:'s8',name:'Palm Oil',category:'Cash Crops',price:1850,unit:'per tonne',stock:25,emoji:'🛢️',farmer_name:'Eastern Palm Ltd.',farmer_location:'Eastern',farmer_id:'sample8',farmer_phone:''},
-];
+// SPLASH
+setTimeout(()=>document.getElementById('splash').classList.add('hide'),2000);
 
-// TICKER
-const RATES=[{n:'Maize',p:285,c:2.3},{n:'Cocoa',p:4200,c:5.1},{n:'Soybean',p:320,c:3.4},{n:'Palm Oil',p:1850,c:-0.5},{n:'Groundnut',p:410,c:1.9}];
-const tickerText = RATES.map(r=>`🌾 ${r.n}: GHS ${r.p}/tonne ${r.c>0?'▲':'▼'}${Math.abs(r.c)}%`).join('   •   ');
-document.getElementById('ticker').innerHTML=`<span>${tickerText}&nbsp;&nbsp;&nbsp;&nbsp;${tickerText}</span>`;
+// TICKER — will update from real data
+function setTicker(items){
+  const t=items.length?items.map(p=>`🌾 ${p.name}: GHS ${Number(p.price).toLocaleString()} ${p.unit||''}`).join('   •   '):'🌿 AgroTrade — Ghana\'s Agri Marketplace   •   Register now to buy and sell fresh produce   •   Farmers post your products today';
+  document.getElementById('ticker').innerHTML=`<span>${t}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;${t}</span>`;
+}
+setTicker([]);
 
 // AUTH
-sb.auth.getSession().then(({data:{session}})=>{ if(session){ currentUser=session.user; onLoggedIn(session.user); }});
-sb.auth.onAuthStateChange((event,session)=>{
-  if(event==='SIGNED_IN'&&session){ currentUser=session.user; onLoggedIn(session.user); }
-  else if(event==='SIGNED_OUT'){ currentUser=null; document.getElementById('authOverlay').style.display='flex'; }
+sb.auth.getSession().then(({data:{session}})=>{if(session){user=session.user;onLogin(session.user);}});
+sb.auth.onAuthStateChange((e,s)=>{
+  if(e==='SIGNED_IN'&&s){user=s.user;onLogin(s.user);}
+  else if(e==='SIGNED_OUT'){user=null;profile=null;document.getElementById('authOverlay').style.display='flex';}
 });
 
-async function onLoggedIn(user) {
+async function onLogin(u){
   document.getElementById('authOverlay').style.display='none';
-  const {data} = await sb.from('profiles').select('*').eq('id',user.id).single();
-  if(data){ currentProfile=data; setupUserUI(data); }
-  else { document.getElementById('userChip').textContent=user.email.split('@')[0]; }
-  loadProducts();
-  loadMyProducts();
-  loadOrders();
-  loadMessages();
+  const {data}=await sb.from('profiles').select('*').eq('id',u.id).single();
+  if(data){profile=data;applyUserUI(data);}
+  else{document.getElementById('userPill').textContent=u.email.split('@')[0];}
+  await loadProds();
+  loadMyListings();
+  renderOrders();
+  renderMsgs();
+  renderCart();
 }
 
-function setupUserUI(profile) {
-  document.getElementById('userChip').textContent = profile.full_name || profile.user_type;
-  if(profile.user_type==='farmer'||profile.user_type==='cooperative'){
-    document.querySelectorAll('.farmer-only').forEach(el=>el.style.display='flex');
-    document.getElementById('sellingTab').style.display='block';
+function applyUserUI(p){
+  document.getElementById('userPill').textContent=p.full_name||p.user_type;
+  if(p.user_type==='farmer'||p.user_type==='cooperative'){
+    document.getElementById('sellNavBtn').style.display='flex';
+    document.getElementById('salesTab').style.display='block';
   }
 }
 
-function switchAuth(tab) {
-  document.getElementById('loginForm').style.display=tab==='login'?'block':'none';
-  document.getElementById('registerForm').style.display=tab==='register'?'block':'none';
-  document.querySelectorAll('.auth-tab').forEach((t,i)=>t.classList.toggle('active',(tab==='login'&&i===0)||(tab==='register'&&i===1)));
-  document.getElementById('authError').style.display='none';
-  document.getElementById('authSuccess').style.display='none';
+function switchAuth(t){
+  document.getElementById('loginForm').style.display=t==='login'?'block':'none';
+  document.getElementById('regForm').style.display=t==='register'?'block':'none';
+  document.querySelectorAll('.tab-sw-btn').forEach((b,i)=>b.classList.toggle('active',(t==='login'&&i===0)||(t==='register'&&i===1)));
+  document.getElementById('authErr').style.display='none';
+  document.getElementById('authOk').style.display='none';
 }
 
-async function handleLogin() {
-  const email=document.getElementById('loginEmail').value;
-  const password=document.getElementById('loginPassword').value;
-  if(!email||!password) return showAuthError('Please fill in all fields');
-  const {error}=await sb.auth.signInWithPassword({email,password});
-  if(error) showAuthError(error.message);
+async function doLogin(){
+  const email=document.getElementById('lEmail').value,pass=document.getElementById('lPass').value;
+  if(!email||!pass)return authErr('Please fill in all fields');
+  const {error}=await sb.auth.signInWithPassword({email,password:pass});
+  if(error)authErr(error.message);
 }
 
-async function handleRegister() {
-  const name=document.getElementById('regName').value;
-  const email=document.getElementById('regEmail').value;
-  const phone=document.getElementById('regPhone').value;
-  const userType=document.getElementById('regType').value;
-  const location=document.getElementById('regLocation').value;
-  const password=document.getElementById('regPassword').value;
-  if(!name||!email||!password) return showAuthError('Please fill in all required fields');
-  if(password.length<6) return showAuthError('Password must be at least 6 characters');
-  const {data,error}=await sb.auth.signUp({email,password});
-  if(error) return showAuthError(error.message);
+async function doRegister(){
+  const name=document.getElementById('rName').value,email=document.getElementById('rEmail').value;
+  const phone=document.getElementById('rPhone').value,type=document.getElementById('rType').value;
+  const loc=document.getElementById('rLoc').value,pass=document.getElementById('rPass').value;
+  if(!name||!email||!pass)return authErr('Please fill in all required fields');
+  if(pass.length<6)return authErr('Password must be at least 6 characters');
+  const {data,error}=await sb.auth.signUp({email,password:pass});
+  if(error)return authErr(error.message);
   if(data.user){
-    await sb.from('profiles').insert({id:data.user.id,full_name:name,phone,user_type:userType,location});
-    showAuthSuccess('Account created! Logging you in... ✅');
-    setTimeout(()=>handleLogin(),1500);
-    document.getElementById('loginEmail').value=email;
-    document.getElementById('loginPassword').value=password;
+    await sb.from('profiles').insert({id:data.user.id,full_name:name,phone,user_type:type,location:loc});
+    authOk('Account created! Logging you in ✅');
+    document.getElementById('lEmail').value=email;
+    document.getElementById('lPass').value=pass;
+    setTimeout(doLogin,1600);
   }
 }
 
-async function handleLogout(){ await sb.auth.signOut(); showNotif('Logged out'); }
-function showAuthError(msg){ const el=document.getElementById('authError'); el.textContent=msg; el.style.display='block'; }
-function showAuthSuccess(msg){ const el=document.getElementById('authSuccess'); el.textContent=msg; el.style.display='block'; document.getElementById('authError').style.display='none'; }
+async function doLogout(){await sb.auth.signOut();toast('Logged out');}
+function authErr(m){const e=document.getElementById('authErr');e.textContent=m;e.style.display='block';}
+function authOk(m){const e=document.getElementById('authOk');e.textContent=m;e.style.display='block';document.getElementById('authErr').style.display='none';}
 
 // PRODUCTS
-async function loadProducts() {
-  const {data} = await sb.from('listings').select('*, profiles(full_name,location,phone,user_type)').order('created_at',{ascending:false});
-  let dbProducts = [];
-  if(data&&data.length>0){
-    dbProducts = data.map(l=>({
-      id:l.id, name:l.name, category:l.category||'Grains',
-      price:l.price, unit:l.unit||'per unit', stock:l.stock||0,
-      emoji:l.description&&l.description.startsWith('EMOJI:')?l.description.replace('EMOJI:','').split('|')[0]:'🌿',
-      farmer_name:l.profiles?.full_name||'Verified Farmer',
-      farmer_location:l.profiles?.location||'Ghana',
-      farmer_id:l.user_id,
-      farmer_phone:l.profiles?.phone||'',
-      desc:l.description
+async function loadProds(){
+  const {data}=await sb.from('listings').select('*,profiles(full_name,location,user_type)').order('created_at',{ascending:false});
+  prods=[];
+  if(data&&data.length){
+    prods=data.map(l=>({
+      id:l.id,name:l.name,cat:l.category||'Grains',
+      price:l.price,unit:l.unit||'',stock:l.stock||0,
+      emoji:l.description&&l.description.startsWith('EMO:')?l.description.split('|')[0].replace('EMO:',''):'🌿',
+      desc:l.description&&l.description.includes('|')?l.description.split('|').slice(1).join('|'):'',
+      farmer:l.profiles?.full_name||'Verified Farmer',
+      loc:l.profiles?.location||'Ghana',
+      fid:l.user_id
     }));
   }
-  allProducts = [...dbProducts, ...SAMPLE_PRODUCTS];
-  document.getElementById('totalProducts').textContent = allProducts.length;
-  const uniqueFarmers = [...new Set(allProducts.map(p=>p.farmer_id))].length;
-  document.getElementById('totalFarmers').textContent = uniqueFarmers;
-  renderProducts(allProducts);
+  document.getElementById('cntProducts').textContent=prods.length||'—';
+  document.getElementById('cntFarmers').textContent=prods.length?[...new Set(prods.map(p=>p.fid))].length:'—';
+  if(!prods.length){
+    document.getElementById('shopEmptyState').style.display='block';
+    document.getElementById('shopProductsSection').style.display='none';
+  } else {
+    document.getElementById('shopEmptyState').style.display='none';
+    document.getElementById('shopProductsSection').style.display='block';
+    renderProds(prods);
+  }
+  setTicker(prods);
+  renderPrices(prods);
 }
 
-function renderProducts(items) {
-  const grid = document.getElementById('productsGrid');
-  if(!items.length){ grid.innerHTML='<div class="empty-state"><div class="empty-icon">🔍</div><p>No products found</p></div>'; return; }
-  grid.innerHTML = items.map(p=>`
-    <div class="product-card">
-      <div class="card-img">${p.emoji}</div>
-      <div class="card-body">
-        <div class="card-name">${p.name}</div>
-        <div class="card-farmer" onclick="viewFarmerShop('${p.farmer_id}')">🧑‍🌾 ${p.farmer_name}</div>
-        <div class="card-price">GHS ${Number(p.price).toLocaleString()}<span class="card-unit"> ${p.unit}</span></div>
-        <div class="card-stock">📦 ${p.stock} available</div>
-        <div class="card-actions">
-          <button class="btn-cart" onclick="addToCart('${p.id}')">🛒 Add</button>
-          <button class="btn-shop" onclick="viewFarmerShop('${p.farmer_id}')">🏪</button>
+function renderProds(items){
+  const g=document.getElementById('prodsGrid');
+  if(!items.length){g.innerHTML='<div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--soft)"><div style="font-size:40px;margin-bottom:10px">🔍</div><p>No products match your search</p></div>';return;}
+  g.innerHTML=items.map(p=>`
+    <div class="pcard">
+      <div class="pcard-img">${p.emoji}</div>
+      <div class="pcard-body">
+        <div class="pcard-name">${p.name}</div>
+        <div class="pcard-farmer" onclick="viewFarmer('${p.fid}')">🧑‍🌾 ${p.farmer}</div>
+        <div class="pcard-price">GHS ${Number(p.price).toLocaleString()}<span class="pcard-unit"> ${p.unit}</span></div>
+        <div class="pcard-loc">📍 ${p.loc}</div>
+        <div class="pcard-stock">📦 ${p.stock} available</div>
+        <div class="pcard-actions">
+          <button class="btn-add" onclick="addCart('${p.id}')">🛒 Add</button>
+          <button class="btn-view" onclick="viewFarmer('${p.fid}')">🏪</button>
         </div>
       </div>
     </div>`).join('');
 }
 
-function filterCat(btn,cat){ activeCat=cat; document.querySelectorAll('.cat-btn').forEach(b=>b.classList.remove('active')); btn.classList.add('active'); filterProducts(); }
-function filterProducts(){ const q=document.getElementById('searchInput').value.toLowerCase(); const f=allProducts.filter(p=>(activeCat==='All'||p.category===activeCat)&&(p.name.toLowerCase().includes(q)||p.farmer_name.toLowerCase().includes(q))); renderProducts(f); }
+function setCat(btn,cat){activeCat=cat;document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');filterProds();}
+function filterProds(){const q=document.getElementById('searchQ').value.toLowerCase();const f=prods.filter(p=>(activeCat==='All'||p.cat===activeCat)&&(p.name.toLowerCase().includes(q)||p.farmer.toLowerCase().includes(q)||p.loc.toLowerCase().includes(q)));renderProds(f);}
 
-// FARMER SHOP PAGE
-function viewFarmerShop(farmerId) {
-  currentFarmerView = farmerId;
-  const farmerProducts = allProducts.filter(p=>p.farmer_id===farmerId);
-  if(!farmerProducts.length) return showNotif('No products from this farmer');
-  const farmer = farmerProducts[0];
-  document.getElementById('shopAvatar').textContent = '🧑‍🌾';
-  document.getElementById('shopName').textContent = farmer.farmer_name;
-  document.getElementById('shopLocation').textContent = '📍 ' + farmer.farmer_location;
-  document.getElementById('shopType').textContent = '✅ Verified Farmer';
-  document.getElementById('shopProducts').textContent = farmerProducts.length;
-  document.getElementById('farmerProductsGrid').innerHTML = farmerProducts.map(p=>`
-    <div class="product-card">
-      <div class="card-img">${p.emoji}</div>
-      <div class="card-body">
-        <div class="card-name">${p.name}</div>
-        <div class="card-price">GHS ${Number(p.price).toLocaleString()}<span class="card-unit"> ${p.unit}</span></div>
-        <div class="card-stock">📦 ${p.stock} available</div>
-        <div class="card-actions">
-          <button class="btn-cart" onclick="addToCart('${p.id}')">🛒 Add to Cart</button>
+// FARMER SHOP
+function viewFarmer(fid){
+  const fp=prods.filter(p=>p.fid===fid);
+  if(!fp.length)return toast('No products from this farmer');
+  const f=fp[0];
+  document.getElementById('fshopAvatar').textContent='🧑‍🌾';
+  document.getElementById('fshopName').textContent=f.farmer;
+  document.getElementById('fshopLoc').textContent='📍 '+f.loc;
+  document.getElementById('fshopCount').textContent=fp.length;
+  document.getElementById('fshopGrid').innerHTML=fp.map(p=>`
+    <div class="pcard">
+      <div class="pcard-img">${p.emoji}</div>
+      <div class="pcard-body">
+        <div class="pcard-name">${p.name}</div>
+        <div class="pcard-price">GHS ${Number(p.price).toLocaleString()}<span class="pcard-unit"> ${p.unit}</span></div>
+        <div class="pcard-stock">📦 ${p.stock} available</div>
+        <div class="pcard-actions">
+          <button class="btn-add" onclick="addCart('${p.id}')">🛒 Add to Cart</button>
         </div>
       </div>
     </div>`).join('');
-  document.getElementById('mainShop').style.display='none';
+  document.getElementById('shopMain').style.display='none';
   document.getElementById('farmerShopPage').style.display='block';
 }
+function backToShop(){document.getElementById('shopMain').style.display='block';document.getElementById('farmerShopPage').style.display='none';}
+function contactFarmerMsg(){goTab('messages',document.querySelectorAll('.bnav-btn')[3]);toast('Start a conversation with this farmer');}
 
-function backToShop(){ document.getElementById('mainShop').style.display='block'; document.getElementById('farmerShopPage').style.display='none'; }
+// SELL
+function toggleForm(){document.getElementById('prodForm').classList.toggle('open');}
 
-function contactFarmer(){
-  switchTab('messages', document.querySelectorAll('.nav-btn')[3]);
-  showNotif('Open a conversation to contact this farmer');
-}
-
-// SELL (Farmer posting products)
-function toggleProductForm(){ document.getElementById('productForm').classList.toggle('show'); }
-
-async function postProduct() {
-  if(!currentUser) return showNotif('Please login first');
-  const name = document.getElementById('pName').value;
-  const price = document.getElementById('pPrice').value;
-  if(!name||!price) return showNotif('Please fill in product name and price');
-  const emoji = document.getElementById('pEmoji').value;
-  const {error} = await sb.from('listings').insert({
-    user_id: currentUser.id,
-    name,
-    category: document.getElementById('pCategory').value,
-    price: parseFloat(price),
-    unit: document.getElementById('pUnit').value,
-    stock: parseInt(document.getElementById('pStock').value)||0,
-    location: currentProfile?.location||'Ghana',
-    description: 'EMOJI:'+emoji+'|'+document.getElementById('pDesc').value
+async function postListing(){
+  if(!user)return toast('Please login first');
+  const name=document.getElementById('pName').value;
+  const price=document.getElementById('pPrice').value;
+  if(!name||!price)return toast('Please enter product name and price');
+  const emoji=document.getElementById('pEmoji').value;
+  const desc=document.getElementById('pDesc').value;
+  const {error}=await sb.from('listings').insert({
+    user_id:user.id,name,
+    category:document.getElementById('pCat').value,
+    price:parseFloat(price),
+    unit:document.getElementById('pUnit').value,
+    stock:parseInt(document.getElementById('pStock').value)||0,
+    location:profile?.location||'Ghana',
+    description:'EMO:'+emoji+'|'+desc
   });
-  if(error){ showNotif('Error posting product'); return; }
-  showNotif('✅ Product posted successfully!');
-  document.getElementById('productForm').classList.remove('show');
-  document.getElementById('pName').value='';
-  document.getElementById('pPrice').value='';
-  document.getElementById('pStock').value='';
-  document.getElementById('pUnit').value='';
-  document.getElementById('pDesc').value='';
-  loadProducts();
-  loadMyProducts();
+  if(error){toast('Error posting product');return;}
+  toast('✅ Product posted!');
+  document.getElementById('prodForm').classList.remove('open');
+  ['pName','pPrice','pStock','pUnit','pDesc'].forEach(id=>document.getElementById(id).value='');
+  await loadProds();
+  loadMyListings();
 }
 
-async function loadMyProducts() {
-  if(!currentUser) return;
-  const {data} = await sb.from('listings').select('*').eq('user_id',currentUser.id).order('created_at',{ascending:false});
-  const el = document.getElementById('myProductsList');
-  if(!data||!data.length){ el.innerHTML='<div class="empty-state"><div class="empty-icon">📦</div><p>No products yet. Add your first product!</p></div>'; return; }
-  el.innerHTML = data.map(p=>`
-    <div class="my-product-card">
-      <div class="my-product-emoji">${p.description&&p.description.startsWith('EMOJI:')?p.description.split('|')[0].replace('EMOJI:',''):'🌿'}</div>
-      <div class="my-product-info">
-        <div class="my-product-name">${p.name}</div>
-        <div class="my-product-price">GHS ${Number(p.price).toLocaleString()} ${p.unit||''}</div>
-        <div class="my-product-stock">📦 ${p.stock||0} units · ${p.category||'General'}</div>
+async function loadMyListings(){
+  if(!user)return;
+  const {data}=await sb.from('listings').select('*').eq('user_id',user.id).order('created_at',{ascending:false});
+  const el=document.getElementById('myListings');
+  if(!data||!data.length){el.innerHTML='<div style="text-align:center;padding:30px;color:var(--soft)"><div style="font-size:40px;margin-bottom:10px">📦</div><p>No products yet. Add your first product above!</p></div>';return;}
+  el.innerHTML=data.map(p=>`
+    <div class="my-listing">
+      <div class="my-listing-ico">${p.description&&p.description.startsWith('EMO:')?p.description.split('|')[0].replace('EMO:',''):'🌿'}</div>
+      <div class="my-listing-info">
+        <div class="my-listing-name">${p.name}</div>
+        <div class="my-listing-price">GHS ${Number(p.price).toLocaleString()} ${p.unit||''}</div>
+        <div class="my-listing-meta">📦 ${p.stock||0} units · ${p.category||'General'}</div>
       </div>
-      <button class="delete-btn" onclick="deleteProduct(${p.id})">🗑️</button>
+      <button class="del-btn" onclick="delListing(${p.id})">🗑️</button>
     </div>`).join('');
 }
 
-async function deleteProduct(id){
+async function delListing(id){
   await sb.from('listings').delete().eq('id',id);
-  showNotif('Product removed');
-  loadMyProducts(); loadProducts();
+  toast('Product removed');
+  loadMyListings();loadProds();
 }
 
 // CART
-function addToCart(productId) {
-  const product = allProducts.find(p=>String(p.id)===String(productId));
-  if(!product) return;
-  const ex = cart.find(c=>String(c.id)===String(productId));
-  if(ex) ex.qty++;
-  else cart.push({...product,qty:1});
-  updateCartBadge();
-  renderCart();
-  showNotif('✓ '+product.name+' added to cart');
+function addCart(pid){
+  const p=prods.find(x=>String(x.id)===String(pid));
+  if(!p)return;
+  const ex=cart.find(c=>String(c.id)===String(pid));
+  if(ex)ex.qty++;else cart.push({...p,qty:1});
+  updateBadge();renderCart();
+  toast('✓ '+p.name+' added to cart');
 }
-
-function updateCartBadge(){
-  const badge=document.getElementById('cartBadge');
-  badge.style.display=cart.length?'block':'none';
-  badge.textContent=cart.length;
-}
+function updateBadge(){const b=document.getElementById('cartBadge');b.style.display=cart.length?'block':'none';b.textContent=cart.length;}
+function changeQty(id,d){const i=cart.find(c=>String(c.id)===String(id));if(i){i.qty=Math.max(1,i.qty+d);updateBadge();renderCart();}}
+function rmCart(id){cart=cart.filter(c=>String(c.id)!==String(id));updateBadge();renderCart();}
 
 function renderCart(){
-  const itemsEl=document.getElementById('cartItems');
-  const checkoutEl=document.getElementById('cartCheckout');
-  if(!cart.length){ itemsEl.innerHTML='<div class="empty-state"><div class="empty-icon">🛒</div><p>Your cart is empty</p></div>'; checkoutEl.innerHTML=''; return; }
-  itemsEl.innerHTML=cart.map(i=>`
-    <div class="cart-item">
-      <div class="cart-emoji">${i.emoji}</div>
-      <div class="cart-info">
-        <div class="cart-name">${i.name}</div>
-        <div class="cart-farmer">🧑‍🌾 ${i.farmer_name}</div>
-        <div class="cart-price">GHS ${(Number(i.price)*i.qty).toLocaleString()}</div>
+  const rows=document.getElementById('cartRows'),sum=document.getElementById('cartSummary');
+  if(!cart.length){rows.innerHTML='<div style="text-align:center;padding:40px;color:var(--soft)"><div style="font-size:48px;margin-bottom:12px">🛒</div><p>Your cart is empty</p></div>';sum.innerHTML='';return;}
+  rows.innerHTML=cart.map(i=>`
+    <div class="cart-item-row">
+      <div class="citem-ico">${i.emoji}</div>
+      <div class="citem-info">
+        <div class="citem-name">${i.name}</div>
+        <div class="citem-farmer">🧑‍🌾 ${i.farmer}</div>
+        <div class="citem-price">GHS ${(Number(i.price)*i.qty).toLocaleString()}</div>
       </div>
       <div>
-        <div class="qty-controls">
-          <button class="qty-btn" onclick="changeQty('${i.id}',-1)">−</button>
-          <span class="qty-num">${i.qty}</span>
-          <button class="qty-btn" onclick="changeQty('${i.id}',1)">+</button>
+        <div class="qty-row">
+          <button class="qty-b" onclick="changeQty('${i.id}',-1)">−</button>
+          <span class="qty-n">${i.qty}</span>
+          <button class="qty-b" onclick="changeQty('${i.id}',1)">+</button>
         </div>
-        <button class="remove-btn" onclick="removeFromCart('${i.id}')">✕</button>
+        <button class="rm-btn" onclick="rmCart('${i.id}')">✕</button>
       </div>
     </div>`).join('');
   const total=cart.reduce((s,i)=>s+Number(i.price)*i.qty,0);
-  checkoutEl.innerHTML=`
-    <div class="checkout-box">
+  sum.innerHTML=`
+    <div class="checkout-card">
       <div class="checkout-title">Order Summary</div>
       ${cart.map(i=>`<div class="checkout-row"><span>${i.name} ×${i.qty}</span><span>GHS ${(Number(i.price)*i.qty).toLocaleString()}</span></div>`).join('')}
       <div class="checkout-total"><span>Total</span><span>GHS ${total.toLocaleString()}</span></div>
@@ -703,126 +758,103 @@ function renderCart(){
     </div>`;
 }
 
-function changeQty(id,d){ const item=cart.find(c=>String(c.id)===String(id)); if(item){ item.qty=Math.max(1,item.qty+d); updateCartBadge(); renderCart(); }}
-function removeFromCart(id){ cart=cart.filter(c=>String(c.id)!==String(id)); updateCartBadge(); renderCart(); }
-
-// MOMO PAYMENT
+// MOMO
 function openMomo(total){
-  orderCounter++;
-  const ref='AGT-'+orderCounter;
-  document.getElementById('momoAmount').textContent='GHS '+total.toLocaleString();
-  document.getElementById('momoAmountStep').textContent='GHS '+total.toLocaleString();
+  ordCount++;
+  const ref='AGT-'+ordCount;
+  const fmt='GHS '+total.toLocaleString();
+  document.getElementById('momoAmt').textContent=fmt;
+  document.getElementById('momoAmt2').textContent=fmt;
   document.getElementById('momoRef').textContent=ref;
-  document.getElementById('momoModal').classList.add('show');
+  document.getElementById('momoModal').classList.add('open');
 }
-function closeMomo(){ document.getElementById('momoModal').classList.remove('show'); }
-function confirmMomoPayment(){
-  closeMomo();
-  saveOrder();
-  cart=[];
-  updateCartBadge();
-  renderCart();
-  showNotif('✅ Order placed! Payment pending confirmation');
-  loadOrders();
-}
-
-async function saveOrder(){
-  // Save order to Supabase orders table if it exists, otherwise just show success
-  showNotif('✅ Order confirmed! Farmer will contact you');
+function closeMomo(){document.getElementById('momoModal').classList.remove('open');}
+function confirmPayment(){
+  closeMomo();cart=[];updateBadge();renderCart();
+  toast('✅ Order confirmed! The farmer will contact you shortly');
+  renderOrders();
 }
 
 // ORDERS
-const SAMPLE_ORDERS=[
-  {id:'#AGT-2041',item:'White Maize',qty:'10 tonnes',total:'GHS 2,850',status:'confirmed',date:'Mar 10, 2026',farmer:'Kofi Farms Co.',phone:'0244123456'},
-  {id:'#AGT-2038',item:'Groundnuts',qty:'5 tonnes',total:'GHS 2,050',status:'delivered',date:'Mar 6, 2026',farmer:'Savannah Coop',phone:'0244678901'},
-];
-
-function loadOrders(){
-  document.getElementById('buyingOrders').innerHTML=SAMPLE_ORDERS.map(o=>`
-    <div class="order-card">
-      <div class="order-header"><span class="order-id">${o.id}</span><span class="status-pill status-${o.status}">${o.status.charAt(0).toUpperCase()+o.status.slice(1)}</span></div>
-      <div class="order-row"><span>Product</span><span>${o.item}</span></div>
-      <div class="order-row"><span>Quantity</span><span>${o.qty}</span></div>
-      <div class="order-row"><span>Total</span><span>${o.total}</span></div>
-      <div class="order-row"><span>Farmer</span><span>${o.farmer}</span></div>
-      <div class="order-row"><span>Date</span><span>${o.date}</span></div>
-      <div class="order-actions">
-        <button class="momo-btn" onclick="callFarmer('${o.phone}')">📞 Call Farmer</button>
-        <button class="confirm-btn" onclick="showNotif('Order tracked successfully')">📍 Track</button>
-      </div>
-    </div>`).join('');
-  document.getElementById('sellingOrders').innerHTML='<div class="empty-state"><div class="empty-icon">📦</div><p>No sales orders yet. Share your shop to get buyers!</p></div>';
+function renderOrders(){
+  const buy=document.getElementById('buyOrders');
+  const sell=document.getElementById('sellOrders');
+  buy.innerHTML=`<div style="text-align:center;padding:40px;color:var(--soft)"><div style="font-size:48px;margin-bottom:12px">📦</div><p style="font-weight:700;font-size:15px;color:var(--dark);margin-bottom:8px">No Orders Yet</p><p>Browse the shop and place your first order!</p></div>`;
+  sell.innerHTML=`<div style="text-align:center;padding:40px;color:var(--soft)"><div style="font-size:48px;margin-bottom:12px">🌾</div><p style="font-weight:700;font-size:15px;color:var(--dark);margin-bottom:8px">No Sales Yet</p><p>Share your shop link with buyers to get orders!</p></div>`;
 }
-
-function callFarmer(phone){ showNotif('Calling '+phone+'...'); window.location.href='tel:'+phone; }
-
-function switchOrderTab(tab,btn){
-  document.querySelectorAll('.orders-tab').forEach(t=>t.classList.remove('active'));
-  btn.classList.add('active');
-  document.getElementById('buyingOrders').style.display=tab==='buying'?'block':'none';
-  document.getElementById('sellingOrders').style.display=tab==='selling'?'block':'none';
+function switchOrdTab(t,btn){
+  document.querySelectorAll('.order-tab').forEach(b=>b.classList.remove('active'));btn.classList.add('active');
+  document.getElementById('buyOrders').style.display=t==='buy'?'block':'none';
+  document.getElementById('sellOrders').style.display=t==='sell'?'block':'none';
 }
 
 // MESSAGES
-const CONVERSATIONS=[
-  {id:1,name:"Kofi Farms Co.",avatar:"KF",time:"10:42 AM",preview:"Hello! Maize available for bulk order",phone:"0244123456",messages:[{from:"them",text:"Hello! We have 50 tonnes of white maize available. Ready for bulk discount negotiation."},{from:"them",text:"Current price: GHS 285 per tonne. Minimum order 5 tonnes."}]},
-  {id:2,name:"Savannah Growers",avatar:"SG",time:"Yesterday",preview:"Fresh tomatoes ready for pickup",phone:"0244345678",messages:[{from:"them",text:"Our fresh tomatoes are ready for pickup. GHS 95 per crate."}]},
-  {id:3,name:"Upper East Coop",avatar:"UE",time:"Mon",preview:"Certificate of analysis available",phone:"0244567890",messages:[{from:"them",text:"We can provide a certificate of analysis for our soybean batch."}]},
+const CONVS=[
+  {id:1,name:"AgroTrade Support",av:"AT",time:"Just now",prev:"Welcome to AgroTrade! 🌿",msgs:[{from:"them",text:"Welcome to AgroTrade! 🌿 We're Ghana's agri marketplace connecting farmers and buyers directly."},{from:"them",text:"Register as a farmer to post products, or browse the shop as a buyer. How can we help you today?"}]},
 ];
-
-function loadMessages(){
-  document.getElementById('conversationList').innerHTML=CONVERSATIONS.map(c=>`
-    <div class="msg-item" onclick="openChat(${c.id})">
-      <div class="msg-avatar">${c.avatar}</div>
-      <div class="msg-info">
-        <div class="msg-name">${c.name}<span class="msg-time">${c.time}</span></div>
-        <div class="msg-preview">${c.preview}</div>
+let activeConvId=null;
+function renderMsgs(){
+  document.getElementById('convList').innerHTML=CONVS.map(c=>`
+    <div class="conv-item" onclick="openChat(${c.id})">
+      <div class="conv-avatar">${c.av}</div>
+      <div class="conv-info">
+        <div class="conv-name">${c.name}<span class="conv-time">${c.time}</span></div>
+        <div class="conv-prev">${c.prev}</div>
       </div>
-      <div class="unread-dot"></div>
+      <div class="unread"></div>
+    </div>`).join('');
+}
+function openChat(id){
+  activeConv=CONVS.find(c=>c.id===id);
+  document.getElementById('msgListView').style.display='none';
+  document.getElementById('chatView').style.display='block';
+  document.getElementById('chatAv').textContent=activeConv.av;
+  document.getElementById('chatNm').textContent=activeConv.name;
+  renderBubbles();
+}
+function renderBubbles(){const el=document.getElementById('chatMsgs');el.innerHTML=activeConv.msgs.map(m=>`<div class="bubble ${m.from}">${m.text}</div>`).join('');el.scrollTop=el.scrollHeight;}
+function backToMsgs(){document.getElementById('msgListView').style.display='block';document.getElementById('chatView').style.display='none';}
+function sendMsg(){
+  const inp=document.getElementById('chatInp');if(!inp.value.trim())return;
+  activeConv.msgs.push({from:'me',text:inp.value});inp.value='';renderBubbles();
+  setTimeout(()=>{activeConv.msgs.push({from:'them',text:"Thanks for your message! Our team will get back to you shortly. 🌿"});renderBubbles();},1000);
+}
+
+// PRICES — from real data
+function renderPrices(items){
+  const el=document.getElementById('priceList');
+  if(!items||!items.length){
+    el.innerHTML=`<div style="text-align:center;padding:40px;color:var(--soft)"><div style="font-size:48px;margin-bottom:12px">📈</div><p style="font-weight:700;font-size:15px;color:var(--dark);margin-bottom:8px">No Price Data Yet</p><p>Prices will appear here once farmers post their products on AgroTrade.</p></div>`;
+    return;
+  }
+  el.innerHTML=items.map(p=>`
+    <div class="price-card">
+      <div class="price-ico">${p.emoji}</div>
+      <div class="price-info">
+        <div class="price-name">${p.name}</div>
+        <div class="price-loc">📍 ${p.loc} · ${p.farmer}</div>
+      </div>
+      <div style="text-align:right">
+        <div class="price-val">GHS ${Number(p.price).toLocaleString()}</div>
+        <div class="price-unit">${p.unit}</div>
+        <span class="price-change pc-up">✅ Live</span>
+      </div>
     </div>`).join('');
 }
 
-function openChat(id){
-  activeConv=CONVERSATIONS.find(c=>c.id===id);
-  document.getElementById('msgListView').style.display='none';
-  document.getElementById('chatView').style.display='block';
-  document.getElementById('chatAvatar').textContent=activeConv.avatar;
-  document.getElementById('chatName').textContent=activeConv.name;
-  renderChatMessages();
-}
-
-function renderChatMessages(){
-  const el=document.getElementById('chatMessages');
-  el.innerHTML=activeConv.messages.map(m=>`<div class="bubble ${m.from}">${m.text}</div>`).join('');
-  el.scrollTop=el.scrollHeight;
-}
-
-function backToMessages(){ document.getElementById('msgListView').style.display='block'; document.getElementById('chatView').style.display='none'; }
-
-function sendMsg(){
-  const input=document.getElementById('chatInput');
-  if(!input.value.trim()) return;
-  activeConv.messages.push({from:'me',text:input.value});
-  input.value='';
-  renderChatMessages();
-  setTimeout(()=>{ activeConv.messages.push({from:'them',text:"Thank you! We'll get back to you shortly. You can also call us directly."}); renderChatMessages(); },1000);
-}
-
-// TAB
-function switchTab(name,btn){
+// TABS & NAV
+function goTab(name,btn){
   document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
-  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.bnav-btn').forEach(b=>b.classList.remove('active'));
   document.getElementById('tab-'+name).classList.add('active');
   btn.classList.add('active');
 }
 
-// NOTIF
-function showNotif(msg){ const n=document.getElementById('notif'); n.textContent=msg; n.classList.add('show'); setTimeout(()=>n.classList.remove('show'),2500); }
+// TOAST
+function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2600);}
 
 // INIT
-renderCart();
-loadOrders();
-loadMessages();
+renderCart();renderOrders();renderMsgs();renderPrices([]);
 </script>
 </body>
-  </html>
+</html>
