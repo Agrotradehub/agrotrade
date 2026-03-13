@@ -631,6 +631,7 @@
         <div class="filter-tab" onclick="setBrowseCat('dairy', this)">🥛 Dairy</div>
         <div class="filter-tab" onclick="setBrowseCat('other', this)">📦 Other</div>
       </div>
+      <div id="buyer-community-bar" style="display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap"></div>
       <div id="browse-grid" class="products-grid"></div>
       <div id="browse-empty" class="empty-state hidden">
         <svg viewBox="0 0 24 24"><path d="M20 13c0 5-3.5 7.5-8 8.5C7.5 20.5 4 18 4 13V6l8-3 8 3v7z"/></svg>
@@ -671,6 +672,7 @@
         </div>
       </div>
       <div class="stats-grid" id="farmer-stats"></div>
+      <div class="card" id="farmer-community-stats" style="padding:16px;margin-bottom:24px"></div>
       <div class="section-title">Recent Orders</div>
       <div id="farmer-recent-orders" class="orders-list"></div>
     </div>
@@ -1330,6 +1332,23 @@ function setBrowseCat(cat, el) {
 }
 
 function renderBrowse() {
+  // Update community bar for buyers
+  const buyerBar = document.getElementById('buyer-community-bar');
+  if (buyerBar) {
+    const allUsers = DB.getUsers();
+    const totalFarmers = allUsers.filter(u => u.role === 'farmer').length;
+    const totalBuyers = allUsers.filter(u => u.role === 'buyer').length;
+    const totalProducts = DB.getProducts().length;
+    buyerBar.innerHTML = `
+      <div style="display:flex;gap:8px;flex-wrap:wrap;width:100%">
+        <div style="background:var(--green-pale);border-radius:var(--radius-full);padding:6px 14px;font-size:12px;font-weight:700;color:var(--green-dark)">🌍 ${formatStatNum(DB._visitorCount||0)} Visitors</div>
+        <div style="background:var(--amber-light);border-radius:var(--radius-full);padding:6px 14px;font-size:12px;font-weight:700;color:var(--amber-dark)">🌾 ${totalFarmers} Farmers</div>
+        <div style="background:var(--blue-light);border-radius:var(--radius-full);padding:6px 14px;font-size:12px;font-weight:700;color:var(--blue)">🛒 ${totalBuyers} Buyers</div>
+        <div style="background:var(--green-pale);border-radius:var(--radius-full);padding:6px 14px;font-size:12px;font-weight:700;color:var(--green-dark)">📦 ${totalProducts} Products</div>
+      </div>
+    `;
+  }
+
   const search = (document.getElementById('browse-search')?.value || '').toLowerCase();
   let products = DB.getProducts();
 
@@ -1577,10 +1596,42 @@ function renderFarmerDashboard() {
       <div><div class="stat-value">${pendingOrders.length}</div><div class="stat-label">Pending Orders</div></div>
     </div>
     <div class="stat-card animate-in" style="animation-delay:0.15s">
-      <div class="stat-icon stat-icon-blue"><svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>
+      <div class="stat-icon stat-icon-blue"><svg viewBox="0 0 24 24"><text x="12" y="17" text-anchor="middle" font-size="14" font-weight="bold" fill="currentColor">₵</text></svg></div>
       <div><div class="stat-value">GHS ${totalRevenue.toLocaleString()}</div><div class="stat-label">Revenue Earned</div></div>
     </div>
   `;
+
+  // Community stats
+  const allUsers = DB.getUsers();
+  const totalFarmers = allUsers.filter(u => u.role === 'farmer').length;
+  const totalBuyers = allUsers.filter(u => u.role === 'buyer').length;
+  const totalProducts = DB.getProducts().length;
+  const visitors = DB._visitorCount || 0;
+
+  const communityDiv = document.getElementById('farmer-community-stats');
+  if (communityDiv) {
+    communityDiv.innerHTML = `
+      <div style="font-family:var(--font-display);font-size:14px;font-weight:700;color:var(--gray-700);margin-bottom:12px">🌍 AgroTrade Community</div>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px">
+        <div style="background:var(--green-pale);border-radius:var(--radius-sm);padding:12px;text-align:center">
+          <div style="font-family:var(--font-display);font-size:22px;font-weight:800;color:var(--green-dark)">${formatStatNum(DB._visitorCount||0)}</div>
+          <div style="font-size:10px;color:var(--gray-500);font-weight:600;text-transform:uppercase;margin-top:2px">Visitors</div>
+        </div>
+        <div style="background:var(--amber-light);border-radius:var(--radius-sm);padding:12px;text-align:center">
+          <div style="font-family:var(--font-display);font-size:22px;font-weight:800;color:var(--amber-dark)">${totalFarmers}</div>
+          <div style="font-size:10px;color:var(--gray-500);font-weight:600;text-transform:uppercase;margin-top:2px">Farmers</div>
+        </div>
+        <div style="background:var(--blue-light);border-radius:var(--radius-sm);padding:12px;text-align:center">
+          <div style="font-family:var(--font-display);font-size:22px;font-weight:800;color:var(--blue)">${totalBuyers}</div>
+          <div style="font-size:10px;color:var(--gray-500);font-weight:600;text-transform:uppercase;margin-top:2px">Buyers</div>
+        </div>
+        <div style="background:var(--green-pale);border-radius:var(--radius-sm);padding:12px;text-align:center">
+          <div style="font-family:var(--font-display);font-size:22px;font-weight:800;color:var(--green-dark)">${totalProducts}</div>
+          <div style="font-size:10px;color:var(--gray-500);font-weight:600;text-transform:uppercase;margin-top:2px">Products</div>
+        </div>
+      </div>
+    `;
+  }
 
   const recentOrders = myOrders.sort((a,b)=>b.createdAt-a.createdAt).slice(0,5);
   const recentDiv = document.getElementById('farmer-recent-orders');
@@ -2087,12 +2138,12 @@ function renderProfile() {
         </div>
         ${u.role==='farmer' ? `
         <div class="stat-card" style="box-shadow:none;border:1px solid var(--gray-100)">
-          <div class="stat-icon stat-icon-blue"><svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>
+          <div class="stat-icon stat-icon-blue"><svg viewBox="0 0 24 24"><text x="12" y="17" text-anchor="middle" font-size="14" font-weight="bold" fill="currentColor">₵</text></svg></div>
           <div><div class="stat-value">GHS ${myOrders.filter(o=>o.status==='completed').reduce((s,o)=>s+o.total,0).toLocaleString()}</div><div class="stat-label">Total Revenue</div></div>
         </div>
         ` : `
         <div class="stat-card" style="box-shadow:none;border:1px solid var(--gray-100)">
-          <div class="stat-icon stat-icon-blue"><svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>
+          <div class="stat-icon stat-icon-blue"><svg viewBox="0 0 24 24"><text x="12" y="17" text-anchor="middle" font-size="14" font-weight="bold" fill="currentColor">₵</text></svg></div>
           <div><div class="stat-value">GHS ${myOrders.reduce((s,o)=>s+o.total,0).toLocaleString()}</div><div class="stat-label">Total Spent</div></div>
         </div>
         `}
@@ -2167,8 +2218,11 @@ function trackVisitAndLoadStats() {
 
   // Listen to stats in realtime and update the auth screen
   db.ref('stats/visitors').on('value', s => {
+    DB._visitorCount = s.val() || 0;
     const el = document.getElementById('stat-visitors');
-    if (el) el.textContent = formatStatNum(s.val() || 0);
+    if (el) el.textContent = formatStatNum(DB._visitorCount);
+    // Refresh dashboard stats if visible
+    renderCurrentPage();
   });
 
   // Count farmers and buyers from users
