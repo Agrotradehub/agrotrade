@@ -993,6 +993,7 @@ let browseCatFilter = 'all';
 let buyerOrderFilter = 'all';
 let farmerOrderFilter = 'all';
 let activeChatWith = null;
+let activeChatWithName = null;
 let selectedProductForOrder = null;
 let editingProductId = null;
 let chatPollInterval = null;
@@ -1159,6 +1160,7 @@ function logout() {
   clearInterval(chatPollInterval);
   currentUser = null;
   activeChatWith = null;
+  activeChatWithName = null;
   DB.clearCurrentUser();
   document.getElementById('app').classList.add('hidden');
   document.getElementById('auth-screen').style.display = '';
@@ -1392,7 +1394,7 @@ function openProductDetail(productId) {
           <svg style="width:16px;height:16px;stroke:white;fill:none;stroke-width:2" viewBox="0 0 24 24"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
           Order Now
         </button>
-        <button class="btn btn-outline flex-1" onclick="closeModal('modal-product');startChatWithFarmer('${farmer.id}')">
+        <button class="btn btn-outline flex-1" onclick="closeModal('modal-product');startChatWithFarmer('${farmer.id}','${farmer.name}')">
           <svg style="width:16px;height:16px;stroke:var(--green-mid);fill:none;stroke-width:2" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
           Message
         </button>
@@ -1748,7 +1750,7 @@ function buildOrderCard(order, viewAs) {
       ${viewAs==='buyer' && order.status==='pending' ? `
         <button class="btn btn-danger btn-sm" onclick="updateOrderStatus('${order.id}','cancelled')">Cancel</button>
       ` : ''}
-      ${viewAs==='buyer' ? `<button class="btn btn-outline btn-sm" onclick="startChatWithFarmer('${order.farmerId}')">Message Farmer</button>` : ''}
+      ${viewAs==='buyer' ? `<button class="btn btn-outline btn-sm" onclick="startChatWithFarmer('${order.farmerId}','${order.farmerName}')">Message Farmer</button>` : ''}
     </div>
   `;
   return card;
@@ -1861,24 +1863,28 @@ function renderConversations() {
   });
 }
 
-function startChatWithFarmer(farmerId) {
+function startChatWithFarmer(farmerId, farmerName) {
   showPage('messages');
   const farmer = DB.getUserById(farmerId);
-  if (farmer) openConversation(farmerId, farmer.name);
+  const name = (farmer && farmer.name) ? farmer.name : (farmerName || 'Farmer');
+  openConversation(farmerId, name);
 }
 
 function openConversation(otherId, otherName) {
   activeChatWith = otherId;
+  activeChatWithName = otherName;
   document.getElementById('chat-empty-state').style.display = 'none';
   const chatActive = document.getElementById('chat-active');
   chatActive.classList.remove('hidden');
   chatActive.style.display = 'flex';
 
   const otherUser = DB.getUserById(otherId);
+  const displayName = otherName || (otherUser && otherUser.name) || 'User';
+  const initials = displayName.split(' ').map(n=>n[0]).join('').toUpperCase().slice(0,2);
   document.getElementById('chat-header').innerHTML = `
-    <div style="width:36px;height:36px;border-radius:50%;background:var(--green-pale);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;color:var(--green-dark);flex-shrink:0">${otherName.split(' ').map(n=>n[0]).join('').toUpperCase().slice(0,2)}</div>
+    <div style="width:36px;height:36px;border-radius:50%;background:var(--green-pale);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;color:var(--green-dark);flex-shrink:0">${initials}</div>
     <div>
-      <div style="font-weight:700;color:var(--gray-900);font-size:15px">${escHtml(otherName)}</div>
+      <div style="font-weight:700;color:var(--gray-900);font-size:15px">${escHtml(displayName)}</div>
       ${otherUser ? `<div style="font-size:12px;color:var(--gray-500)">${escHtml(otherUser.role)} • ${escHtml(otherUser.phone||'')}</div>` : ''}
     </div>
   `;
@@ -1917,14 +1923,14 @@ function sendMessage() {
   if (!text || !activeChatWith) return;
 
   const otherUser = DB.getUserById(activeChatWith);
-  if (!otherUser) return;
+  const receiverName = (otherUser && otherUser.name) ? otherUser.name : (activeChatWithName || 'User');
 
   const msg = {
     id: DB.generateId(),
     senderId: currentUser.id,
     senderName: currentUser.name,
     receiverId: activeChatWith,
-    receiverName: otherUser.name,
+    receiverName: receiverName,
     text,
     createdAt: Date.now()
   };
