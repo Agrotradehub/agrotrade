@@ -447,6 +447,29 @@
       </div>
     </div>
 
+    <!-- TRUST STATS BAR -->
+    <div id="trust-stats" style="display:flex;justify-content:space-around;background:var(--green-xpale);border-radius:var(--radius);padding:12px 8px;margin-bottom:24px;border:1px solid var(--green-pale)">
+      <div style="text-align:center">
+        <div style="font-family:var(--font-display);font-size:20px;font-weight:800;color:var(--green-dark)" id="stat-visitors">0</div>
+        <div style="font-size:10px;color:var(--gray-500);font-weight:600;text-transform:uppercase;letter-spacing:0.5px">Visitors</div>
+      </div>
+      <div style="width:1px;background:var(--gray-200)"></div>
+      <div style="text-align:center">
+        <div style="font-family:var(--font-display);font-size:20px;font-weight:800;color:var(--green-dark)" id="stat-farmers">0</div>
+        <div style="font-size:10px;color:var(--gray-500);font-weight:600;text-transform:uppercase;letter-spacing:0.5px">Farmers</div>
+      </div>
+      <div style="width:1px;background:var(--gray-200)"></div>
+      <div style="text-align:center">
+        <div style="font-family:var(--font-display);font-size:20px;font-weight:800;color:var(--green-dark)" id="stat-buyers">0</div>
+        <div style="font-size:10px;color:var(--gray-500);font-weight:600;text-transform:uppercase;letter-spacing:0.5px">Buyers</div>
+      </div>
+      <div style="width:1px;background:var(--gray-200)"></div>
+      <div style="text-align:center">
+        <div style="font-family:var(--font-display);font-size:20px;font-weight:800;color:var(--green-dark)" id="stat-products">0</div>
+        <div style="font-size:10px;color:var(--gray-500);font-weight:600;text-transform:uppercase;letter-spacing:0.5px">Products</div>
+      </div>
+    </div>
+
     <!-- Step 1: Role Selection -->
     <div id="auth-role-step">
       <div class="auth-title">Welcome!</div>
@@ -2136,6 +2159,45 @@ function escHtml(str) {
 // INIT
 // ===================================================
 // ===================================================
+// TRUST STATS — visitors, farmers, buyers, products
+// ===================================================
+function trackVisitAndLoadStats() {
+  // Increment visitor count
+  db.ref('stats/visitors').transaction(current => (current || 0) + 1);
+
+  // Listen to stats in realtime and update the auth screen
+  db.ref('stats/visitors').on('value', s => {
+    const el = document.getElementById('stat-visitors');
+    if (el) el.textContent = formatStatNum(s.val() || 0);
+  });
+
+  // Count farmers and buyers from users
+  db.ref('users').on('value', s => {
+    const users = s.val() || {};
+    const allUsers = Object.values(users);
+    const farmers = allUsers.filter(u => u.role === 'farmer').length;
+    const buyers  = allUsers.filter(u => u.role === 'buyer').length;
+    const fel = document.getElementById('stat-farmers');
+    const bel = document.getElementById('stat-buyers');
+    if (fel) fel.textContent = formatStatNum(farmers);
+    if (bel) bel.textContent = formatStatNum(buyers);
+  });
+
+  // Count products
+  db.ref('products').on('value', s => {
+    const products = s.val() || {};
+    const count = Object.keys(products).length;
+    const pel = document.getElementById('stat-products');
+    if (pel) pel.textContent = formatStatNum(count);
+  });
+}
+
+function formatStatNum(n) {
+  if (n >= 1000) return (n / 1000).toFixed(1) + 'k';
+  return n.toString();
+}
+
+// ===================================================
 // GLOBAL renderCurrentPage helper (called by Firebase listeners)
 // ===================================================
 function renderCurrentPage() {
@@ -2170,6 +2232,9 @@ document.addEventListener('DOMContentLoaded', () => {
       <style>@keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}</style>
     </div>
   `);
+
+  // Track this visit and load trust stats for auth screen
+  trackVisitAndLoadStats();
 
   // Start Firebase realtime listeners — data is shared across ALL users
   DB.listenAll(() => {
