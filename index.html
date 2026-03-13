@@ -922,9 +922,13 @@
 // ===================================================
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getDatabase, ref, set, get, update, remove, onValue } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+import { initializeApp } from "firebase/app";
+import { getAnalytics } from "firebase/analytics";
+// TODO: Add SDKs for Firebase products that you want to use
+// https://firebase.google.com/docs/web/setup#available-libraries
 
-// ⚠️  IMPORTANT: Replace the values below with YOUR Firebase project config
-// Go to: https://console.firebase.google.com → Your Project → Project Settings → Your apps → Config
+// Your web app's Firebase configuration
+// For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
   apiKey: "AIzaSyAbvUYaTnssuyt6sjQ7DvZvzZTWoI7VQbw",
   authDomain: "agrotrade-6116c.firebaseapp.com",
@@ -934,10 +938,11 @@ const firebaseConfig = {
   appId: "1:598521022385:web:3142aedc1e28fc74da9f90",
   measurementId: "G-QG1SETVY8W"
 };
-};
 
-const firebaseApp = initializeApp(firebaseConfig);
-const db = getDatabase(firebaseApp);
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const analytics = getAnalytics(app);
+
 
 // ===================================================
 // DATA STORE  (Firebase Realtime Database — shared across all users)
