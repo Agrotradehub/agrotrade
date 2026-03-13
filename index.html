@@ -1,1117 +1,2074 @@
-<!doctype html>
-<html lang="en" class="h-full">
- <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AgroTrade Buyer</title>
-  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
-  <script src="https://cdn.jsdelivr.net/npm/lucide@0.263.0/dist/umd/lucide.min.js"></script>
-  <script src="/_sdk/element_sdk.js"></script>
-  <script src="/_sdk/data_sdk.js"></script>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&amp;family=Playfair+Display:wght@600;700&amp;display=swap" rel="stylesheet">
-  <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    html, body { height: 100%; }
-*'outline, 1px space 'solid blue:}
-    @keyframes slideUp {
-      from { opacity: 0; transform: translateY(20px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-    .animate-slide-up { animation: slideUp 0.4s ease forwards; }
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AgroTrade — Farm Direct Marketplace</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --green-dark: #0a3d0a;
+    --green-mid: #1a6b1a;
+    --green-light: #2d9e2d;
+    --green-pale: #e8f5e9;
+    --green-xpale: #f1f8f1;
+    --amber: #f59e0b;
+    --amber-dark: #d97706;
+    --amber-light: #fef3c7;
+    --red: #dc2626;
+    --red-light: #fee2e2;
+    --blue: #2563eb;
+    --blue-light: #dbeafe;
+    --white: #ffffff;
+    --gray-50: #f9fafb;
+    --gray-100: #f3f4f6;
+    --gray-200: #e5e7eb;
+    --gray-300: #d1d5db;
+    --gray-400: #9ca3af;
+    --gray-500: #6b7280;
+    --gray-600: #4b5563;
+    --gray-700: #374151;
+    --gray-800: #1f2937;
+    --gray-900: #111827;
+    --shadow-sm: 0 1px 3px rgba(0,0,0,0.08);
+    --shadow: 0 4px 16px rgba(0,0,0,0.1);
+    --shadow-lg: 0 12px 40px rgba(0,0,0,0.15);
+    --shadow-xl: 0 24px 60px rgba(0,0,0,0.2);
+    --radius: 14px;
+    --radius-sm: 8px;
+    --radius-lg: 20px;
+    --radius-full: 999px;
+    --font-display: 'Syne', sans-serif;
+    --font-body: 'DM Sans', sans-serif;
+    --transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  }
 
-    @keyframes fadeIn {
-      from { opacity: 0; }
-      to { opacity: 1; }
-    }
-    .animate-fade-in { animation: fadeIn 0.3s ease forwards; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; font-family: var(--font-body); background: var(--gray-50); color: var(--gray-800); }
 
-    @keyframes scaleIn {
-      from { opacity: 0; transform: scale(0.95); }
-      to { opacity: 1; transform: scale(1); }
-    }
-    .animate-scale-in { animation: scaleIn 0.3s ease forwards; }
+  /* ===== SCROLLBAR ===== */
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--gray-300); border-radius: 999px; }
 
-    .tab-nav { transition: all 0.3s ease; }
-    .tab-active { border-bottom: 3px solid #ffb300; }
+  /* ===== UTILITIES ===== */
+  .hidden { display: none !important; }
+  .flex { display: flex; }
+  .flex-col { flex-direction: column; }
+  .items-center { align-items: center; }
+  .items-start { align-items: flex-start; }
+  .justify-between { justify-content: space-between; }
+  .justify-center { justify-content: center; }
+  .gap-1 { gap: 6px; }
+  .gap-2 { gap: 10px; }
+  .gap-3 { gap: 14px; }
+  .gap-4 { gap: 20px; }
+  .gap-6 { gap: 28px; }
+  .w-full { width: 100%; }
+  .flex-1 { flex: 1; }
+  .text-sm { font-size: 13px; }
+  .text-xs { font-size: 11px; }
+  .font-bold { font-weight: 700; }
+  .font-semibold { font-weight: 600; }
+  .truncate { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .relative { position: relative; }
+  .absolute { position: absolute; }
+  .cursor-pointer { cursor: pointer; }
 
-    .chat-message { animation: slideUp 0.3s ease forwards; }
-    .order-card { transition: transform 0.2s ease, box-shadow 0.2s ease; }
-    .order-card:hover { transform: translateY(-2px); }
+  /* ===== BUTTONS ===== */
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+    padding: 10px 20px; border-radius: var(--radius-sm); font-family: var(--font-body);
+    font-size: 14px; font-weight: 600; border: none; cursor: pointer;
+    transition: var(--transition); user-select: none;
+  }
+  .btn:disabled { opacity: 0.6; cursor: not-allowed; }
+  .btn-primary { background: var(--green-mid); color: white; }
+  .btn-primary:hover:not(:disabled) { background: var(--green-dark); transform: translateY(-1px); box-shadow: 0 4px 12px rgba(26,107,26,0.3); }
+  .btn-amber { background: var(--amber); color: var(--green-dark); }
+  .btn-amber:hover:not(:disabled) { background: var(--amber-dark); transform: translateY(-1px); }
+  .btn-outline { background: transparent; color: var(--green-mid); border: 2px solid var(--green-mid); }
+  .btn-outline:hover:not(:disabled) { background: var(--green-pale); }
+  .btn-ghost { background: var(--gray-100); color: var(--gray-700); }
+  .btn-ghost:hover:not(:disabled) { background: var(--gray-200); }
+  .btn-danger { background: var(--red); color: white; }
+  .btn-danger:hover:not(:disabled) { background: #b91c1c; }
+  .btn-lg { padding: 14px 28px; font-size: 15px; border-radius: var(--radius); }
+  .btn-sm { padding: 6px 14px; font-size: 12px; border-radius: 6px; }
+  .btn-icon { padding: 8px; border-radius: var(--radius-sm); aspect-ratio: 1; }
 
-    .product-card { transition: all 0.3s ease; cursor: pointer; }
-    .product-card:hover { transform: translateY(-4px); box-shadow: 0 12px 24px rgba(27, 94, 32, 0.15); }
+  /* ===== FORM ELEMENTS ===== */
+  .form-group { display: flex; flex-direction: column; gap: 6px; margin-bottom: 16px; }
+  .form-label { font-size: 13px; font-weight: 600; color: var(--gray-700); }
+  .form-input {
+    padding: 11px 14px; border: 2px solid var(--gray-200); border-radius: var(--radius-sm);
+    font-family: var(--font-body); font-size: 14px; color: var(--gray-800);
+    background: white; transition: var(--transition); width: 100%;
+  }
+  .form-input:focus { outline: none; border-color: var(--green-mid); box-shadow: 0 0 0 3px rgba(26,107,26,0.1); }
+  .form-input::placeholder { color: var(--gray-400); }
+  .form-input.error { border-color: var(--red); }
+  .form-textarea { resize: vertical; min-height: 90px; }
+  .form-hint { font-size: 12px; color: var(--gray-500); }
+  .form-error { font-size: 12px; color: var(--red); font-weight: 500; }
 
-    .farmer-item { transition: all 0.2s ease; cursor: pointer; }
-    .farmer-item:hover { background: #f5f9f5; }
+  /* ===== CARDS ===== */
+  .card {
+    background: white; border-radius: var(--radius); border: 1px solid var(--gray-200);
+    box-shadow: var(--shadow-sm); transition: var(--transition);
+  }
+  .card-hover:hover { box-shadow: var(--shadow); transform: translateY(-2px); }
+  .card-body { padding: 20px; }
+  .card-header { padding: 16px 20px; border-bottom: 1px solid var(--gray-100); }
 
-    .product-image { width: 100%; height: 180px; object-fit: cover; display: block; background: linear-gradient(135deg, #c8e6c9 0%, #e8f5e9 100%); }
+  /* ===== BADGES ===== */
+  .badge {
+    display: inline-flex; align-items: center; gap: 4px;
+    padding: 3px 10px; border-radius: var(--radius-full);
+    font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;
+  }
+  .badge-green { background: var(--green-pale); color: var(--green-dark); }
+  .badge-amber { background: var(--amber-light); color: #92400e; }
+  .badge-red { background: var(--red-light); color: var(--red); }
+  .badge-blue { background: var(--blue-light); color: var(--blue); }
+  .badge-gray { background: var(--gray-100); color: var(--gray-600); }
 
-    input:focus, textarea:focus { outline: none; }
-  </style>
-  <style>body { box-sizing: border-box; }</style>
- </head>
- <body class="h-full">
-  <div id="app-wrapper" class="w-full h-full flex flex-col" style="background: linear-gradient(135deg, #f0f7f0 0%, #e8f5e9 50%, #f1f8e9 100%); font-family: 'DM Sans', sans-serif;">
-   <!-- Login Screen -->
-   <div id="login-screen" class="w-full h-full flex items-center justify-center" style="background: linear-gradient(135deg, #1b5e20 0%, #2e7d32 60%, #388e3c 100%);">
-    <!-- Role Selection Screen -->
-    <div id="role-selection" class="w-full max-w-md" style="padding: 24px;">
-     <div style="text-align: center; margin-bottom: 40px;">
-      <div style="background: #ffb300; width: 60px; height: 60px; border-radius: 14px; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px;"><i data-lucide="shopping-cart" style="color: #1b5e20; width: 32px; height: 32px;"></i>
+  /* ===== MODAL ===== */
+  .modal-overlay {
+    position: fixed; inset: 0; background: rgba(0,0,0,0.55); z-index: 100;
+    display: flex; align-items: center; justify-content: center; padding: 16px;
+    backdrop-filter: blur(4px); animation: fadeIn 0.2s ease;
+  }
+  .modal {
+    background: white; border-radius: var(--radius-lg); box-shadow: var(--shadow-xl);
+    width: 100%; max-width: 480px; max-height: 90vh; overflow-y: auto;
+    animation: slideUp 0.25s ease;
+  }
+  .modal-lg { max-width: 700px; }
+  .modal-header {
+    padding: 20px 24px 16px; border-bottom: 1px solid var(--gray-100);
+    display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0;
+    background: white; z-index: 1;
+  }
+  .modal-title { font-family: var(--font-display); font-size: 20px; font-weight: 700; color: var(--gray-900); }
+  .modal-body { padding: 24px; }
+  .modal-footer { padding: 16px 24px; border-top: 1px solid var(--gray-100); display: flex; gap: 10px; justify-content: flex-end; }
+
+  /* ===== TOAST ===== */
+  #toast-container {
+    position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+    z-index: 200; display: flex; flex-direction: column; gap: 8px; align-items: center;
+  }
+  .toast {
+    padding: 12px 20px; border-radius: var(--radius-full); font-size: 14px; font-weight: 600;
+    color: white; box-shadow: var(--shadow-lg); animation: slideUp 0.3s ease;
+    max-width: 360px; text-align: center;
+  }
+  .toast-success { background: var(--green-mid); }
+  .toast-error { background: var(--red); }
+  .toast-info { background: var(--blue); }
+
+  /* ===== ANIMATIONS ===== */
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+  @keyframes slideUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes slideIn { from { opacity: 0; transform: translateX(-16px); } to { opacity: 1; transform: translateX(0); } }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .animate-in { animation: slideUp 0.3s ease both; }
+
+  /* ===== AUTH SCREEN ===== */
+  #auth-screen {
+    min-height: 100vh; background: linear-gradient(135deg, var(--green-dark) 0%, var(--green-mid) 60%, #1a8a1a 100%);
+    display: flex; align-items: center; justify-content: center; padding: 24px;
+    position: relative; overflow: hidden;
+  }
+  #auth-screen::before {
+    content: ''; position: absolute; inset: 0;
+    background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Ccircle cx='30' cy='30' r='20'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  }
+  .auth-card {
+    background: white; border-radius: 24px; box-shadow: var(--shadow-xl);
+    width: 100%; max-width: 420px; padding: 40px; position: relative; z-index: 1;
+    animation: slideUp 0.4s ease;
+  }
+  .auth-logo { display: flex; align-items: center; gap: 12px; margin-bottom: 32px; justify-content: center; }
+  .auth-logo-icon {
+    width: 52px; height: 52px; background: linear-gradient(135deg, var(--green-mid), var(--green-dark));
+    border-radius: 14px; display: flex; align-items: center; justify-content: center;
+  }
+  .auth-logo-icon svg { width: 28px; height: 28px; fill: none; stroke: white; stroke-width: 2; }
+  .auth-logo-text { font-family: var(--font-display); font-size: 26px; font-weight: 800; color: var(--green-dark); }
+  .auth-logo-sub { font-size: 12px; color: var(--gray-500); font-weight: 500; }
+  .auth-title { font-family: var(--font-display); font-size: 22px; font-weight: 700; color: var(--gray-900); margin-bottom: 6px; }
+  .auth-subtitle { font-size: 14px; color: var(--gray-500); margin-bottom: 28px; }
+  .role-selector { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 28px; }
+  .role-btn {
+    padding: 18px 12px; border-radius: var(--radius); border: 2px solid var(--gray-200);
+    background: white; cursor: pointer; transition: var(--transition); text-align: center;
+    font-family: var(--font-body);
+  }
+  .role-btn:hover { border-color: var(--green-mid); background: var(--green-xpale); }
+  .role-btn.active { border-color: var(--green-mid); background: var(--green-pale); }
+  .role-btn svg { width: 32px; height: 32px; margin: 0 auto 8px; display: block; stroke: var(--green-mid); fill: none; stroke-width: 1.5; }
+  .role-btn.active svg { stroke: var(--green-dark); }
+  .role-btn-label { font-size: 13px; font-weight: 600; color: var(--gray-700); display: block; }
+  .role-btn.active .role-btn-label { color: var(--green-dark); }
+  .auth-divider { display: flex; align-items: center; gap: 10px; margin: 16px 0; }
+  .auth-divider span { font-size: 12px; color: var(--gray-400); white-space: nowrap; }
+  .auth-divider::before, .auth-divider::after { content: ''; flex: 1; height: 1px; background: var(--gray-200); }
+  .auth-link { font-size: 13px; color: var(--gray-500); text-align: center; margin-top: 16px; }
+  .auth-link a { color: var(--green-mid); font-weight: 600; cursor: pointer; text-decoration: none; }
+  .auth-link a:hover { text-decoration: underline; }
+
+  /* ===== APP LAYOUT ===== */
+  #app { display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
+
+  /* ===== HEADER ===== */
+  #app-header {
+    background: linear-gradient(135deg, var(--green-dark) 0%, var(--green-mid) 100%);
+    padding: 0 24px; height: 64px; display: flex; align-items: center; justify-content: space-between;
+    flex-shrink: 0; box-shadow: 0 2px 12px rgba(0,0,0,0.15); z-index: 10;
+  }
+  .header-logo { display: flex; align-items: center; gap: 10px; }
+  .header-logo-icon {
+    width: 36px; height: 36px; background: var(--amber); border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .header-logo-icon svg { width: 20px; height: 20px; stroke: var(--green-dark); fill: none; stroke-width: 2; }
+  .header-logo-text { font-family: var(--font-display); color: white; font-size: 20px; font-weight: 800; }
+  .header-nav { display: flex; align-items: center; gap: 4px; }
+  .nav-btn {
+    padding: 8px 14px; border-radius: var(--radius-sm); font-size: 13px; font-weight: 600;
+    color: rgba(255,255,255,0.7); background: transparent; border: none; cursor: pointer;
+    transition: var(--transition); display: flex; align-items: center; gap: 6px; font-family: var(--font-body);
+  }
+  .nav-btn:hover { color: white; background: rgba(255,255,255,0.1); }
+  .nav-btn.active { color: white; background: rgba(255,255,255,0.15); border-bottom: 2px solid var(--amber); }
+  .nav-btn svg { width: 16px; height: 16px; stroke: currentColor; fill: none; stroke-width: 2; }
+  .header-right { display: flex; align-items: center; gap: 12px; }
+  .user-pill {
+    display: flex; align-items: center; gap: 8px; background: rgba(255,255,255,0.12);
+    border-radius: var(--radius-full); padding: 6px 12px; cursor: pointer;
+  }
+  .user-avatar {
+    width: 28px; height: 28px; border-radius: 50%; background: var(--amber);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px; font-weight: 700; color: var(--green-dark);
+  }
+  .user-name { font-size: 13px; font-weight: 600; color: white; }
+  .user-role { font-size: 10px; color: rgba(255,255,255,0.6); text-transform: uppercase; letter-spacing: 0.5px; }
+  .logout-btn { color: rgba(255,255,255,0.7); background: rgba(255,255,255,0.1); border: none; cursor: pointer; padding: 8px; border-radius: var(--radius-sm); transition: var(--transition); }
+  .logout-btn:hover { color: white; background: rgba(255,255,255,0.2); }
+  .logout-btn svg { width: 16px; height: 16px; stroke: currentColor; fill: none; stroke-width: 2; display: block; }
+
+  /* ===== MAIN AREA ===== */
+  #app-main { flex: 1; overflow: hidden; display: flex; flex-direction: column; }
+  .page { flex: 1; overflow-y: auto; padding: 24px; display: none; }
+  .page.active { display: block; }
+  .page-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; }
+  .page-title { font-family: var(--font-display); font-size: 24px; font-weight: 700; color: var(--gray-900); }
+  .page-subtitle { font-size: 14px; color: var(--gray-500); margin-top: 2px; }
+
+  /* ===== STATS CARDS ===== */
+  .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px; margin-bottom: 28px; }
+  .stat-card {
+    background: white; border-radius: var(--radius); padding: 20px; border: 1px solid var(--gray-200);
+    display: flex; align-items: center; gap: 14px; box-shadow: var(--shadow-sm);
+  }
+  .stat-icon { width: 48px; height: 48px; border-radius: var(--radius-sm); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .stat-icon svg { width: 22px; height: 22px; stroke: currentColor; fill: none; stroke-width: 2; }
+  .stat-icon-green { background: var(--green-pale); color: var(--green-mid); }
+  .stat-icon-amber { background: var(--amber-light); color: var(--amber-dark); }
+  .stat-icon-blue { background: var(--blue-light); color: var(--blue); }
+  .stat-icon-red { background: var(--red-light); color: var(--red); }
+  .stat-value { font-family: var(--font-display); font-size: 24px; font-weight: 800; color: var(--gray-900); line-height: 1; }
+  .stat-label { font-size: 12px; color: var(--gray-500); font-weight: 500; margin-top: 2px; }
+
+  /* ===== SEARCH BAR ===== */
+  .search-bar { position: relative; flex: 1; }
+  .search-bar input { padding-left: 40px; }
+  .search-bar svg { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); width: 16px; height: 16px; stroke: var(--gray-400); fill: none; stroke-width: 2; pointer-events: none; }
+
+  /* ===== PRODUCT GRID ===== */
+  .products-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 18px; }
+  .product-card {
+    background: white; border-radius: var(--radius); border: 1px solid var(--gray-200);
+    overflow: hidden; cursor: pointer; transition: var(--transition); box-shadow: var(--shadow-sm);
+  }
+  .product-card:hover { box-shadow: var(--shadow); transform: translateY(-3px); }
+  .product-img {
+    width: 100%; height: 180px; object-fit: cover;
+    background: linear-gradient(135deg, var(--green-pale), var(--green-xpale));
+    display: block;
+  }
+  .product-img-placeholder {
+    width: 100%; height: 180px; background: linear-gradient(135deg, var(--green-pale), #d1e7d1);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .product-img-placeholder svg { width: 48px; height: 48px; stroke: var(--green-mid); fill: none; stroke-width: 1.5; opacity: 0.5; }
+  .product-body { padding: 14px; }
+  .product-name { font-weight: 700; font-size: 15px; color: var(--gray-900); margin-bottom: 4px; }
+  .product-farmer { font-size: 12px; color: var(--green-mid); font-weight: 500; margin-bottom: 10px; }
+  .product-meta { display: flex; align-items: center; justify-content: space-between; }
+  .product-price { font-family: var(--font-display); font-size: 18px; font-weight: 700; color: var(--green-dark); }
+  .product-qty { font-size: 12px; color: var(--gray-500); background: var(--gray-100); padding: 3px 8px; border-radius: var(--radius-full); }
+
+  /* ===== ORDERS TABLE ===== */
+  .orders-list { display: flex; flex-direction: column; gap: 12px; }
+  .order-card { background: white; border-radius: var(--radius); border: 1px solid var(--gray-200); padding: 16px 20px; box-shadow: var(--shadow-sm); }
+  .order-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+  .order-id { font-size: 12px; color: var(--gray-400); font-weight: 600; }
+  .order-details-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 10px; }
+  .order-detail { background: var(--gray-50); border-radius: var(--radius-sm); padding: 8px 12px; }
+  .order-detail-label { font-size: 10px; color: var(--gray-500); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 2px; }
+  .order-detail-value { font-size: 14px; font-weight: 600; color: var(--gray-800); }
+
+  /* ===== MESSAGES ===== */
+  #page-messages { display: none; flex-direction: column; padding: 0; overflow: hidden; height: 100%; }
+  #page-messages.active { display: flex; }
+  .messages-layout { display: flex; flex: 1; overflow: hidden; height: 100%; }
+  .conversations-panel {
+    width: 300px; flex-shrink: 0; border-right: 1px solid var(--gray-200);
+    background: white; display: flex; flex-direction: column; overflow: hidden;
+  }
+  .conversations-header { padding: 16px; border-bottom: 1px solid var(--gray-100); }
+  .conversations-header h3 { font-family: var(--font-display); font-size: 16px; font-weight: 700; color: var(--gray-900); }
+  .conversations-list { flex: 1; overflow-y: auto; }
+  .conv-item {
+    padding: 14px 16px; cursor: pointer; transition: var(--transition);
+    border-bottom: 1px solid var(--gray-50); display: flex; align-items: center; gap: 12px;
+  }
+  .conv-item:hover { background: var(--gray-50); }
+  .conv-item.active { background: var(--green-xpale); border-left: 3px solid var(--green-mid); }
+  .conv-avatar {
+    width: 40px; height: 40px; border-radius: 50%; background: var(--green-pale);
+    display: flex; align-items: center; justify-content: center; font-weight: 700;
+    font-size: 14px; color: var(--green-dark); flex-shrink: 0;
+  }
+  .conv-name { font-size: 14px; font-weight: 600; color: var(--gray-900); }
+  .conv-last { font-size: 12px; color: var(--gray-400); margin-top: 2px; }
+  .chat-panel { flex: 1; display: flex; flex-direction: column; overflow: hidden; background: var(--gray-50); }
+  .chat-header { padding: 14px 20px; background: white; border-bottom: 1px solid var(--gray-200); display: flex; align-items: center; gap: 12px; }
+  .chat-messages { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 10px; }
+  .chat-empty { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; color: var(--gray-400); }
+  .chat-empty svg { width: 52px; height: 52px; stroke: var(--gray-300); fill: none; stroke-width: 1.5; }
+  .msg-bubble { max-width: 70%; padding: 10px 14px; border-radius: 16px; font-size: 14px; line-height: 1.5; animation: slideIn 0.2s ease; }
+  .msg-bubble.mine { background: var(--green-mid); color: white; align-self: flex-end; border-bottom-right-radius: 4px; }
+  .msg-bubble.theirs { background: white; color: var(--gray-800); align-self: flex-start; border: 1px solid var(--gray-200); border-bottom-left-radius: 4px; }
+  .msg-time { font-size: 10px; margin-top: 4px; opacity: 0.6; }
+  .chat-input-area { padding: 14px 20px; background: white; border-top: 1px solid var(--gray-200); display: flex; gap: 10px; align-items: flex-end; }
+  .chat-input-area textarea { flex: 1; padding: 10px 14px; border: 2px solid var(--gray-200); border-radius: var(--radius); font-family: var(--font-body); font-size: 14px; resize: none; max-height: 120px; min-height: 44px; transition: var(--transition); }
+  .chat-input-area textarea:focus { outline: none; border-color: var(--green-mid); }
+
+  /* ===== PROFILE PAGE ===== */
+  .profile-header { background: linear-gradient(135deg, var(--green-dark), var(--green-mid)); border-radius: var(--radius-lg); padding: 32px; margin-bottom: 24px; color: white; display: flex; align-items: center; gap: 24px; }
+  .profile-avatar-big { width: 80px; height: 80px; border-radius: 50%; background: var(--amber); display: flex; align-items: center; justify-content: center; font-family: var(--font-display); font-size: 28px; font-weight: 800; color: var(--green-dark); flex-shrink: 0; border: 4px solid rgba(255,255,255,0.3); }
+  .profile-info h2 { font-family: var(--font-display); font-size: 24px; font-weight: 800; margin-bottom: 4px; }
+  .profile-info p { font-size: 14px; opacity: 0.8; }
+  .profile-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+
+  /* ===== SECTION ===== */
+  .section-title { font-family: var(--font-display); font-size: 16px; font-weight: 700; color: var(--gray-900); margin-bottom: 16px; }
+
+  /* ===== FILTER TABS ===== */
+  .filter-tabs { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 20px; }
+  .filter-tab { padding: 6px 14px; border-radius: var(--radius-full); font-size: 13px; font-weight: 600; border: 2px solid var(--gray-200); background: white; cursor: pointer; transition: var(--transition); color: var(--gray-600); }
+  .filter-tab:hover { border-color: var(--green-mid); color: var(--green-mid); }
+  .filter-tab.active { border-color: var(--green-mid); background: var(--green-pale); color: var(--green-dark); }
+
+  /* ===== EMPTY STATE ===== */
+  .empty-state { text-align: center; padding: 60px 20px; color: var(--gray-400); }
+  .empty-state svg { width: 60px; height: 60px; stroke: var(--gray-300); fill: none; stroke-width: 1.5; margin: 0 auto 16px; display: block; }
+  .empty-state h3 { font-size: 18px; font-weight: 600; color: var(--gray-600); margin-bottom: 6px; }
+  .empty-state p { font-size: 14px; }
+
+  /* ===== LOADING ===== */
+  .spinner { width: 20px; height: 20px; border: 2px solid rgba(255,255,255,0.3); border-top-color: white; border-radius: 50%; animation: spin 0.7s linear infinite; }
+
+  /* ===== PRODUCT DETAIL MODAL ===== */
+  .product-detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+  .product-detail-img { width: 100%; height: 260px; object-fit: cover; border-radius: var(--radius); background: var(--green-xpale); display: block; }
+  .product-detail-info { display: flex; flex-direction: column; gap: 14px; }
+  .info-row { display: flex; align-items: center; gap: 8px; padding: 10px; background: var(--gray-50); border-radius: var(--radius-sm); }
+  .info-row svg { width: 16px; height: 16px; stroke: var(--green-mid); fill: none; stroke-width: 2; flex-shrink: 0; }
+  .info-row-label { font-size: 11px; color: var(--gray-400); text-transform: uppercase; font-weight: 600; letter-spacing: 0.5px; }
+  .info-row-value { font-size: 14px; font-weight: 600; color: var(--gray-800); }
+  .price-big { font-family: var(--font-display); font-size: 28px; font-weight: 800; color: var(--green-dark); }
+
+  /* ===== RESPONSIVE ===== */
+  @media (max-width: 768px) {
+    .header-nav { display: none; }
+    .products-grid { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); }
+    .product-detail-grid { grid-template-columns: 1fr; }
+    .conversations-panel { width: 260px; }
+    .profile-grid { grid-template-columns: 1fr; }
+    .page { padding: 16px; }
+  }
+  @media (max-width: 600px) {
+    .conversations-panel { width: 220px; }
+    .profile-header { flex-direction: column; text-align: center; }
+    .stats-grid { grid-template-columns: 1fr 1fr; }
+  }
+
+  /* ===== BOTTOM NAV (mobile) ===== */
+  #bottom-nav {
+    display: none; position: fixed; bottom: 0; left: 0; right: 0;
+    background: white; border-top: 1px solid var(--gray-200); padding: 8px 0 env(safe-area-inset-bottom);
+    z-index: 50;
+  }
+  .bottom-nav-inner { display: flex; justify-content: space-around; }
+  .bottom-nav-btn { display: flex; flex-direction: column; align-items: center; gap: 3px; padding: 6px 12px; cursor: pointer; border: none; background: none; color: var(--gray-400); font-size: 10px; font-weight: 600; font-family: var(--font-body); transition: var(--transition); }
+  .bottom-nav-btn.active { color: var(--green-mid); }
+  .bottom-nav-btn svg { width: 20px; height: 20px; stroke: currentColor; fill: none; stroke-width: 2; }
+  @media (max-width: 768px) { #bottom-nav { display: block; } #app-main { padding-bottom: 64px; } }
+
+  /* ===== NOTIFICATION DOT ===== */
+  .notif-dot { width: 8px; height: 8px; background: var(--red); border-radius: 50%; position: absolute; top: 6px; right: 6px; }
+
+  /* ===== DIVIDER ===== */
+  .divider { height: 1px; background: var(--gray-100); margin: 16px 0; }
+
+  /* ===== TWO COL LAYOUT ===== */
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  @media (max-width: 500px) { .two-col { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+
+<!-- ===================== AUTH SCREEN ===================== -->
+<div id="auth-screen">
+  <div class="auth-card" id="auth-card">
+    <div class="auth-logo">
+      <div class="auth-logo-icon">
+        <svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 0 0-10 10c0 5.52 4.48 10 10 10s10-4.48 10-10S17.52 2 12 2z"/><path d="M7 13s0-5 5-5 5 5 5 5"/><path d="M12 8v8"/><path d="M9 11h6"/></svg>
       </div>
-      <h1 style="font-family: 'Playfair Display', serif; color: #ffffff; font-size: 28px; font-weight: 700; margin: 0;">AgroTrade</h1>
-      <p style="color: #c8e6c9; font-size: 14px; margin: 4px 0 0 0;">Farm Direct Marketplace</p>
-     </div>
-     <div class="space-y-4">
-      <button onclick="selectRole('buyer')" class="w-full py-4 rounded-lg font-semibold text-base flex items-center justify-center gap-3 transition-all" style="background: #ffb300; color: #1b5e20; border: none; cursor: pointer;"> <i data-lucide="shopping-bag" style="width: 20px; height: 20px;"></i> <span>I'm a Buyer</span> </button> <button onclick="selectRole('farmer')" class="w-full py-4 rounded-lg font-semibold text-base flex items-center justify-center gap-3 transition-all" style="background: rgba(255,255,255,0.2); color: #ffffff; border: 2px solid #c8e6c9; cursor: pointer;"> <i data-lucide="sprout" style="width: 20px; height: 20px;"></i> <span>I'm a Farmer</span> </button>
-     </div>
-    </div><!-- Login Form -->
-    <div id="login-form" class="w-full max-w-md" style="padding: 24px; display: none;">
-     <div style="text-align: center; margin-bottom: 40px;">
-      <button onclick="backToRoleSelection()" style="background: rgba(255,255,255,0.1); border: none; color: #c8e6c9; padding: 8px 12px; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 12px; display: flex; align-items: center; gap: 6px; margin-bottom: 16px;"><i data-lucide="arrow-left" style="width: 14px; height: 14px;"></i>Back</button>
-      <div style="background: #ffb300; width: 60px; height: 60px; border-radius: 14px; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px;"><i id="role-icon" data-lucide="shopping-cart" style="color: #1b5e20; width: 32px; height: 32px;"></i>
+      <div>
+        <div class="auth-logo-text">AgroTrade</div>
+        <div class="auth-logo-sub">Farm Direct Marketplace</div>
       </div>
-      <h1 id="role-title" style="font-family: 'Playfair Display', serif; color: #ffffff; font-size: 28px; font-weight: 700; margin: 0;">Sign In</h1>
-      <p style="color: #c8e6c9; font-size: 14px; margin: 4px 0 0 0;">Access your account</p>
-     </div>
-     <div class="space-y-4">
-      <div style="margin-bottom: 16px;"><label for="login-email" style="display: block; color: #c8e6c9; font-size: 13px; font-weight: 600; margin-bottom: 8px;">Email or Phone</label> <input id="login-email" type="text" placeholder="your@email.com or +254712345678" class="w-full px-4 py-3 rounded-lg border-2 text-sm" style="border-color: #c8e6c9; background: rgba(255,255,255,0.1); color: #ffffff; font-family: 'DM Sans', sans-serif;">
-      </div>
-      <div style="margin-bottom: 24px;"><label for="login-password" style="display: block; color: #c8e6c9; font-size: 13px; font-weight: 600; margin-bottom: 8px;">Password</label> <input id="login-password" type="password" placeholder="Enter your password" class="w-full px-4 py-3 rounded-lg border-2 text-sm" style="border-color: #c8e6c9; background: rgba(255,255,255,0.1); color: #ffffff; font-family: 'DM Sans', sans-serif;">
-      </div><button onclick="handleLogin()" class="w-full py-3 rounded-lg font-semibold text-sm flex items-center justify-center gap-2 transition-all" style="background: #ffb300; color: #1b5e20;"> <i data-lucide="log-in" style="width: 16px; height: 16px;"></i><span id="login-btn-text">Sign In</span> </button>
-      <p style="text-align: center; color: #c8e6c9; font-size: 12px; margin-top: 16px;">New here? <span onclick="toggleAuthMode()" style="color: #ffb300; cursor: pointer; font-weight: 600;">Create Account</span></p>
-      <p style="text-align: center; color: #c8e6c9; font-size: 12px; margin-top: 8px;">Forgot password? <span onclick="toggleForgotPassword()" style="color: #ffb300; cursor: pointer; font-weight: 600;">Reset here</span></p>
-     </div>
-    </div><!-- Forgot Password Form -->
-    <div id="forgot-password-form" class="w-full max-w-md" style="padding: 24px; display: none;">
-     <div style="text-align: center; margin-bottom: 40px;">
-      <button onclick="backToRoleSelection()" style="background: rgba(255,255,255,0.1); border: none; color: #c8e6c9; padding: 8px 12px; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 12px; display: flex; align-items: center; gap: 6px; margin-bottom: 16px;"><i data-lucide="arrow-left" style="width: 14px; height: 14px;"></i>Back</button>
-      <div style="background: #ffb300; width: 60px; height: 60px; border-radius: 14px; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px;"><i data-lucide="key" style="color: #1b5e20; width: 32px; height: 32px;"></i>
-      </div>
-      <h1 style="font-family: 'Playfair Display', serif; color: #ffffff; font-size: 28px; font-weight: 700; margin: 0;">Reset Password</h1>
-      <p style="color: #c8e6c9; font-size: 14px; margin: 4px 0 0 0;">Recover your account</p>
-     </div>
-     <div class="space-y-4">
-      <div style="margin-bottom: 16px;"><label for="forgot-phone" style="display: block; color: #c8e6c9; font-size: 13px; font-weight: 600; margin-bottom: 8px;">Phone Number</label> <input id="forgot-phone" type="text" placeholder="+254712345678" class="w-full px-4 py-3 rounded-lg border-2 text-sm" style="border-color: #c8e6c9; background: rgba(255,255,255,0.1); color: #ffffff; font-family: 'DM Sans', sans-serif;">
-      </div>
-      <div style="margin-bottom: 24px;"><label for="forgot-new-password" style="display: block; color: #c8e6c9; font-size: 13px; font-weight: 600; margin-bottom: 8px;">New Password</label> <input id="forgot-new-password" type="password" placeholder="Enter new password" class="w-full px-4 py-3 rounded-lg border-2 text-sm" style="border-color: #c8e6c9; background: rgba(255,255,255,0.1); color: #ffffff; font-family: 'DM Sans', sans-serif;">
-      </div><button onclick="handleForgotPassword()" class="w-full py-3 rounded-lg font-semibold text-sm flex items-center justify-center gap-2 transition-all" style="background: #ffb300; color: #1b5e20;"> <i data-lucide="check-circle" style="width: 16px; height: 16px;"></i><span id="forgot-btn-text">Reset Password</span> </button>
-      <p style="text-align: center; color: #c8e6c9; font-size: 12px; margin-top: 16px;">Remember your password? <span onclick="toggleForgotPassword()" style="color: #ffb300; cursor: pointer; font-weight: 600;">Sign In</span></p>
-     </div>
-    </div><!-- Signup Form -->
-    <div id="signup-form" class="w-full max-w-md" style="padding: 24px; display: none;">
-     <div style="text-align: center; margin-bottom: 40px;">
-      <button onclick="backToRoleSelection()" style="background: rgba(255,255,255,0.1); border: none; color: #c8e6c9; padding: 8px 12px; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 12px; display: flex; align-items: center; gap: 6px; margin-bottom: 16px;"><i data-lucide="arrow-left" style="width: 14px; height: 14px;"></i>Back</button>
-      <div style="background: #ffb300; width: 60px; height: 60px; border-radius: 14px; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px;"><i data-lucide="user-plus" style="color: #1b5e20; width: 32px; height: 32px;"></i>
-      </div>
-      <h1 style="font-family: 'Playfair Display', serif; color: #ffffff; font-size: 28px; font-weight: 700; margin: 0;">Create Account</h1>
-      <p style="color: #c8e6c9; font-size: 14px; margin: 4px 0 0 0;">Join AgroTrade Today</p>
-     </div>
-     <div class="space-y-4">
-      <div style="margin-bottom: 16px;"><label for="signup-name" style="display: block; color: #c8e6c9; font-size: 13px; font-weight: 600; margin-bottom: 8px;">Full Name</label> <input id="signup-name" type="text" placeholder="Your name" class="w-full px-4 py-3 rounded-lg border-2 text-sm" style="border-color: #c8e6c9; background: rgba(255,255,255,0.1); color: #ffffff; font-family: 'DM Sans', sans-serif;">
-      </div>
-      <div style="margin-bottom: 16px;"><label for="signup-email" style="display: block; color: #c8e6c9; font-size: 13px; font-weight: 600; margin-bottom: 8px;">Email or Phone</label> <input id="signup-email" type="text" placeholder="your@email.com or +254712345678" class="w-full px-4 py-3 rounded-lg border-2 text-sm" style="border-color: #c8e6c9; background: rgba(255,255,255,0.1); color: #ffffff; font-family: 'DM Sans', sans-serif;">
-      </div>
-      <div style="margin-bottom: 24px;"><label for="signup-password" style="display: block; color: #c8e6c9; font-size: 13px; font-weight: 600; margin-bottom: 8px;">Password</label> <input id="signup-password" type="password" placeholder="Create a password" class="w-full px-4 py-3 rounded-lg border-2 text-sm" style="border-color: #c8e6c9; background: rgba(255,255,255,0.1); color: #ffffff; font-family: 'DM Sans', sans-serif;">
-      </div><button onclick="handleSignup()" class="w-full py-3 rounded-lg font-semibold text-sm flex items-center justify-center gap-2 transition-all" style="background: #ffb300; color: #1b5e20;"> <i data-lucide="user-plus" style="width: 16px; height: 16px;"></i><span id="signup-btn-text">Create Account</span> </button>
-      <p style="text-align: center; color: #c8e6c9; font-size: 12px; margin-top: 16px;">Already have an account? <span onclick="toggleAuthMode()" style="color: #ffb300; cursor: pointer; font-weight: 600;">Sign In</span></p>
-     </div>
     </div>
-   </div><!-- Header -->
-   <header class="w-full flex-shrink-0" style="background: linear-gradient(135deg, #1b5e20 0%, #2e7d32 60%, #388e3c 100%); box-shadow: 0 4px 12px rgba(27, 94, 32, 0.15);">
-    <div class="max-w-7xl mx-auto px-4 py-5">
-     <div class="flex items-center justify-between">
-      <div class="flex items-center gap-3">
-       <div style="background: #ffb300; width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center;"><i data-lucide="shopping-cart" style="color: #1b5e20; width: 22px; height: 22px;"></i>
-       </div>
-       <div>
-        <h1 id="app-title" style="font-family: 'Playfair Display', serif; color: #ffffff; font-size: 24px; font-weight: 700; margin: 0;">AgroTrade Buyer</h1>
-        <p id="app-subtitle" style="color: #c8e6c9; font-size: 12px; margin: 0;">Find fresh products from local farmers</p>
-       </div>
+
+    <!-- Step 1: Role Selection -->
+    <div id="auth-role-step">
+      <div class="auth-title">Welcome!</div>
+      <div class="auth-subtitle">Choose how you want to use AgroTrade</div>
+      <div class="role-selector">
+        <div class="role-btn" id="role-buyer-btn" onclick="selectRole('buyer')">
+          <svg viewBox="0 0 24 24"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+          <span class="role-btn-label">I'm a Buyer</span>
+          <div style="font-size:11px;color:var(--gray-400);margin-top:4px;">Browse & buy</div>
+        </div>
+        <div class="role-btn" id="role-farmer-btn" onclick="selectRole('farmer')">
+          <svg viewBox="0 0 24 24"><path d="M2 20h20"/><path d="M6 20V10l6-6 6 6v10"/><path d="M10 20v-6h4v6"/></svg>
+          <span class="role-btn-label">I'm a Farmer</span>
+          <div style="font-size:11px;color:var(--gray-400);margin-top:4px;">Sell products</div>
+        </div>
       </div>
-      <div style="display: flex; gap: 2px; background: rgba(255,255,255,0.1); border-radius: 8px; padding: 4px;">
-       <button onclick="switchTab('browse')" class="tab-nav px-4 py-2 rounded-lg font-semibold text-sm transition-all" id="tab-browse-btn" style="color: #ffffff; background: transparent;"><i data-lucide="store" style="width: 16px; height: 16px; display: inline; margin-right: 4px;"></i>Browse</button> <button onclick="switchTab('orders')" class="tab-nav px-4 py-2 rounded-lg font-semibold text-sm transition-all" id="tab-orders-btn" style="color: rgba(255,255,255,0.6); background: transparent;"><i data-lucide="package" style="width: 16px; height: 16px; display: inline; margin-right: 4px;"></i>Orders</button> <button onclick="switchTab('chats')" class="tab-nav px-4 py-2 rounded-lg font-semibold text-sm transition-all" id="tab-chats-btn" style="color: rgba(255,255,255,0.6); background: transparent;"><i data-lucide="message-circle" style="width: 16px; height: 16px; display: inline; margin-right: 4px;"></i>Messages</button>
-      </div><button onclick="logout()" style="background: rgba(255,255,255,0.1); border: none; color: #c8e6c9; padding: 8px 12px; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 12px; display: flex; align-items: center; gap: 6px; transition: all 0.2s ease;"><i data-lucide="log-out" style="width: 14px; height: 14px;"></i>Logout</button>
-     </div>
+      <div style="text-align:center">
+        <button class="btn btn-primary btn-lg w-full" onclick="goToAuthForm()">Continue</button>
+      </div>
     </div>
-   </header><!-- Main Content -->
-   <main class="flex-1 overflow-auto max-w-7xl mx-auto w-full px-4 py-6">
-    <!-- Browse Tab - Products View -->
-    <div id="tab-browse" class="animate-fade-in">
-     <div class="mb-6">
-      <div class="flex gap-2 mb-4">
-       <div class="flex-1 relative"><i data-lucide="search" style="position: absolute; left: 14px; top: 50%; transform: translateY(-50%); width: 18px; height: 18px; color: #66bb6a;"></i> <input id="search-products" type="text" placeholder="Search products or farmers..." oninput="filterProducts()" class="w-full pl-11 pr-4 py-3 rounded-xl border-2 text-sm" style="border-color: #c8e6c9; background: #ffffff; color: #1b5e20;">
-       </div><button onclick="toggleViewMode()" class="px-4 py-3 rounded-xl border-2 font-semibold text-sm flex items-center gap-2" id="view-toggle-btn" style="border-color: #c8e6c9; background: #ffffff; color: #1b5e20;"><i data-lucide="grid-3x3" style="width: 16px; height: 16px;"></i><span id="view-mode-text">List</span></button>
+
+    <!-- Step 2: Sign In Form -->
+    <div id="auth-signin-step" class="hidden">
+      <button onclick="backToRole()" style="background:none;border:none;cursor:pointer;color:var(--gray-500);font-size:13px;font-weight:600;display:flex;align-items:center;gap:4px;margin-bottom:20px;font-family:var(--font-body);padding:0;">
+        <svg style="width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2;" viewBox="0 0 24 24"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg> Back
+      </button>
+      <div class="auth-title" id="signin-title">Sign In</div>
+      <div class="auth-subtitle" id="signin-subtitle">Access your account</div>
+      <div class="form-group">
+        <label class="form-label">Email or Phone Number</label>
+        <input class="form-input" id="signin-email" type="text" placeholder="email@example.com or +254700000000">
       </div>
-     </div><!-- Products Grid View -->
-     <div id="products-grid" class="grid grid-cols-1 gap-4" style="grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); display: grid;">
-     </div><!-- Products List View -->
-     <div id="products-list" class="space-y-3" style="display: none;"></div>
-     <div id="browse-empty" class="text-center py-16 animate-fade-in" style="display: none;">
-      <div style="width: 80px; height: 80px; border-radius: 50%; background: #c8e6c9; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px;"><i data-lucide="package-open" style="width: 36px; height: 36px; color: #2e7d32;"></i>
+      <div class="form-group">
+        <label class="form-label">Password</label>
+        <input class="form-input" id="signin-password" type="password" placeholder="Your password">
       </div>
-      <p style="color: #2e7d32; font-size: 18px; font-weight: 600;">No products found</p>
-      <p style="color: #66bb6a; font-size: 14px; margin-top: 4px;">Try adjusting your search</p>
-     </div>
-    </div><!-- Orders Tab -->
-    <div id="tab-orders" class="animate-fade-in hidden">
-     <h2 style="color: #1b5e20; font-size: 20px; font-weight: 700; margin-bottom: 16px;">My Orders</h2>
-     <div id="orders-list" class="space-y-3"></div>
-     <div id="orders-empty" class="text-center py-16 animate-fade-in" style="display: none;">
-      <div style="width: 80px; height: 80px; border-radius: 50%; background: #c8e6c9; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px;"><i data-lucide="inbox" style="width: 36px; height: 36px; color: #2e7d32;"></i>
-      </div>
-      <p style="color: #2e7d32; font-size: 18px; font-weight: 600;">No orders yet</p>
-      <p style="color: #66bb6a; font-size: 14px; margin-top: 4px;">Create an order to get started</p>
-     </div>
-    </div><!-- Messages Tab -->
-    <div id="tab-chats" class="animate-fade-in hidden h-full flex flex-col">
-     <div class="flex gap-4 h-full" style="min-height: 500px;">
-      <!-- Chat List -->
-      <div style="flex: 0 0 280px; background: #ffffff; border-radius: 16px; border: 1px solid #e8f5e9; display: flex; flex-direction: column; box-shadow: 0 2px 8px rgba(0,0,0,0.04);">
-       <div style="padding: 16px; border-bottom: 1px solid #e8f5e9;">
-        <h3 style="color: #1b5e20; font-weight: 700; font-size: 16px; margin: 0;">Conversations</h3>
-       </div>
-       <div id="chats-list" class="flex-1 overflow-y-auto" style="padding: 8px;"></div>
-      </div><!-- Chat Window -->
-      <div style="flex: 1; background: #ffffff; border-radius: 16px; border: 1px solid #e8f5e9; display: flex; flex-direction: column; box-shadow: 0 2px 8px rgba(0,0,0,0.04);">
-       <div id="chat-empty" class="flex-1 flex items-center justify-center text-center">
-        <div>
-         <div style="width: 80px; height: 80px; border-radius: 50%; background: #c8e6c9; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px;"><i data-lucide="message-circle" style="width: 36px; height: 36px; color: #2e7d32;"></i>
-         </div>
-         <p style="color: #2e7d32; font-size: 16px; font-weight: 600;">Select a conversation</p>
-        </div>
-       </div>
-       <div id="chat-window" class="flex-1 overflow-y-auto hidden" style="padding: 20px; display: flex; flex-direction: column; gap: 12px;"></div>
-       <div id="chat-input-area" class="hidden p-4 border-t" style="border-color: #e8f5e9;">
-        <form onsubmit="sendMessage(event)" style="display: flex; gap: 8px;">
-         <textarea id="message-input" placeholder="Type a message..." class="flex-1 px-4 py-2.5 rounded-lg border-2 text-sm resize-none" style="border-color: #c8e6c9; color: #1b5e20; max-height: 100px; font-family: 'DM Sans', sans-serif;" rows="2"></textarea> <button type="submit" class="px-4 py-2.5 rounded-lg font-semibold flex items-center gap-2" style="background: #1b5e20; color: #ffffff;"><i data-lucide="send" style="width: 16px; height: 16px;"></i></button>
-        </form>
-       </div>
-      </div>
-     </div>
+      <button class="btn btn-primary btn-lg w-full" onclick="handleSignIn()" id="signin-btn">
+        <span id="signin-btn-text">Sign In</span>
+      </button>
+      <div class="auth-divider"><span>or</span></div>
+      <div class="auth-link">Don't have an account? <a onclick="showSignup()">Create Account</a></div>
+      <div class="auth-link" style="margin-top:8px"><a onclick="showForgotPassword()">Forgot Password?</a></div>
     </div>
-   </main><!-- Product Details Modal -->
-   <div id="product-modal" style="position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 50; display: none; align-items: center; justify-content: center; padding: 16px;">
-    <div class="w-full max-w-2xl rounded-2xl overflow-hidden" style="background: #ffffff; box-shadow: 0 25px 60px rgba(0,0,0,0.3); max-height: 90vh; overflow-y: auto;">
-     <div style="position: sticky; top: 0; background: #ffffff; display: flex; align-items: center; justify-content: space-between; padding: 16px; border-bottom: 1px solid #e8f5e9; z-index: 10;">
-      <h2 id="product-modal-title" style="font-family: 'Playfair Display', serif; color: #1b5e20; font-size: 20px; font-weight: 700; margin: 0;">Product Details</h2><button onclick="closeProductModal()" style="color: #999; background: none; border: none; cursor: pointer;"><i data-lucide="x" style="width: 20px; height: 20px;"></i></button>
-     </div>
-     <div style="padding: 24px;">
-      <div class="grid gap-6" style="grid-template-columns: 1fr 1fr;"><!-- Image Section -->
-       <div><img id="product-modal-image" src="" alt="Product" class="product-image rounded-lg" style="border-radius: 12px; width: 100%; height: auto;">
-       </div><!-- Info Section -->
-       <div>
-        <h3 id="product-modal-name" style="color: #1b5e20; font-size: 22px; font-weight: 700; margin: 0 0 8px 0;"></h3>
-        <p id="product-modal-farmer" style="color: #66bb6a; font-size: 14px; margin: 0 0 16px 0;"></p>
-        <div style="background: #e8f5e9; padding: 12px; border-radius: 8px; margin-bottom: 16px;">
-         <p style="color: #1b5e20; font-size: 12px; margin: 0 0 4px 0; font-weight: 600;">PRICE</p>
-         <p id="product-modal-price" style="color: #1b5e20; font-size: 24px; font-weight: 700; margin: 0;">KES 0</p>
+
+    <!-- Step 3: Sign Up Form -->
+    <div id="auth-signup-step" class="hidden">
+      <button onclick="showSignIn()" style="background:none;border:none;cursor:pointer;color:var(--gray-500);font-size:13px;font-weight:600;display:flex;align-items:center;gap:4px;margin-bottom:20px;font-family:var(--font-body);padding:0;">
+        <svg style="width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2;" viewBox="0 0 24 24"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg> Back to Sign In
+      </button>
+      <div class="auth-title">Create Account</div>
+      <div class="auth-subtitle" id="signup-subtitle">Join AgroTrade today</div>
+      <div class="two-col">
+        <div class="form-group">
+          <label class="form-label">Full Name *</label>
+          <input class="form-input" id="signup-name" type="text" placeholder="John Kamau">
         </div>
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px;">
-         <div style="background: #f5f9f5; padding: 12px; border-radius: 8px;">
-          <p style="color: #999; font-size: 12px; margin: 0 0 4px 0; font-weight: 600;">AVAILABLE</p>
-          <p id="product-modal-quantity" style="color: #1b5e20; font-size: 16px; font-weight: 700; margin: 0;">0</p>
-         </div>
-         <div style="background: #f5f9f5; padding: 12px; border-radius: 8px;">
-          <p style="color: #999; font-size: 12px; margin: 0 0 4px 0; font-weight: 600;">RATING</p>
-          <div style="display: flex; align-items: center; gap: 4px;">
-           <i data-lucide="star" style="width: 14px; height: 14px; color: #ffb300; fill: #ffb300;"></i>
-           <p id="product-modal-rating" style="color: #1b5e20; font-size: 14px; font-weight: 700; margin: 0;">4.8</p>
-          </div>
-         </div>
+        <div class="form-group">
+          <label class="form-label">Phone Number *</label>
+          <input class="form-input" id="signup-phone" type="tel" placeholder="+254700000000">
         </div>
-        <div style="background: #f5f9f5; padding: 12px; border-radius: 8px; margin-bottom: 16px;">
-         <p style="color: #999; font-size: 12px; margin: 0 0 4px 0; font-weight: 600;">LOCATION</p>
-         <p id="product-modal-location" style="color: #1b5e20; font-size: 14px; font-weight: 600; margin: 0;"></p>
-        </div>
-        <div style="margin-bottom: 20px;">
-         <p style="color: #999; font-size: 12px; margin: 0 0 8px 0; font-weight: 600;">DESCRIPTION</p>
-         <p id="product-modal-description" style="color: #1b5e20; font-size: 13px; line-height: 1.6; margin: 0;"></p>
-        </div>
-        <div style="display: flex; gap: 8px; margin-bottom: 12px;"><a id="product-modal-call" href="tel:" class="flex-1 flex items-center justify-center gap-2 py-3 rounded-lg font-semibold text-sm" style="background: #1b5e20; color: #fff; text-decoration: none;"><i data-lucide="phone" style="width: 16px; height: 16px;"></i>Call Farmer</a> <button onclick="openOrderFromProduct()" class="flex-1 flex items-center justify-center gap-2 py-3 rounded-lg font-semibold text-sm" style="background: #ffb300; color: #1b5e20; border: none; cursor: pointer;"><i data-lucide="shopping-cart" style="width: 16px; height: 16px;"></i>Order</button>
-        </div><button onclick="startChatFromProduct()" class="w-full py-3 rounded-lg font-semibold text-sm flex items-center justify-center gap-2" style="background: #e8f5e9; color: #1b5e20; border: none; cursor: pointer;"><i data-lucide="message-circle" style="width: 16px; height: 16px;"></i>Chat with Farmer</button>
-       </div>
       </div>
-     </div>
+      <div class="form-group">
+        <label class="form-label">Email Address *</label>
+        <input class="form-input" id="signup-email" type="email" placeholder="email@example.com">
+      </div>
+      <div class="form-group" id="signup-location-group">
+        <label class="form-label">Location / County *</label>
+        <input class="form-input" id="signup-location" type="text" placeholder="e.g. Nairobi, Kiambu, Meru">
+      </div>
+      <div class="form-group" id="signup-farm-group" style="display:none">
+        <label class="form-label">Farm Name *</label>
+        <input class="form-input" id="signup-farm" type="text" placeholder="e.g. Green Valley Farm">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Password * <span class="form-hint">(min 6 characters)</span></label>
+        <input class="form-input" id="signup-password" type="password" placeholder="Create a strong password">
+      </div>
+      <button class="btn btn-primary btn-lg w-full" onclick="handleSignUp()" id="signup-btn">
+        <span id="signup-btn-text">Create Account</span>
+      </button>
+      <div class="auth-link" style="margin-top:12px">Already have an account? <a onclick="showSignIn()">Sign In</a></div>
     </div>
-   </div><!-- Order Modal -->
-   <div id="order-modal" style="position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 50; display: none; align-items: center; justify-content: center; padding: 16px;">
-    <div class="w-full max-w-md rounded-2xl p-6 relative" style="background: #ffffff; box-shadow: 0 25px 60px rgba(0,0,0,0.2);">
-     <button onclick="closeOrderModal()" class="absolute top-4 right-4" style="color: #999;"><i data-lucide="x" style="width: 20px; height: 20px;"></i></button>
-     <h2 style="font-family: 'Playfair Display', serif; color: #1b5e20; font-size: 24px; font-weight: 700; margin-bottom: 4px;" id="order-modal-title">Place Order</h2>
-     <p style="color: #66bb6a; font-size: 13px; margin-bottom: 20px;" id="order-modal-farmer">from Farmer</p>
-     <form id="order-form" onsubmit="submitOrder(event)">
-      <div class="mb-4"><label for="order-item" class="block text-sm font-semibold mb-1" style="color: #1b5e20;">Product *</label> <input id="order-item" type="text" required placeholder="e.g. Fresh Tomatoes" class="w-full px-4 py-2.5 rounded-lg border-2 text-sm" style="border-color: #c8e6c9; color: #1b5e20; font-family: 'DM Sans', sans-serif;">
+
+    <!-- Step 4: Forgot Password -->
+    <div id="auth-forgot-step" class="hidden">
+      <button onclick="showSignIn()" style="background:none;border:none;cursor:pointer;color:var(--gray-500);font-size:13px;font-weight:600;display:flex;align-items:center;gap:4px;margin-bottom:20px;font-family:var(--font-body);padding:0;">
+        <svg style="width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2;" viewBox="0 0 24 24"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg> Back to Sign In
+      </button>
+      <div class="auth-title">Reset Password</div>
+      <div class="auth-subtitle">Enter your phone number to reset your password</div>
+      <div class="form-group">
+        <label class="form-label">Phone Number</label>
+        <input class="form-input" id="forgot-phone" type="tel" placeholder="+254700000000">
       </div>
-      <div class="mb-4"><label for="order-quantity" class="block text-sm font-semibold mb-1" style="color: #1b5e20;">Quantity *</label> <input id="order-quantity" type="text" required placeholder="e.g. 50 kg" class="w-full px-4 py-2.5 rounded-lg border-2 text-sm" style="border-color: #c8e6c9; color: #1b5e20; font-family: 'DM Sans', sans-serif;">
+      <div class="form-group">
+        <label class="form-label">New Password *</label>
+        <input class="form-input" id="forgot-newpass" type="password" placeholder="New password (min 6 chars)">
       </div>
-      <div class="mb-5"><label for="order-price" class="block text-sm font-semibold mb-1" style="color: #1b5e20;">Total Price (KES) *</label> <input id="order-price" type="number" required placeholder="e.g. 5000" class="w-full px-4 py-2.5 rounded-lg border-2 text-sm" style="border-color: #c8e6c9; color: #1b5e20; font-family: 'DM Sans', sans-serif;">
-      </div><button type="submit" class="w-full py-3 rounded-xl font-semibold text-base flex items-center justify-center gap-2 transition-all" style="background: #1b5e20; color: #ffffff;"><i data-lucide="check-circle" style="width: 18px; height: 18px;"></i><span>Place Order</span></button>
-     </form>
+      <div class="form-group">
+        <label class="form-label">Confirm New Password *</label>
+        <input class="form-input" id="forgot-confirmpass" type="password" placeholder="Repeat new password">
+      </div>
+      <button class="btn btn-primary btn-lg w-full" onclick="handleForgotPassword()" id="forgot-btn">
+        <span id="forgot-btn-text">Reset Password</span>
+      </button>
     </div>
-   </div><!-- Toast -->
-   <div id="toast" style="position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); padding: 12px 24px; border-radius: 12px; font-size: 14px; font-weight: 600; z-index: 70; background: #1b5e20; color: #ffffff; box-shadow: 0 8px 24px rgba(0,0,0,0.2); display: none;"></div>
   </div>
-  <script>
-    // State
-    let allProducts = [];
-    let allOrders = [];
-    let allMessages = [];
-    let currentTab = 'browse';
-    let currentChatFarmerId = null;
-    let selectedFarmerForOrder = null;
-    let selectedProductForOrder = null;
-    let viewMode = 'grid';
-    let currentUser = null; // { id, name, email, phone, role: 'buyer' or 'farmer' }
-    let allBuyers = [];
-    let allFarmers = [];
-    let userRole = null; // 'buyer' or 'farmer'
+</div>
 
-    const defaultConfig = {
-      app_title: 'AgroTrade Buyer',
-      app_subtitle: 'Find fresh products from local farmers',
-      primary_color: '#1b5e20',
-      accent_color: '#ffb300',
-      surface_color: '#ffffff',
-      text_color: '#ffffff',
-      font_family: 'DM Sans',
-      font_size: 16
-    };
+<!-- ===================== MAIN APP ===================== -->
+<div id="app" class="hidden">
 
-    // Authentication
-    function selectRole(role) {
-      userRole = role;
-      document.getElementById('role-selection').style.display = 'none';
-      document.getElementById('login-form').style.display = 'block';
-      
-      const roleTitle = document.getElementById('role-title');
-      const roleIcon = document.getElementById('role-icon');
-      
-      if (role === 'farmer') {
-        roleTitle.textContent = 'Farmer Portal';
-        roleIcon.setAttribute('data-lucide', 'sprout');
-      } else {
-        roleTitle.textContent = 'Sign In';
-        roleIcon.setAttribute('data-lucide', 'shopping-cart');
-      }
-      lucide.createIcons();
-    }
-
-    function backToRoleSelection() {
-      userRole = null;
-      document.getElementById('role-selection').style.display = 'block';
-      document.getElementById('login-form').style.display = 'none';
-      document.getElementById('signup-form').style.display = 'none';
-      document.getElementById('login-email').value = '';
-      document.getElementById('login-password').value = '';
-      lucide.createIcons();
-    }
-
-    async function handleLogin() {
-      const email = document.getElementById('login-email').value.trim();
-      const password = document.getElementById('login-password').value.trim();
-
-      if (!email || !password) {
-        showToastLogin('Please enter email/phone and password', true);
-        return;
-      }
-
-      const btn = document.querySelector('#login-form button[onclick="handleLogin()"]');
-      const btnText = btn.querySelector('span') || btn;
-      btn.disabled = true;
-      btnText.textContent = 'Signing in...';
-
-      await new Promise(r => setTimeout(r, 600));
-
-      let user = null;
-      if (userRole === 'buyer') {
-        user = allBuyers.find(b => (b.buyer_email === email || b.buyer_phone === email) && b.buyer_password === password);
-        if (user) {
-          currentUser = { id: user.buyer_id, name: user.buyer_name, email: user.buyer_email, phone: user.buyer_phone, role: 'buyer' };
-        }
-      } else if (userRole === 'farmer') {
-        user = allFarmers.find(f => (f.farmer_email === email) && f.farmer_password === password);
-        if (user) {
-          currentUser = { id: user.farmer_id, name: user.farmer_name, email: user.farmer_email, role: 'farmer' };
-        }
-      }
-
-      if (user && currentUser) {
-        btn.disabled = false;
-        btnText.textContent = 'Sign In';
-        document.getElementById('login-screen').style.display = 'none';
-        document.querySelector('header').style.display = '';
-        document.querySelector('main').style.display = '';
-        lucide.createIcons();
-        showToast('Welcome ' + currentUser.name + '!');
-      } else {
-        btn.disabled = false;
-        btnText.textContent = 'Sign In';
-        showToastLogin('Invalid email/phone or password', true);
-      }
-    }
-
-    async function handleSignup() {
-      const name = document.getElementById('signup-name').value.trim();
-      const email = document.getElementById('signup-email').value.trim();
-      const password = document.getElementById('signup-password').value.trim();
-
-      if (!name || !email || !password) {
-        showToastLogin('Please fill all fields', true);
-        return;
-      }
-
-      if (password.length < 6) {
-        showToastLogin('Password must be at least 6 characters', true);
-        return;
-      }
-
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$|^[+]?[0-9]{10,}$/;
-      if (!emailRegex.test(email)) {
-        showToastLogin('Enter valid email or phone number', true);
-        return;
-      }
-
-      const btn = document.querySelector('#signup-form button[onclick="handleSignup()"]');
-      const btnText = btn.querySelector('span') || btn;
-      btn.disabled = true;
-      btnText.textContent = 'Creating...';
-
-      const isEmail = email.includes('@');
-
-      if (userRole === 'buyer') {
-        const exists = allBuyers.find(b => b.buyer_email === email || b.buyer_phone === email);
-        if (exists) {
-          showToastLogin('Account already exists', true);
-          btn.disabled = false;
-          btnText.textContent = 'Create Account';
-          return;
-        }
-
-        const newBuyer = {
-          buyer_id: 'buyer_' + Date.now(),
-          buyer_name: name,
-          buyer_email: isEmail ? email : '',
-          buyer_phone: !isEmail ? email : '',
-          buyer_password: password
-        };
-
-        const result = await window.dataSdk.create(newBuyer);
-        btn.disabled = false;
-        btnText.textContent = 'Create Account';
-
-        if (result.isOk) {
-          allBuyers.push(newBuyer);
-          showToastLogin('Account created! Now sign in', false);
-          toggleAuthMode();
-          document.getElementById('login-email').value = email;
-          document.getElementById('login-password').value = '';
-        } else {
-          showToastLogin('Failed to create account', true);
-        }
-      } else if (userRole === 'farmer') {
-        if (!isEmail) {
-          showToastLogin('Farmers must register with email', true);
-          btn.disabled = false;
-          btnText.textContent = 'Create Account';
-          return;
-        }
-
-        const exists = allFarmers.find(f => f.farmer_email === email);
-        if (exists) {
-          showToastLogin('Account already exists', true);
-          btn.disabled = false;
-          btnText.textContent = 'Create Account';
-          return;
-        }
-
-        const newFarmer = {
-          farmer_id: 'farmer_' + Date.now(),
-          farmer_name: name,
-          farmer_email: email,
-          farmer_password: password,
-          farmer_rating: '5.0'
-        };
-
-        const result = await window.dataSdk.create(newFarmer);
-        btn.disabled = false;
-        btnText.textContent = 'Create Account';
-
-        if (result.isOk) {
-          allFarmers.push(newFarmer);
-          showToastLogin('Account created! Now sign in', false);
-          toggleAuthMode();
-          document.getElementById('login-email').value = email;
-          document.getElementById('login-password').value = '';
-        } else {
-          showToastLogin('Failed to create account', true);
-        }
-      }
-    }
-
-    function toggleAuthMode() {
-      const loginForm = document.getElementById('login-form');
-      const signupForm = document.getElementById('signup-form');
-      const forgotForm = document.getElementById('forgot-password-form');
-
-      if (signupForm.style.display === 'none') {
-        loginForm.style.display = 'none';
-        signupForm.style.display = 'block';
-        forgotForm.style.display = 'none';
-      } else {
-        loginForm.style.display = 'block';
-        signupForm.style.display = 'none';
-        forgotForm.style.display = 'none';
-        document.getElementById('signup-name').value = '';
-        document.getElementById('signup-email').value = '';
-        document.getElementById('signup-password').value = '';
-      }
-    }
-
-    function toggleForgotPassword() {
-      const loginForm = document.getElementById('login-form');
-      const forgotForm = document.getElementById('forgot-password-form');
-
-      if (forgotForm.style.display === 'none') {
-        loginForm.style.display = 'none';
-        forgotForm.style.display = 'block';
-        document.getElementById('forgot-phone').value = '';
-        document.getElementById('forgot-new-password').value = '';
-      } else {
-        loginForm.style.display = 'block';
-        forgotForm.style.display = 'none';
-        document.getElementById('login-email').value = '';
-        document.getElementById('login-password').value = '';
-      }
-    }
-
-    async function handleForgotPassword() {
-      const phone = document.getElementById('forgot-phone').value.trim();
-      const newPassword = document.getElementById('forgot-new-password').value.trim();
-
-      if (!phone || !newPassword) {
-        showToastLogin('Please enter phone number and new password', true);
-        return;
-      }
-
-      if (newPassword.length < 6) {
-        showToastLogin('Password must be at least 6 characters', true);
-        return;
-      }
-
-      const btn = document.querySelector('#forgot-password-form button[onclick="handleForgotPassword()"]');
-      const btnText = btn.querySelector('span') || btn;
-      btn.disabled = true;
-      btnText.textContent = 'Resetting...';
-
-      await new Promise(r => setTimeout(r, 800));
-
-      let found = false;
-      let updatedUser = null;
-
-      if (userRole === 'buyer') {
-        const buyer = allBuyers.find(b => b.buyer_phone === phone);
-        if (buyer) {
-          found = true;
-          updatedUser = { ...buyer, buyer_password: newPassword };
-          const result = await window.dataSdk.update(updatedUser);
-          
-          if (result.isOk) {
-            const index = allBuyers.findIndex(b => b.buyer_id === buyer.buyer_id);
-            if (index !== -1) allBuyers[index] = updatedUser;
-          }
-        }
-      } else if (userRole === 'farmer') {
-        showToastLogin('Farmers must reset via email. Contact support.', true);
-        btn.disabled = false;
-        btnText.textContent = 'Reset Password';
-        return;
-      }
-
-      btn.disabled = false;
-      btnText.textContent = 'Reset Password';
-
-      if (found && updatedUser) {
-        showToastLogin('✓ Password reset successfully! Sign in with your new password', false);
-        toggleForgotPassword();
-        document.getElementById('login-email').value = phone;
-        document.getElementById('login-password').value = '';
-      } else {
-        showToastLogin('Phone number not found. Check and try again.', true);
-      }
-    }
-
-    function showToastLogin(msg, isError = false) {
-      const existingToast = document.getElementById('login-toast');
-      if (existingToast) existingToast.remove();
-
-      const toast = document.createElement('div');
-      toast.id = 'login-toast';
-      toast.textContent = msg;
-      toast.style.position = 'fixed';
-      toast.style.bottom = '24px';
-      toast.style.left = '50%';
-      toast.style.transform = 'translateX(-50%)';
-      toast.style.padding = '12px 24px';
-      toast.style.borderRadius = '12px';
-      toast.style.fontSize = '14px';
-      toast.style.fontWeight = '600';
-      toast.style.zIndex = '70';
-      toast.style.background = isError ? '#d32f2f' : '#4caf50';
-      toast.style.color = '#ffffff';
-      toast.style.boxShadow = '0 8px 24px rgba(0,0,0,0.2)';
-      document.body.appendChild(toast);
-
-      setTimeout(() => {
-        if (toast.parentNode) toast.remove();
-      }, 3000);
-    }
-
-    function logout() {
-      currentUser = null;
-      userRole = null;
-      document.getElementById('login-screen').style.display = 'flex';
-      document.querySelector('header').style.display = 'none';
-      document.querySelector('main').style.display = 'none';
-      document.getElementById('login-email').value = '';
-      document.getElementById('login-password').value = '';
-      document.getElementById('role-selection').style.display = 'block';
-      document.getElementById('login-form').style.display = 'none';
-      document.getElementById('signup-form').style.display = 'none';
-    }
-
-    // Element SDK
-    window.elementSdk.init({
-      defaultConfig,
-      onConfigChange: async (config) => {
-        const c = { ...defaultConfig, ...config };
-        const font = c.font_family || defaultConfig.font_family;
-        const size = c.font_size || defaultConfig.font_size;
-
-        document.getElementById('app-title').textContent = c.app_title;
-        document.getElementById('app-title').style.fontSize = `${size * 1.5}px`;
-        document.getElementById('app-subtitle').textContent = c.app_subtitle;
-        document.getElementById('app-subtitle').style.fontSize = `${size * 0.75}px`;
-      },
-      mapToCapabilities: (config) => {
-        const c = { ...defaultConfig, ...config };
-        return {
-          recolorables: [
-            { get: () => c.primary_color, set: (v) => { c.primary_color = v; window.elementSdk.setConfig({ primary_color: v }); } },
-            { get: () => c.accent_color, set: (v) => { c.accent_color = v; window.elementSdk.setConfig({ accent_color: v }); } },
-            { get: () => c.surface_color, set: (v) => { c.surface_color = v; window.elementSdk.setConfig({ surface_color: v }); } },
-            { get: () => c.text_color, set: (v) => { c.text_color = v; window.elementSdk.setConfig({ text_color: v }); } }
-          ],
-          borderables: [],
-          fontEditable: { get: () => c.font_family, set: (v) => { c.font_family = v; window.elementSdk.setConfig({ font_family: v }); } },
-          fontSizeable: { get: () => c.font_size, set: (v) => { c.font_size = v; window.elementSdk.setConfig({ font_size: v }); } }
-        };
-      },
-      mapToEditPanelValues: (config) => {
-        const c = { ...defaultConfig, ...config };
-        return new Map([
-          ['app_title', c.app_title],
-          ['app_subtitle', c.app_subtitle]
-        ]);
-      }
-    });
-
-    // Data SDK
-    const dataHandler = {
-      onDataChanged(data) {
-        allBuyers = data.filter(d => d.buyer_id);
-        allFarmers = data.filter(d => d.farmer_id && !d.message_id && !d.order_id && !d.product_id);
-        allProducts = data.filter(d => !d.message_id && !d.order_id && !d.buyer_id && !d.farmer_id);
-        allOrders = data.filter(d => d.order_id && currentUser && d.buyer_id === currentUser.id);
-        allMessages = data.filter(d => d.message_id && currentUser && d.buyer_id === currentUser.id);
-
-        renderProducts(allProducts);
-        renderOrders(allOrders);
-        renderChats(allMessages);
-      }
-    };
-
-    (async () => {
-      const result = await window.dataSdk.init(dataHandler);
-      if (!result.isOk) console.error('Data SDK init failed');
-    })();
-
-    // Tab Switching
-    function switchTab(tab) {
-      currentTab = tab;
-      document.querySelectorAll('[id^="tab-"]').forEach(el => {
-        if (!el.id.includes('-btn')) {
-          el.classList.add('hidden');
-          el.style.display = 'none';
-        }
-      });
-      document.getElementById('tab-' + tab).classList.remove('hidden');
-      document.getElementById('tab-' + tab).style.display = '';
-
-      document.querySelectorAll('[id$="-btn"]').forEach(btn => btn.style.color = 'rgba(255,255,255,0.6)');
-      document.getElementById('tab-' + tab + '-btn').style.color = '#ffffff';
-      document.getElementById('tab-' + tab + '-btn').style.borderBottom = '3px solid #ffb300';
-
-      lucide.createIcons();
-    }
-
-    // View Mode Toggle
-    function toggleViewMode() {
-      viewMode = viewMode === 'grid' ? 'list' : 'grid';
-      document.getElementById('view-mode-text').textContent = viewMode === 'grid' ? 'List' : 'Grid';
-      document.getElementById('products-grid').style.display = viewMode === 'grid' ? 'grid' : 'none';
-      document.getElementById('products-list').style.display = viewMode === 'list' ? 'block' : 'none';
-      renderProducts(allProducts);
-    }
-
-    // BROWSE TAB - Products
-    function renderProducts(products) {
-      const grid = document.getElementById('products-grid');
-      const list = document.getElementById('products-list');
-      const empty = document.getElementById('browse-empty');
-      const query = (document.getElementById('search-products').value || '').toLowerCase();
-
-      const filtered = query ? products.filter(p =>
-        (p.product_name || '').toLowerCase().includes(query) ||
-        (p.farmer_name || '').toLowerCase().includes(query)) : products;
-
-      empty.style.display = filtered.length === 0 ? '' : 'none';
-
-      if (viewMode === 'grid') {
-        grid.innerHTML = '';
-        filtered.forEach((product, i) => {
-          const card = createProductCard(product, i);
-          grid.appendChild(card);
-        });
-      } else {
-        list.innerHTML = '';
-        filtered.forEach((product, i) => {
-          const item = createProductListItem(product, i);
-          list.appendChild(item);
-        });
-      }
-    }
-
-    function createProductCard(product, index) {
-      const card = document.createElement('div');
-      card.className = 'product-card animate-scale-in';
-      card.style.background = '#ffffff';
-      card.style.borderRadius = '12px';
-      card.style.border = '1px solid #e8f5e9';
-      card.style.overflow = 'hidden';
-      card.style.animationDelay = `${index * 0.05}s`;
-      card.style.opacity = '0';
-      card.onclick = () => openProductModal(product);
-      
-      const img = document.createElement('img');
-      img.src = product.image_url || '';
-      img.alt = product.product_name || 'Product';
-      img.className = 'product-image';
-      img.onerror = () => { img.style.background = 'linear-gradient(135deg, #c8e6c9 0%, #e8f5e9 100%)'; };
-      
-      const content = document.createElement('div');
-      content.style.padding = '12px';
-      content.innerHTML = `
-        <h3 style="color: #1b5e20; font-weight: 700; font-size: 14px; margin: 0 0 4px 0; line-height: 1.3;">${escapeHtml(product.product_name || 'Product')}</h3>
-        <p style="color: #66bb6a; font-size: 12px; margin: 0 0 8px 0;">${escapeHtml(product.farmer_name || 'Farmer')}</p>
-        <div style="display: flex; align-items: center; justify-content: space-between;">
-          <span style="color: #1b5e20; font-weight: 700; font-size: 16px;">KES ${escapeHtml(product.price || '0')}</span>
-          <span style="background: #e8f5e9; color: #1b5e20; font-size: 11px; font-weight: 600; padding: 4px 8px; border-radius: 6px;">${escapeHtml(product.quantity_available || '0')}</span>
+  <!-- Header -->
+  <header id="app-header">
+    <div class="header-logo">
+      <div class="header-logo-icon">
+        <svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 0 0-10 10c0 5.52 4.48 10 10 10s10-4.48 10-10S17.52 2 12 2z"/><path d="M7 13s0-5 5-5 5 5 5 5"/></svg>
+      </div>
+      <span class="header-logo-text">AgroTrade</span>
+    </div>
+    <nav class="header-nav" id="header-nav"></nav>
+    <div class="header-right">
+      <div class="user-pill">
+        <div class="user-avatar" id="header-avatar"></div>
+        <div>
+          <div class="user-name" id="header-name"></div>
+          <div class="user-role" id="header-role"></div>
         </div>
-      `;
-      
-      card.appendChild(img);
-      card.appendChild(content);
-      return card;
-    }
+      </div>
+      <button class="logout-btn" onclick="logout()" title="Logout">
+        <svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+      </button>
+    </div>
+  </header>
 
-    function createProductListItem(product, index) {
-      const item = document.createElement('div');
-      item.className = 'product-card animate-slide-up';
-      item.style.background = '#ffffff';
-      item.style.padding = '12px';
-      item.style.borderRadius = '12px';
-      item.style.border = '1px solid #e8f5e9';
-      item.style.display = 'flex';
-      item.style.gap = '12px';
-      item.style.cursor = 'pointer';
-      item.style.animationDelay = `${index * 0.05}s`;
-      item.style.opacity = '0';
-      item.onclick = () => openProductModal(product);
-      
-      const img = document.createElement('img');
-      img.src = product.image_url || '';
-      img.alt = product.product_name || 'Product';
-      img.style.width = '80px';
-      img.style.height = '80px';
-      img.style.borderRadius = '8px';
-      img.style.objectFit = 'cover';
-      img.style.flexShrink = '0';
-      img.style.background = 'linear-gradient(135deg, #c8e6c9 0%, #e8f5e9 100%)';
-      img.onerror = () => { img.style.background = 'linear-gradient(135deg, #c8e6c9 0%, #e8f5e9 100%)'; };
-      
-      const content = document.createElement('div');
-      content.style.flex = '1';
-      content.style.display = 'flex';
-      content.style.justifyContent = 'space-between';
-      content.style.alignItems = 'flex-start';
-      content.innerHTML = `
-        <div style="flex: 1;">
-          <h3 style="color: #1b5e20; font-weight: 700; font-size: 14px; margin: 0 0 2px 0;">${escapeHtml(product.product_name || 'Product')}</h3>
-          <p style="color: #66bb6a; font-size: 12px; margin: 0 0 4px 0;">${escapeHtml(product.farmer_name || 'Farmer')}</p>
-          <p style="color: #999; font-size: 11px; margin: 0;">Qty: ${escapeHtml(product.quantity_available || '0')}</p>
+  <!-- Pages -->
+  <div id="app-main">
+
+    <!-- BUYER: Browse -->
+    <div class="page" id="page-browse">
+      <div class="page-header">
+        <div>
+          <div class="page-title">Browse Products</div>
+          <div class="page-subtitle">Fresh produce from local farmers</div>
         </div>
-        <div style="text-align: right;">
-          <p style="color: #1b5e20; font-weight: 700; font-size: 16px; margin: 0;">KES ${escapeHtml(product.price || '0')}</p>
+        <div class="flex gap-2 items-center">
+          <div class="search-bar">
+            <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+            <input class="form-input" id="browse-search" placeholder="Search products, farmers..." oninput="renderBrowse()" style="width:260px">
+          </div>
         </div>
-      `;
-      
-      item.appendChild(img);
-      item.appendChild(content);
-      return item;
-    }
+      </div>
+      <div class="filter-tabs" id="browse-cats">
+        <div class="filter-tab active" onclick="setBrowseCat('all', this)">All Products</div>
+        <div class="filter-tab" onclick="setBrowseCat('vegetables', this)">🥬 Vegetables</div>
+        <div class="filter-tab" onclick="setBrowseCat('fruits', this)">🍎 Fruits</div>
+        <div class="filter-tab" onclick="setBrowseCat('grains', this)">🌾 Grains</div>
+        <div class="filter-tab" onclick="setBrowseCat('livestock', this)">🐄 Livestock</div>
+        <div class="filter-tab" onclick="setBrowseCat('dairy', this)">🥛 Dairy</div>
+        <div class="filter-tab" onclick="setBrowseCat('other', this)">📦 Other</div>
+      </div>
+      <div id="browse-grid" class="products-grid"></div>
+      <div id="browse-empty" class="empty-state hidden">
+        <svg viewBox="0 0 24 24"><path d="M20 13c0 5-3.5 7.5-8 8.5C7.5 20.5 4 18 4 13V6l8-3 8 3v7z"/></svg>
+        <h3>No products found</h3>
+        <p>Try a different search or category</p>
+      </div>
+    </div>
 
-    function openProductModal(product) {
-      document.getElementById('product-modal-title').textContent = escapeHtml(product.product_name || 'Product');
-      document.getElementById('product-modal-image').src = product.image_url || '';
-      document.getElementById('product-modal-name').textContent = escapeHtml(product.product_name || 'Product');
-      document.getElementById('product-modal-farmer').textContent = `by ${escapeHtml(product.farmer_name || 'Farmer')} • ${escapeHtml(product.location || 'Location')}`;
-      document.getElementById('product-modal-price').textContent = `KES ${escapeHtml(product.price || '0')}`;
-      document.getElementById('product-modal-quantity').textContent = escapeHtml(product.quantity_available || '0');
-      document.getElementById('product-modal-rating').textContent = product.farmer_rating || '4.8';
-      document.getElementById('product-modal-location').textContent = escapeHtml(product.location || 'N/A');
-      document.getElementById('product-modal-description').textContent = escapeHtml(product.description || 'No description available');
-      document.getElementById('product-modal-call').href = `tel:${encodeURIComponent(product.phone_number || '')}`;
-      
-      selectedProductForOrder = product;
-      document.getElementById('product-modal').style.display = 'flex';
-      lucide.createIcons();
-    }
+    <!-- BUYER: My Orders -->
+    <div class="page" id="page-buyer-orders">
+      <div class="page-header">
+        <div>
+          <div class="page-title">My Orders</div>
+          <div class="page-subtitle">Track your purchases</div>
+        </div>
+      </div>
+      <div class="filter-tabs">
+        <div class="filter-tab active" onclick="setBuyerOrderFilter('all', this)">All</div>
+        <div class="filter-tab" onclick="setBuyerOrderFilter('pending', this)">Pending</div>
+        <div class="filter-tab" onclick="setBuyerOrderFilter('accepted', this)">Accepted</div>
+        <div class="filter-tab" onclick="setBuyerOrderFilter('completed', this)">Completed</div>
+        <div class="filter-tab" onclick="setBuyerOrderFilter('rejected', this)">Rejected</div>
+      </div>
+      <div id="buyer-orders-list" class="orders-list"></div>
+      <div id="buyer-orders-empty" class="empty-state hidden">
+        <svg viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg>
+        <h3>No orders yet</h3>
+        <p>Browse products and place your first order</p>
+      </div>
+    </div>
 
-    function closeProductModal() {
-      document.getElementById('product-modal').style.display = 'none';
-      selectedProductForOrder = null;
-    }
+    <!-- FARMER: Dashboard -->
+    <div class="page" id="page-farmer-dashboard">
+      <div class="page-header">
+        <div>
+          <div class="page-title" id="farmer-welcome">Welcome!</div>
+          <div class="page-subtitle">Your farm business at a glance</div>
+        </div>
+      </div>
+      <div class="stats-grid" id="farmer-stats"></div>
+      <div class="section-title">Recent Orders</div>
+      <div id="farmer-recent-orders" class="orders-list"></div>
+    </div>
 
-    function openOrderFromProduct() {
-      if (!selectedProductForOrder) return;
-      closeProductModal();
-      selectedFarmerForOrder = { id: selectedProductForOrder.farmer_id, name: selectedProductForOrder.farmer_name };
-      document.getElementById('order-item').value = selectedProductForOrder.product_name || '';
-      document.getElementById('order-quantity').value = '';
-      document.getElementById('order-price').value = selectedProductForOrder.price || '';
-      document.getElementById('order-modal-title').textContent = `Order ${selectedProductForOrder.product_name}`;
-      document.getElementById('order-modal-farmer').textContent = `from ${selectedProductForOrder.farmer_name}`;
-      document.getElementById('order-modal').style.display = 'flex';
-    }
+    <!-- FARMER: My Products -->
+    <div class="page" id="page-farmer-products">
+      <div class="page-header">
+        <div>
+          <div class="page-title">My Products</div>
+          <div class="page-subtitle">Manage what you sell</div>
+        </div>
+        <button class="btn btn-primary" onclick="openAddProductModal()">
+          <svg style="width:16px;height:16px;stroke:white;fill:none;stroke-width:2" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Add Product
+        </button>
+      </div>
+      <div id="farmer-products-grid" class="products-grid"></div>
+      <div id="farmer-products-empty" class="empty-state hidden">
+        <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M12 8v8"/><path d="M8 12h8"/></svg>
+        <h3>No products listed</h3>
+        <p>Add your first product to start selling</p>
+      </div>
+    </div>
 
-    function startChatFromProduct() {
-      if (!selectedProductForOrder) return;
-      closeProductModal();
-      startChat(selectedProductForOrder.farmer_id, selectedProductForOrder.farmer_name);
-    }
+    <!-- FARMER: Incoming Orders -->
+    <div class="page" id="page-farmer-orders">
+      <div class="page-header">
+        <div>
+          <div class="page-title">Incoming Orders</div>
+          <div class="page-subtitle">Orders from buyers</div>
+        </div>
+      </div>
+      <div class="filter-tabs">
+        <div class="filter-tab active" onclick="setFarmerOrderFilter('all', this)">All</div>
+        <div class="filter-tab" onclick="setFarmerOrderFilter('pending', this)">Pending</div>
+        <div class="filter-tab" onclick="setFarmerOrderFilter('accepted', this)">Accepted</div>
+        <div class="filter-tab" onclick="setFarmerOrderFilter('completed', this)">Completed</div>
+        <div class="filter-tab" onclick="setFarmerOrderFilter('rejected', this)">Rejected</div>
+      </div>
+      <div id="farmer-orders-list" class="orders-list"></div>
+      <div id="farmer-orders-empty" class="empty-state hidden">
+        <svg viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg>
+        <h3>No orders yet</h3>
+        <p>Orders from buyers will appear here</p>
+      </div>
+    </div>
 
-    function filterProducts() { renderProducts(allProducts); lucide.createIcons(); }
-
-    // ORDERS TAB
-    function renderOrders(orders) {
-      const list = document.getElementById('orders-list');
-      const empty = document.getElementById('orders-empty');
-
-      empty.style.display = orders.length === 0 ? '' : 'none';
-
-      const existingItems = new Map([...list.children].map(el => [el.dataset.orderId, el]));
-      const newIds = new Set(orders.map(o => o.__backendId));
-
-      existingItems.forEach((el, id) => { if (!newIds.has(id)) el.remove(); });
-
-      orders.forEach((order, i) => {
-        const id = order.__backendId;
-        if (existingItems.has(id)) {
-          updateOrderCard(existingItems.get(id), order);
-        } else {
-          const card = createOrderCard(order, i);
-          list.appendChild(card);
-        }
-      });
-    }
-
-    function createOrderCard(order, index) {
-      const card = document.createElement('div');
-      card.className = 'order-card animate-slide-up';
-      card.dataset.orderId = order.__backendId;
-      card.style.background = '#ffffff';
-      card.style.padding = '16px';
-      card.style.borderRadius = '12px';
-      card.style.border = '1px solid #e8f5e9';
-      card.style.animationDelay = `${index * 0.05}s`;
-      card.style.opacity = '0';
-      card.innerHTML = buildOrderCardHTML(order);
-      return card;
-    }
-
-    function updateOrderCard(card, order) {
-      card.innerHTML = buildOrderCardHTML(order);
-      card.style.opacity = '1';
-    }
-
-    function buildOrderCardHTML(order) {
-      const statusColor = order.order_status === 'completed' ? '#4caf50' : order.order_status === 'pending' ? '#ff9800' : '#999';
-      const deliveryColor = order.delivery_status === 'delivered' ? '#4caf50' : order.delivery_status === 'in-transit' ? '#2196f3' : '#999';
-      const paymentColor = order.payment_status === 'paid' ? '#4caf50' : order.payment_status === 'pending' ? '#ff9800' : '#999';
-      return `
-        <div class="flex items-start gap-3">
-          <div style="width: 48px; height: 48px; border-radius: 10px; background: #e8f5e9; display: flex; align-items: center; justify-content: center; flex-shrink: 0;"><i data-lucide="package" style="width: 24px; height: 24px; color: #1b5e20;"></i></div>
-          <div class="flex-1">
-            <div class="flex items-start justify-between">
-              <div>
-                <h3 style="color: #1b5e20; font-weight: 700; font-size: 15px; margin: 0;">${escapeHtml(order.item_name || 'Order')}</h3>
-                <p style="color: #66bb6a; font-size: 12px; margin: 2px 0 0 0;">${escapeHtml(order.farmer_name || 'Farmer')}</p>
-              </div>
-              <span style="background: ${statusColor}; color: #fff; font-size: 11px; font-weight: 600; padding: 4px 12px; border-radius: 20px;">${escapeHtml(order.order_status || 'pending').toUpperCase()}</span>
-            </div>
-            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-top: 10px;">
-              <div style="background: #f5f9f5; padding: 8px; border-radius: 6px; font-size: 12px;">
-                <p style="color: #999; margin: 0 0 2px 0; font-weight: 600;">Delivery</p>
-                <p style="color: ${deliveryColor}; margin: 0; font-weight: 600;">${escapeHtml((order.delivery_status || 'pending')).replace('-', ' ').toUpperCase()}</p>
-              </div>
-              <div style="background: #f5f9f5; padding: 8px; border-radius: 6px; font-size: 12px;">
-                <p style="color: #999; margin: 0 0 2px 0; font-weight: 600;">Payment</p>
-                <p style="color: ${paymentColor}; margin: 0; font-weight: 600;">${escapeHtml((order.payment_status || 'pending')).toUpperCase()}</p>
-              </div>
-              <div style="background: #f5f9f5; padding: 8px; border-radius: 6px; font-size: 12px;">
-                <p style="color: #999; margin: 0 0 2px 0; font-weight: 600;">Total</p>
-                <p style="color: #1b5e20; margin: 0; font-weight: 600;">KES ${escapeHtml(order.order_price || '0')}</p>
-              </div>
-            </div>
-            <div style="display: flex; gap: 12px; margin-top: 8px; color: #999; font-size: 13px;">
-              <span><i data-lucide="box" style="width: 12px; height: 12px; display: inline; margin-right: 4px; vertical-align: -2px;"></i>${escapeHtml(order.quantity || 'N/A')}</span>
-              <span><i data-lucide="calendar" style="width: 12px; height: 12px; display: inline; margin-right: 4px; vertical-align: -2px;"></i>${new Date(order.created_at).toLocaleDateString()}</span>
+    <!-- MESSAGES (shared) -->
+    <div class="page" id="page-messages">
+      <div class="messages-layout">
+        <div class="conversations-panel">
+          <div class="conversations-header">
+            <h3>Messages</h3>
+          </div>
+          <div class="conversations-list" id="conversations-list"></div>
+          <div id="conversations-empty" class="empty-state" style="padding:30px 16px">
+            <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+            <p style="font-size:12px">No conversations yet</p>
+          </div>
+        </div>
+        <div class="chat-panel">
+          <div id="chat-empty-state" class="chat-empty">
+            <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+            <p>Select a conversation to start chatting</p>
+          </div>
+          <div id="chat-active" class="hidden" style="display:flex;flex-direction:column;height:100%;overflow:hidden">
+            <div class="chat-header" id="chat-header"></div>
+            <div class="chat-messages" id="chat-messages"></div>
+            <div class="chat-input-area">
+              <textarea id="chat-input" placeholder="Type a message..." rows="1" onkeydown="chatKeyDown(event)"></textarea>
+              <button class="btn btn-primary btn-icon" onclick="sendMessage()">
+                <svg style="width:18px;height:18px;stroke:white;fill:none;stroke-width:2" viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+              </button>
             </div>
           </div>
         </div>
-      `;
-    }
+      </div>
+    </div>
 
-    // CHATS TAB
-    function renderChats(messages) {
-      const chatsList = document.getElementById('chats-list');
-      
-      const farmerMap = new Map();
-      messages.forEach(msg => {
-        if (!farmerMap.has(msg.farmer_id)) {
-          farmerMap.set(msg.farmer_id, { farmer_id: msg.farmer_id, farmer_name: msg.farmer_name, lastMessage: msg.message_text, timestamp: msg.timestamp });
-        } else {
-          const existing = farmerMap.get(msg.farmer_id);
-          if (new Date(msg.timestamp) > new Date(existing.timestamp)) {
-            existing.lastMessage = msg.message_text;
-            existing.timestamp = msg.timestamp;
-          }
-        }
-      });
+    <!-- PROFILE -->
+    <div class="page" id="page-profile">
+      <div class="profile-header">
+        <div class="profile-avatar-big" id="profile-avatar-big"></div>
+        <div class="profile-info">
+          <h2 id="profile-name-big"></h2>
+          <p id="profile-role-big"></p>
+          <p id="profile-location-big" style="margin-top:4px;opacity:0.7;font-size:13px"></p>
+        </div>
+      </div>
+      <div class="profile-grid" id="profile-grid"></div>
+    </div>
 
-      const existingItems = new Map([...chatsList.children].map(el => [el.dataset.farmerId, el]));
-      const newIds = new Set(farmerMap.keys());
+  </div><!-- end app-main -->
 
-      existingItems.forEach((el, id) => { if (!newIds.has(id)) el.remove(); });
+  <!-- Bottom Nav Mobile -->
+  <nav id="bottom-nav">
+    <div class="bottom-nav-inner" id="bottom-nav-inner"></div>
+  </nav>
 
-      Array.from(farmerMap.values()).forEach((convo, i) => {
-        const id = convo.farmer_id;
-        if (existingItems.has(id)) {
-          updateChatItem(existingItems.get(id), convo);
-        } else {
-          const item = createChatItem(convo, i);
-          chatsList.appendChild(item);
-        }
-      });
-    }
+</div><!-- end app -->
 
-    function createChatItem(convo, index) {
-      const item = document.createElement('button');
-      item.dataset.farmerId = convo.farmer_id;
-      item.style.width = '100%';
-      item.style.padding = '12px';
-      item.style.border = 'none';
-      item.style.background = '#f9f9f9';
-      item.style.borderRadius = '8px';
-      item.style.cursor = 'pointer';
-      item.style.marginBottom = '4px';
-      item.style.textAlign = 'left';
-      item.style.transition = 'all 0.2s ease';
-      item.onclick = () => selectChat(convo.farmer_id);
-      item.innerHTML = `
-        <h4 style="color: #1b5e20; font-weight: 600; font-size: 14px; margin: 0; margin-bottom: 4px;">${escapeHtml(convo.farmer_name)}</h4>
-        <p style="color: #999; font-size: 12px; margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${escapeHtml(convo.lastMessage)}</p>
-      `;
-      return item;
-    }
+<!-- Toast Container -->
+<div id="toast-container"></div>
 
-    function updateChatItem(item, convo) {
-      item.innerHTML = `
-        <h4 style="color: #1b5e20; font-weight: 600; font-size: 14px; margin: 0; margin-bottom: 4px;">${escapeHtml(convo.farmer_name)}</h4>
-        <p style="color: #999; font-size: 12px; margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${escapeHtml(convo.lastMessage)}</p>
-      `;
-    }
+<!-- ===================== MODALS ===================== -->
 
-    function selectChat(farmerId) {
-      currentChatFarmerId = farmerId;
-      const chatWindow = document.getElementById('chat-window');
-      chatWindow.innerHTML = '';
+<!-- Product Detail Modal -->
+<div id="modal-product" class="modal-overlay hidden" onclick="closeModalOnOverlay(event,'modal-product')">
+  <div class="modal modal-lg" onclick="event.stopPropagation()">
+    <div class="modal-header">
+      <span class="modal-title" id="modal-product-title">Product Details</span>
+      <button class="btn btn-ghost btn-icon" onclick="closeModal('modal-product')">
+        <svg style="width:18px;height:18px;stroke:var(--gray-600);fill:none;stroke-width:2" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <div class="product-detail-grid" id="product-detail-content"></div>
+    </div>
+  </div>
+</div>
 
-      const messages = allMessages.filter(m => m.farmer_id === farmerId);
-      messages.forEach((msg, i) => {
-        const isMe = msg.buyer_name && msg.buyer_name !== '';
-        const bubble = document.createElement('div');
-        bubble.className = 'chat-message';
-        bubble.style.alignSelf = isMe ? 'flex-end' : 'flex-start';
-        bubble.style.maxWidth = '70%';
-        bubble.style.padding = '10px 14px';
-        bubble.style.borderRadius = '12px';
-        bubble.style.background = isMe ? '#1b5e20' : '#e8f5e9';
-        bubble.style.color = isMe ? '#fff' : '#1b5e20';
-        bubble.style.fontSize = '13px';
-        bubble.style.animationDelay = `${i * 0.05}s`;
-        bubble.textContent = msg.message_text;
-        chatWindow.appendChild(bubble);
-      });
+<!-- Order Modal -->
+<div id="modal-order" class="modal-overlay hidden" onclick="closeModalOnOverlay(event,'modal-order')">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-header">
+      <span class="modal-title">Place Order</span>
+      <button class="btn btn-ghost btn-icon" onclick="closeModal('modal-order')">
+        <svg style="width:18px;height:18px;stroke:var(--gray-600);fill:none;stroke-width:2" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <div id="order-product-info" style="background:var(--gray-50);border-radius:var(--radius);padding:14px;margin-bottom:20px;display:flex;gap:12px;align-items:center"></div>
+      <div class="form-group">
+        <label class="form-label">Product Name</label>
+        <input class="form-input" id="order-item" readonly style="background:var(--gray-50)">
+      </div>
+      <div class="two-col">
+        <div class="form-group">
+          <label class="form-label">Quantity *</label>
+          <input class="form-input" id="order-qty" type="text" placeholder="e.g. 10 kg" oninput="calcOrderTotal()">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Unit Price (KES)</label>
+          <input class="form-input" id="order-unit-price" type="number" readonly style="background:var(--gray-50)">
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Total Price (KES) *</label>
+        <input class="form-input" id="order-total" type="number" placeholder="Total amount">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Delivery Address</label>
+        <input class="form-input" id="order-address" type="text" placeholder="Where should it be delivered?">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Notes (optional)</label>
+        <textarea class="form-input form-textarea" id="order-notes" placeholder="Any special instructions..."></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('modal-order')">Cancel</button>
+      <button class="btn btn-primary" onclick="submitOrder()" id="order-submit-btn">
+        <svg style="width:16px;height:16px;stroke:white;fill:none;stroke-width:2" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+        Place Order
+      </button>
+    </div>
+  </div>
+</div>
 
-      chatWindow.scrollTop = chatWindow.scrollHeight;
-      document.getElementById('chat-empty').classList.add('hidden');
-      document.getElementById('chat-empty').style.display = 'none';
-      chatWindow.classList.remove('hidden');
-      chatWindow.style.display = 'flex';
-      document.getElementById('chat-input-area').classList.remove('hidden');
-      document.getElementById('chat-input-area').style.display = '';
-    }
+<!-- Add/Edit Product Modal -->
+<div id="modal-product-form" class="modal-overlay hidden" onclick="closeModalOnOverlay(event,'modal-product-form')">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-header">
+      <span class="modal-title" id="product-form-title">Add Product</span>
+      <button class="btn btn-ghost btn-icon" onclick="closeModal('modal-product-form')">
+        <svg style="width:18px;height:18px;stroke:var(--gray-600);fill:none;stroke-width:2" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="pf-id">
+      <div class="form-group">
+        <label class="form-label">Product Name *</label>
+        <input class="form-input" id="pf-name" type="text" placeholder="e.g. Fresh Tomatoes">
+      </div>
+      <div class="two-col">
+        <div class="form-group">
+          <label class="form-label">Category *</label>
+          <select class="form-input" id="pf-category">
+            <option value="vegetables">🥬 Vegetables</option>
+            <option value="fruits">🍎 Fruits</option>
+            <option value="grains">🌾 Grains</option>
+            <option value="livestock">🐄 Livestock</option>
+            <option value="dairy">🥛 Dairy</option>
+            <option value="other">📦 Other</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Price per Unit (KES) *</label>
+          <input class="form-input" id="pf-price" type="number" placeholder="e.g. 50">
+        </div>
+      </div>
+      <div class="two-col">
+        <div class="form-group">
+          <label class="form-label">Quantity Available *</label>
+          <input class="form-input" id="pf-qty" type="text" placeholder="e.g. 100 kg">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Unit</label>
+          <select class="form-input" id="pf-unit">
+            <option value="kg">kg</option>
+            <option value="g">g</option>
+            <option value="liter">liter</option>
+            <option value="piece">piece</option>
+            <option value="crate">crate</option>
+            <option value="bag">bag</option>
+            <option value="dozen">dozen</option>
+            <option value="head">head</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Location / Farm</label>
+        <input class="form-input" id="pf-location" type="text" placeholder="Where is this product from?">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Description</label>
+        <textarea class="form-input form-textarea" id="pf-desc" placeholder="Describe your product..."></textarea>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Image URL (optional)</label>
+        <input class="form-input" id="pf-image" type="url" placeholder="https://...">
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('modal-product-form')">Cancel</button>
+      <button class="btn btn-primary" onclick="submitProductForm()" id="pf-submit-btn">Save Product</button>
+    </div>
+  </div>
+</div>
 
-    function startChat(farmerId, farmerName) {
-      switchTab('chats');
-      const hasConvo = allMessages.some(m => m.farmer_id === farmerId);
-      if (!hasConvo) {
-        currentChatFarmerId = farmerId;
-        document.getElementById('chat-empty').classList.add('hidden');
-        document.getElementById('chat-empty').style.display = 'none';
-        document.getElementById('chat-window').classList.remove('hidden');
-        document.getElementById('chat-window').style.display = 'flex';
-        document.getElementById('chat-input-area').classList.remove('hidden');
-        document.getElementById('chat-input-area').style.display = '';
-      } else {
-        selectChat(farmerId);
-      }
-    }
+<!-- Farmer Profile Modal (for buyers) -->
+<div id="modal-farmer-profile" class="modal-overlay hidden" onclick="closeModalOnOverlay(event,'modal-farmer-profile')">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-header">
+      <span class="modal-title">Farmer Profile</span>
+      <button class="btn btn-ghost btn-icon" onclick="closeModal('modal-farmer-profile')">
+        <svg style="width:18px;height:18px;stroke:var(--gray-600);fill:none;stroke-width:2" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="modal-body" id="farmer-profile-content"></div>
+    <div class="modal-footer" id="farmer-profile-footer"></div>
+  </div>
+</div>
 
-    async function sendMessage(e) {
-      e.preventDefault();
-      if (!currentChatFarmerId) return;
+<!-- Order Detail Modal -->
+<div id="modal-order-detail" class="modal-overlay hidden" onclick="closeModalOnOverlay(event,'modal-order-detail')">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-header">
+      <span class="modal-title">Order Details</span>
+      <button class="btn btn-ghost btn-icon" onclick="closeModal('modal-order-detail')">
+        <svg style="width:18px;height:18px;stroke:var(--gray-600);fill:none;stroke-width:2" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="modal-body" id="order-detail-content"></div>
+    <div class="modal-footer" id="order-detail-footer"></div>
+  </div>
+</div>
 
-      const input = document.getElementById('message-input');
-      const text = input.value.trim();
-      if (!text) return;
+<script>
+// ===================================================
+// DATA STORE
+// ===================================================
+const DB = {
+  // Storage keys
+  KEYS: { users: 'at_users', products: 'at_products', orders: 'at_orders', messages: 'at_messages', currentUser: 'at_current' },
 
-      input.disabled = true;
-      const farmer = allProducts.find(p => p.farmer_id === currentChatFarmerId);
+  load(key) { try { return JSON.parse(localStorage.getItem(key) || 'null'); } catch { return null; } },
+  save(key, val) { localStorage.setItem(key, JSON.stringify(val)); },
 
-      const record = {
-        message_id: 'msg_' + Date.now(),
-        buyer_id: currentUser.id,
-        buyer_name: currentUser.name,
-        farmer_id: currentChatFarmerId,
-        farmer_name: farmer ? farmer.farmer_name : 'Farmer',
-        message_text: text,
-        timestamp: new Date().toISOString()
-      };
+  getUsers() { return this.load(this.KEYS.users) || []; },
+  saveUsers(u) { this.save(this.KEYS.users, u); },
+  getProducts() { return this.load(this.KEYS.products) || []; },
+  saveProducts(p) { this.save(this.KEYS.products, p); },
+  getOrders() { return this.load(this.KEYS.orders) || []; },
+  saveOrders(o) { this.save(this.KEYS.orders, o); },
+  getMessages() { return this.load(this.KEYS.messages) || []; },
+  saveMessages(m) { this.save(this.KEYS.messages, m); },
+  getCurrentUser() { return this.load(this.KEYS.currentUser); },
+  setCurrentUser(u) { this.save(this.KEYS.currentUser, u); },
+  clearCurrentUser() { localStorage.removeItem(this.KEYS.currentUser); },
 
-      const result = await window.dataSdk.create(record);
-      input.disabled = false;
+  getUserById(id) { return this.getUsers().find(u => u.id === id); },
+  getProductById(id) { return this.getProducts().find(p => p.id === id); },
+  getOrderById(id) { return this.getOrders().find(o => o.id === id); },
 
-      if (result.isOk) {
-        input.value = '';
-        selectChat(currentChatFarmerId);
-      } else {
-        showToast('Failed to send message', true);
-      }
-    }
+  generateId() { return Date.now().toString(36) + Math.random().toString(36).substr(2, 5); }
+};
 
-    // ORDER MODAL
-    function closeOrderModal() {
-      document.getElementById('order-modal').style.display = 'none';
-      document.getElementById('order-form').reset();
-      selectedFarmerForOrder = null;
-    }
+// ===================================================
+// APP STATE
+// ===================================================
+let currentUser = null;
+let currentRole = null;
+let browseCatFilter = 'all';
+let buyerOrderFilter = 'all';
+let farmerOrderFilter = 'all';
+let activeChatWith = null;
+let selectedProductForOrder = null;
+let editingProductId = null;
+let chatPollInterval = null;
 
-    async function submitOrder(e) {
-      e.preventDefault();
-      if (!selectedFarmerForOrder) return;
+// ===================================================
+// AUTH
+// ===================================================
+function selectRole(role) {
+  currentRole = role;
+  document.getElementById('role-buyer-btn').classList.toggle('active', role === 'buyer');
+  document.getElementById('role-farmer-btn').classList.toggle('active', role === 'farmer');
+  if (role === 'farmer') {
+    document.getElementById('signup-location-group').style.display = 'none';
+    document.getElementById('signup-farm-group').style.display = 'block';
+  } else {
+    document.getElementById('signup-location-group').style.display = '';
+    document.getElementById('signup-farm-group').style.display = 'none';
+  }
+}
 
-      if (allOrders.length >= 999) {
-        showToast('Maximum limit of 999 orders reached', true);
-        return;
-      }
+function goToAuthForm() {
+  if (!currentRole) { showToast('Please select Buyer or Farmer first', 'error'); return; }
+  document.getElementById('auth-role-step').classList.add('hidden');
+  document.getElementById('auth-signin-step').classList.remove('hidden');
+  document.getElementById('signin-title').textContent = currentRole === 'farmer' ? 'Farmer Sign In' : 'Buyer Sign In';
+  document.getElementById('signin-subtitle').textContent = currentRole === 'farmer' ? 'Access your farm portal' : 'Access your account';
+}
 
-      const btn = document.querySelector('#order-form button[type="submit"]');
-      btn.disabled = true;
-      btn.textContent = 'Placing...';
+function backToRole() {
+  document.getElementById('auth-signin-step').classList.add('hidden');
+  document.getElementById('auth-signup-step').classList.add('hidden');
+  document.getElementById('auth-forgot-step').classList.add('hidden');
+  document.getElementById('auth-role-step').classList.remove('hidden');
+}
 
-      const record = {
-        order_id: 'ord_' + Date.now(),
-        buyer_id: currentUser.id,
-        buyer_name: currentUser.name,
-        farmer_id: selectedFarmerForOrder.id,
-        farmer_name: selectedFarmerForOrder.name,
-        item_name: document.getElementById('order-item').value.trim(),
-        quantity: document.getElementById('order-quantity').value.trim(),
-        order_price: document.getElementById('order-price').value.trim(),
-        order_status: 'pending',
-        delivery_status: 'pending',
-        payment_status: 'pending',
-        created_at: new Date().toISOString()
-      };
+function showSignIn() {
+  document.getElementById('auth-signup-step').classList.add('hidden');
+  document.getElementById('auth-forgot-step').classList.add('hidden');
+  document.getElementById('auth-role-step').classList.add('hidden');
+  document.getElementById('auth-signin-step').classList.remove('hidden');
+}
 
-      const result = await window.dataSdk.create(record);
+function showSignup() {
+  document.getElementById('auth-signin-step').classList.add('hidden');
+  document.getElementById('auth-signup-step').classList.remove('hidden');
+  document.getElementById('signup-subtitle').textContent = currentRole === 'farmer' ? 'Create your farmer account' : 'Create your buyer account';
+  if (currentRole === 'farmer') {
+    document.getElementById('signup-location-group').style.display = 'none';
+    document.getElementById('signup-farm-group').style.display = 'block';
+  } else {
+    document.getElementById('signup-location-group').style.display = '';
+    document.getElementById('signup-farm-group').style.display = 'none';
+  }
+}
 
-      btn.disabled = false;
-      btn.textContent = 'Place Order';
+function showForgotPassword() {
+  document.getElementById('auth-signin-step').classList.add('hidden');
+  document.getElementById('auth-forgot-step').classList.remove('hidden');
+}
 
-      if (result.isOk) {
-        closeOrderModal();
-        showToast('Order placed successfully!');
-      } else {
-        showToast('Failed to place order', true);
-      }
-    }
+function handleSignIn() {
+  const emailOrPhone = document.getElementById('signin-email').value.trim();
+  const password = document.getElementById('signin-password').value.trim();
+  if (!emailOrPhone || !password) { showToast('Please fill all fields', 'error'); return; }
 
-    // Utils
-    function escapeHtml(str) {
-      const div = document.createElement('div');
-      div.textContent = str;
-      return div.innerHTML;
-    }
+  const users = DB.getUsers();
+  const user = users.find(u =>
+    (u.email === emailOrPhone || u.phone === emailOrPhone) &&
+    u.password === password &&
+    u.role === currentRole
+  );
 
-    function escapeHtmlAttr(str) {
-      return str.replace(/'/g, "\\'").replace(/"/g, '&quot;');
-    }
+  if (!user) { showToast('Invalid credentials or wrong role selected', 'error'); return; }
 
-    function showToast(msg, isError = false) {
-      const toast = document.getElementById('toast');
-      toast.textContent = msg;
-      toast.style.background = isError ? '#d32f2f' : '#1b5e20';
-      toast.style.display = 'block';
-      clearTimeout(toast._timeout);
-      toast._timeout = setTimeout(() => { toast.style.display = 'none'; }, 3000);
-    }
+  const btn = document.getElementById('signin-btn');
+  btn.disabled = true;
+  document.getElementById('signin-btn-text').innerHTML = '<div class="spinner"></div>';
+  setTimeout(() => {
+    currentUser = user;
+    DB.setCurrentUser(user);
+    launchApp();
+  }, 700);
+}
 
-    // Init
-    window.addEventListener('DOMContentLoaded', () => {
-      lucide.createIcons();
-      document.querySelector('header').style.display = 'none';
-      document.querySelector('main').style.display = 'none';
-    });
+function handleSignUp() {
+  const name = document.getElementById('signup-name').value.trim();
+  const phone = document.getElementById('signup-phone').value.trim();
+  const email = document.getElementById('signup-email').value.trim();
+  const password = document.getElementById('signup-password').value.trim();
+  const location = currentRole === 'farmer' ? document.getElementById('signup-farm').value.trim() : document.getElementById('signup-location').value.trim();
 
-    const origRenderProducts = renderProducts;
-    renderProducts = function(data) {
-      origRenderProducts(data);
-      setTimeout(() => lucide.createIcons(), 10);
+  if (!name || !phone || !email || !password || !location) { showToast('Please fill all required fields', 'error'); return; }
+  if (password.length < 6) { showToast('Password must be at least 6 characters', 'error'); return; }
+  if (!/^\+?[\d\s\-]{9,15}$/.test(phone)) { showToast('Enter a valid phone number', 'error'); return; }
+
+  const users = DB.getUsers();
+  if (users.find(u => u.email === email || u.phone === phone)) {
+    showToast('An account with this email or phone already exists', 'error'); return;
+  }
+
+  const btn = document.getElementById('signup-btn');
+  btn.disabled = true;
+  document.getElementById('signup-btn-text').innerHTML = '<div class="spinner"></div>';
+
+  setTimeout(() => {
+    const newUser = {
+      id: DB.generateId(),
+      name, phone, email, password,
+      role: currentRole,
+      location: currentRole === 'farmer' ? location : location,
+      farmName: currentRole === 'farmer' ? location : null,
+      createdAt: Date.now()
     };
-  </script>
- <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9dbccebe3518933f',t:'MTc3MzQyMzQ1Ny4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
-      </html>
+    users.push(newUser);
+    DB.saveUsers(users);
+    currentUser = newUser;
+    DB.setCurrentUser(newUser);
+    launchApp();
+  }, 700);
+}
+
+function handleForgotPassword() {
+  const phone = document.getElementById('forgot-phone').value.trim();
+  const newPass = document.getElementById('forgot-newpass').value.trim();
+  const confirmPass = document.getElementById('forgot-confirmpass').value.trim();
+
+  if (!phone || !newPass || !confirmPass) { showToast('Please fill all fields', 'error'); return; }
+  if (newPass.length < 6) { showToast('Password must be at least 6 characters', 'error'); return; }
+  if (newPass !== confirmPass) { showToast('Passwords do not match', 'error'); return; }
+
+  const users = DB.getUsers();
+  const idx = users.findIndex(u => u.phone === phone);
+  if (idx === -1) { showToast('No account found with this phone number', 'error'); return; }
+
+  const btn = document.getElementById('forgot-btn');
+  btn.disabled = true;
+  document.getElementById('forgot-btn-text').innerHTML = '<div class="spinner"></div>';
+
+  setTimeout(() => {
+    users[idx].password = newPass;
+    DB.saveUsers(users);
+    btn.disabled = false;
+    document.getElementById('forgot-btn-text').textContent = 'Reset Password';
+    showToast('Password reset successfully! Please sign in.', 'success');
+    showSignIn();
+    document.getElementById('signin-email').value = phone;
+    document.getElementById('signin-password').value = '';
+  }, 700);
+}
+
+function logout() {
+  clearInterval(chatPollInterval);
+  currentUser = null;
+  activeChatWith = null;
+  DB.clearCurrentUser();
+  document.getElementById('app').classList.add('hidden');
+  document.getElementById('auth-screen').style.display = '';
+  document.getElementById('auth-role-step').classList.remove('hidden');
+  document.getElementById('auth-signin-step').classList.add('hidden');
+  document.getElementById('auth-signup-step').classList.add('hidden');
+  document.getElementById('auth-forgot-step').classList.add('hidden');
+  // reset form fields
+  ['signin-email','signin-password','signup-name','signup-phone','signup-email','signup-password','signup-location','signup-farm','forgot-phone','forgot-newpass','forgot-confirmpass'].forEach(id => { const el = document.getElementById(id); if(el) el.value=''; });
+  document.getElementById('signin-btn').disabled = false;
+  document.getElementById('signin-btn-text').textContent = 'Sign In';
+  document.getElementById('signup-btn').disabled = false;
+  document.getElementById('signup-btn-text').textContent = 'Create Account';
+  currentRole = null;
+  document.getElementById('role-buyer-btn').classList.remove('active');
+  document.getElementById('role-farmer-btn').classList.remove('active');
+}
+
+// ===================================================
+// APP LAUNCH
+// ===================================================
+function launchApp() {
+  document.getElementById('auth-screen').style.display = 'none';
+  document.getElementById('app').classList.remove('hidden');
+
+  // Header
+  const initials = currentUser.name.split(' ').map(n=>n[0]).join('').toUpperCase().slice(0,2);
+  document.getElementById('header-avatar').textContent = initials;
+  document.getElementById('header-name').textContent = currentUser.name;
+  document.getElementById('header-role').textContent = currentUser.role;
+
+  // Profile avatar
+  document.getElementById('profile-avatar-big').textContent = initials;
+
+  // Build nav
+  buildNav();
+  buildBottomNav();
+
+  // Go to default page
+  if (currentUser.role === 'buyer') {
+    showPage('browse');
+  } else {
+    showPage('farmer-dashboard');
+    renderFarmerDashboard();
+  }
+
+  // Chat polling
+  chatPollInterval = setInterval(() => {
+    if (activeChatWith) renderChatMessages();
+    renderConversations();
+  }, 3000);
+}
+
+function buildNav() {
+  const nav = document.getElementById('header-nav');
+  nav.innerHTML = '';
+  const pages = getNavPages();
+  pages.forEach(p => {
+    const btn = document.createElement('button');
+    btn.className = 'nav-btn';
+    btn.id = 'nav-' + p.id;
+    btn.innerHTML = p.icon + '<span>' + p.label + '</span>';
+    btn.onclick = () => showPage(p.id);
+    nav.appendChild(btn);
+  });
+}
+
+function buildBottomNav() {
+  const nav = document.getElementById('bottom-nav-inner');
+  nav.innerHTML = '';
+  const pages = getNavPages();
+  pages.forEach(p => {
+    const btn = document.createElement('button');
+    btn.className = 'bottom-nav-btn';
+    btn.id = 'bnav-' + p.id;
+    btn.innerHTML = p.icon + '<span>' + p.label + '</span>';
+    btn.onclick = () => showPage(p.id);
+    nav.appendChild(btn);
+  });
+}
+
+function getNavPages() {
+  if (currentUser.role === 'buyer') {
+    return [
+      { id:'browse', label:'Browse', icon:'<svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>' },
+      { id:'buyer-orders', label:'My Orders', icon:'<svg viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg>' },
+      { id:'messages', label:'Messages', icon:'<svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>' },
+      { id:'profile', label:'Profile', icon:'<svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>' }
+    ];
+  } else {
+    return [
+      { id:'farmer-dashboard', label:'Dashboard', icon:'<svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>' },
+      { id:'farmer-products', label:'Products', icon:'<svg viewBox="0 0 24 24"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>' },
+      { id:'farmer-orders', label:'Orders', icon:'<svg viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg>' },
+      { id:'messages', label:'Messages', icon:'<svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>' },
+      { id:'profile', label:'Profile', icon:'<svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>' }
+    ];
+  }
+}
+
+function showPage(id) {
+  // Hide all pages
+  document.querySelectorAll('.page').forEach(p => { p.classList.remove('active'); });
+
+  // Show target
+  const page = document.getElementById('page-' + id);
+  if (page) { page.classList.add('active'); }
+
+  // Update nav active states
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.bottom-nav-btn').forEach(b => b.classList.remove('active'));
+  const nb = document.getElementById('nav-' + id);
+  if (nb) nb.classList.add('active');
+  const bnb = document.getElementById('bnav-' + id);
+  if (bnb) bnb.classList.add('active');
+
+  // Render page-specific content
+  if (id === 'browse') renderBrowse();
+  if (id === 'buyer-orders') renderBuyerOrders();
+  if (id === 'farmer-dashboard') renderFarmerDashboard();
+  if (id === 'farmer-products') renderFarmerProducts();
+  if (id === 'farmer-orders') renderFarmerOrders();
+  if (id === 'messages') { renderConversations(); }
+  if (id === 'profile') renderProfile();
+}
+
+// ===================================================
+// BROWSE (BUYER)
+// ===================================================
+let browseCat = 'all';
+
+function setBrowseCat(cat, el) {
+  browseCat = cat;
+  document.querySelectorAll('#browse-cats .filter-tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  renderBrowse();
+}
+
+function renderBrowse() {
+  const search = (document.getElementById('browse-search')?.value || '').toLowerCase();
+  let products = DB.getProducts();
+
+  // Only show available products from other users
+  products = products.filter(p => p.farmerId !== currentUser?.id && p.status !== 'unavailable');
+
+  if (browseCat !== 'all') products = products.filter(p => p.category === browseCat);
+  if (search) products = products.filter(p =>
+    p.name.toLowerCase().includes(search) ||
+    p.farmerName.toLowerCase().includes(search) ||
+    (p.location||'').toLowerCase().includes(search) ||
+    (p.description||'').toLowerCase().includes(search)
+  );
+
+  const grid = document.getElementById('browse-grid');
+  const empty = document.getElementById('browse-empty');
+  grid.innerHTML = '';
+
+  if (!products.length) { empty.classList.remove('hidden'); return; }
+  empty.classList.add('hidden');
+
+  products.forEach((p, i) => {
+    const card = document.createElement('div');
+    card.className = 'product-card animate-in';
+    card.style.animationDelay = (i * 0.05) + 's';
+    card.innerHTML = `
+      ${p.imageUrl ? `<img class="product-img" src="${escHtml(p.imageUrl)}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" alt="${escHtml(p.name)}">
+      <div class="product-img-placeholder" style="display:none"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div>`
+      : `<div class="product-img-placeholder"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div>`}
+      <div class="product-body">
+        <div class="product-name">${escHtml(p.name)}</div>
+        <div class="product-farmer">by ${escHtml(p.farmerName)} • ${escHtml(p.location||'')}</div>
+        <div class="product-meta">
+          <div class="product-price">KES ${Number(p.price).toLocaleString()}<span style="font-size:11px;font-weight:400;color:var(--gray-500)">/${escHtml(p.unit||'unit')}</span></div>
+          <div class="product-qty">${escHtml(p.qty||'')} avail.</div>
+        </div>
+      </div>
+    `;
+    card.onclick = () => openProductDetail(p.id);
+    grid.appendChild(card);
+  });
+}
+
+function openProductDetail(productId) {
+  const p = DB.getProductById(productId);
+  if (!p) return;
+  const farmer = DB.getUserById(p.farmerId);
+
+  document.getElementById('modal-product-title').textContent = p.name;
+  document.getElementById('product-detail-content').innerHTML = `
+    <div>
+      ${p.imageUrl
+        ? `<img src="${escHtml(p.imageUrl)}" class="product-detail-img" onerror="this.src=''" alt="${escHtml(p.name)}">`
+        : `<div class="product-detail-img" style="background:var(--green-xpale);display:flex;align-items:center;justify-content:center"><svg style="width:64px;height:64px;stroke:var(--green-mid);fill:none;stroke-width:1.5;opacity:0.5" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div>`
+      }
+      <div style="margin-top:14px">
+        <span class="badge badge-green">${p.category}</span>
+      </div>
+      ${p.description ? `<p style="font-size:14px;color:var(--gray-600);margin-top:12px;line-height:1.6">${escHtml(p.description)}</p>` : ''}
+    </div>
+    <div class="product-detail-info">
+      <div>
+        <div class="price-big">KES ${Number(p.price).toLocaleString()}<span style="font-size:14px;font-weight:400;color:var(--gray-500)"> / ${escHtml(p.unit||'unit')}</span></div>
+      </div>
+      <div class="info-row">
+        <svg viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg>
+        <div><div class="info-row-label">Available</div><div class="info-row-value">${escHtml(p.qty||'')}</div></div>
+      </div>
+      <div class="info-row">
+        <svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+        <div><div class="info-row-label">Location</div><div class="info-row-value">${escHtml(p.location||'N/A')}</div></div>
+      </div>
+      ${farmer ? `
+      <div style="background:var(--green-pale);border-radius:var(--radius);padding:14px">
+        <div style="font-size:12px;font-weight:600;color:var(--green-dark);margin-bottom:10px">FARMER INFO</div>
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
+          <div style="width:40px;height:40px;border-radius:50%;background:var(--green-mid);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;color:white;flex-shrink:0">${farmer.name.split(' ').map(n=>n[0]).join('').toUpperCase().slice(0,2)}</div>
+          <div>
+            <div style="font-weight:700;font-size:15px;color:var(--gray-900)">${escHtml(farmer.name)}</div>
+            <div style="font-size:12px;color:var(--green-mid)">${escHtml(farmer.farmName||farmer.location||'')}</div>
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:6px">
+          <div style="display:flex;align-items:center;gap:6px;font-size:13px">
+            <svg style="width:14px;height:14px;stroke:var(--green-mid);fill:none;stroke-width:2;flex-shrink:0" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.18 2 2 0 0 1 3.58 1h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.56a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+            <a href="tel:${escHtml(farmer.phone)}" style="color:var(--green-dark);font-weight:600">${escHtml(farmer.phone)}</a>
+          </div>
+          <div style="display:flex;align-items:center;gap:6px;font-size:13px">
+            <svg style="width:14px;height:14px;stroke:var(--green-mid);fill:none;stroke-width:2;flex-shrink:0" viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+            <a href="mailto:${escHtml(farmer.email)}" style="color:var(--green-dark);font-weight:600">${escHtml(farmer.email)}</a>
+          </div>
+        </div>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn btn-primary flex-1" onclick="closeModal('modal-product');openOrderModal('${p.id}')">
+          <svg style="width:16px;height:16px;stroke:white;fill:none;stroke-width:2" viewBox="0 0 24 24"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+          Order Now
+        </button>
+        <button class="btn btn-outline flex-1" onclick="closeModal('modal-product');startChatWithFarmer('${farmer.id}')">
+          <svg style="width:16px;height:16px;stroke:var(--green-mid);fill:none;stroke-width:2" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          Message
+        </button>
+      </div>
+      ` : ''}
+    </div>
+  `;
+  openModal('modal-product');
+}
+
+// ===================================================
+// ORDER
+// ===================================================
+function openOrderModal(productId) {
+  const p = DB.getProductById(productId);
+  if (!p) return;
+  selectedProductForOrder = p;
+
+  document.getElementById('order-item').value = p.name;
+  document.getElementById('order-unit-price').value = p.price;
+  document.getElementById('order-qty').value = '';
+  document.getElementById('order-total').value = '';
+  document.getElementById('order-address').value = '';
+  document.getElementById('order-notes').value = '';
+  document.getElementById('order-product-info').innerHTML = `
+    <div style="width:44px;height:44px;border-radius:var(--radius-sm);background:var(--green-pale);display:flex;align-items:center;justify-content:center;flex-shrink:0">
+      ${p.imageUrl ? `<img src="${escHtml(p.imageUrl)}" style="width:44px;height:44px;border-radius:var(--radius-sm);object-fit:cover" onerror="this.parentElement.innerHTML='🌿'">` : '<span style="font-size:22px">🌿</span>'}
+    </div>
+    <div>
+      <div style="font-weight:700;color:var(--gray-900)">${escHtml(p.name)}</div>
+      <div style="font-size:12px;color:var(--gray-500)">by ${escHtml(p.farmerName)} • KES ${Number(p.price).toLocaleString()}/${escHtml(p.unit||'unit')}</div>
+    </div>
+  `;
+  openModal('modal-order');
+}
+
+function calcOrderTotal() {
+  const price = parseFloat(document.getElementById('order-unit-price').value) || 0;
+  const qtyStr = document.getElementById('order-qty').value.trim();
+  const qtyNum = parseFloat(qtyStr);
+  if (!isNaN(qtyNum) && price > 0) {
+    document.getElementById('order-total').value = (qtyNum * price).toFixed(2);
+  }
+}
+
+function submitOrder() {
+  if (!selectedProductForOrder) return;
+  const qty = document.getElementById('order-qty').value.trim();
+  const total = document.getElementById('order-total').value.trim();
+  const address = document.getElementById('order-address').value.trim();
+  const notes = document.getElementById('order-notes').value.trim();
+
+  if (!qty || !total) { showToast('Please enter quantity and total price', 'error'); return; }
+
+  const btn = document.getElementById('order-submit-btn');
+  btn.disabled = true;
+
+  const orders = DB.getOrders();
+  const newOrder = {
+    id: DB.generateId(),
+    productId: selectedProductForOrder.id,
+    productName: selectedProductForOrder.name,
+    farmerId: selectedProductForOrder.farmerId,
+    farmerName: selectedProductForOrder.farmerName,
+    buyerId: currentUser.id,
+    buyerName: currentUser.name,
+    buyerPhone: currentUser.phone,
+    qty,
+    unitPrice: selectedProductForOrder.price,
+    total: parseFloat(total),
+    address,
+    notes,
+    status: 'pending',
+    paymentStatus: 'pending',
+    createdAt: Date.now()
+  };
+  orders.push(newOrder);
+  DB.saveOrders(orders);
+
+  btn.disabled = false;
+  closeModal('modal-order');
+  showToast('Order placed successfully!', 'success');
+  renderBuyerOrders();
+}
+
+// ===================================================
+// BUYER ORDERS
+// ===================================================
+function setBuyerOrderFilter(f, el) {
+  buyerOrderFilter = f;
+  document.querySelectorAll('#page-buyer-orders .filter-tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  renderBuyerOrders();
+}
+
+function renderBuyerOrders() {
+  let orders = DB.getOrders().filter(o => o.buyerId === currentUser.id);
+  if (buyerOrderFilter !== 'all') orders = orders.filter(o => o.status === buyerOrderFilter);
+  orders.sort((a,b) => b.createdAt - a.createdAt);
+
+  const list = document.getElementById('buyer-orders-list');
+  const empty = document.getElementById('buyer-orders-empty');
+  list.innerHTML = '';
+
+  if (!orders.length) { empty.classList.remove('hidden'); return; }
+  empty.classList.add('hidden');
+
+  orders.forEach(o => {
+    const card = buildOrderCard(o, 'buyer');
+    list.appendChild(card);
+  });
+}
+
+// ===================================================
+// FARMER DASHBOARD
+// ===================================================
+function renderFarmerDashboard() {
+  const myProducts = DB.getProducts().filter(p => p.farmerId === currentUser.id);
+  const myOrders = DB.getOrders().filter(o => o.farmerId === currentUser.id);
+  const pendingOrders = myOrders.filter(o => o.status === 'pending');
+  const totalRevenue = myOrders.filter(o=>o.status==='completed').reduce((s,o)=>s+o.total,0);
+
+  document.getElementById('farmer-welcome').textContent = 'Welcome, ' + currentUser.name.split(' ')[0] + '!';
+
+  document.getElementById('farmer-stats').innerHTML = `
+    <div class="stat-card animate-in">
+      <div class="stat-icon stat-icon-green"><svg viewBox="0 0 24 24"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg></div>
+      <div><div class="stat-value">${myProducts.length}</div><div class="stat-label">Listed Products</div></div>
+    </div>
+    <div class="stat-card animate-in" style="animation-delay:0.05s">
+      <div class="stat-icon stat-icon-amber"><svg viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg></div>
+      <div><div class="stat-value">${myOrders.length}</div><div class="stat-label">Total Orders</div></div>
+    </div>
+    <div class="stat-card animate-in" style="animation-delay:0.1s">
+      <div class="stat-icon stat-icon-red"><svg viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div>
+      <div><div class="stat-value">${pendingOrders.length}</div><div class="stat-label">Pending Orders</div></div>
+    </div>
+    <div class="stat-card animate-in" style="animation-delay:0.15s">
+      <div class="stat-icon stat-icon-blue"><svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>
+      <div><div class="stat-value">KES ${totalRevenue.toLocaleString()}</div><div class="stat-label">Revenue Earned</div></div>
+    </div>
+  `;
+
+  const recentOrders = myOrders.sort((a,b)=>b.createdAt-a.createdAt).slice(0,5);
+  const recentDiv = document.getElementById('farmer-recent-orders');
+  recentDiv.innerHTML = '';
+  if (!recentOrders.length) {
+    recentDiv.innerHTML = '<div class="empty-state"><svg viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2"/></svg><h3>No orders yet</h3><p>When buyers order your products they will appear here</p></div>';
+    return;
+  }
+  recentOrders.forEach(o => recentDiv.appendChild(buildOrderCard(o, 'farmer')));
+}
+
+// ===================================================
+// FARMER PRODUCTS
+// ===================================================
+function renderFarmerProducts() {
+  const products = DB.getProducts().filter(p => p.farmerId === currentUser.id);
+  const grid = document.getElementById('farmer-products-grid');
+  const empty = document.getElementById('farmer-products-empty');
+  grid.innerHTML = '';
+
+  if (!products.length) { empty.classList.remove('hidden'); return; }
+  empty.classList.add('hidden');
+
+  products.forEach((p, i) => {
+    const card = document.createElement('div');
+    card.className = 'product-card animate-in';
+    card.style.animationDelay = (i * 0.05) + 's';
+    card.innerHTML = `
+      ${p.imageUrl ? `<img class="product-img" src="${escHtml(p.imageUrl)}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" alt="${escHtml(p.name)}">
+      <div class="product-img-placeholder" style="display:none"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div>`
+      : `<div class="product-img-placeholder"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div>`}
+      <div class="product-body">
+        <div class="product-name">${escHtml(p.name)}</div>
+        <div class="product-farmer"><span class="badge badge-green">${p.category}</span> • ${escHtml(p.location||'')}</div>
+        <div class="product-meta" style="margin-top:8px">
+          <div class="product-price">KES ${Number(p.price).toLocaleString()}<span style="font-size:11px;font-weight:400;color:var(--gray-500)">/${escHtml(p.unit||'unit')}</span></div>
+          <div class="product-qty">${escHtml(p.qty||'')} avail.</div>
+        </div>
+        <div style="display:flex;gap:6px;margin-top:12px">
+          <button class="btn btn-outline btn-sm flex-1" onclick="editProduct('${p.id}');event.stopPropagation()">Edit</button>
+          <button class="btn btn-danger btn-sm flex-1" onclick="deleteProduct('${p.id}');event.stopPropagation()">Delete</button>
+        </div>
+      </div>
+    `;
+    grid.appendChild(card);
+  });
+}
+
+function openAddProductModal() {
+  editingProductId = null;
+  document.getElementById('product-form-title').textContent = 'Add Product';
+  document.getElementById('pf-id').value = '';
+  document.getElementById('pf-name').value = '';
+  document.getElementById('pf-category').value = 'vegetables';
+  document.getElementById('pf-price').value = '';
+  document.getElementById('pf-qty').value = '';
+  document.getElementById('pf-unit').value = 'kg';
+  document.getElementById('pf-location').value = currentUser.farmName || currentUser.location || '';
+  document.getElementById('pf-desc').value = '';
+  document.getElementById('pf-image').value = '';
+  openModal('modal-product-form');
+}
+
+function editProduct(productId) {
+  const p = DB.getProductById(productId);
+  if (!p) return;
+  editingProductId = productId;
+  document.getElementById('product-form-title').textContent = 'Edit Product';
+  document.getElementById('pf-id').value = p.id;
+  document.getElementById('pf-name').value = p.name || '';
+  document.getElementById('pf-category').value = p.category || 'vegetables';
+  document.getElementById('pf-price').value = p.price || '';
+  document.getElementById('pf-qty').value = p.qty || '';
+  document.getElementById('pf-unit').value = p.unit || 'kg';
+  document.getElementById('pf-location').value = p.location || '';
+  document.getElementById('pf-desc').value = p.description || '';
+  document.getElementById('pf-image').value = p.imageUrl || '';
+  openModal('modal-product-form');
+}
+
+function deleteProduct(productId) {
+  if (!confirm('Delete this product?')) return;
+  let products = DB.getProducts();
+  products = products.filter(p => p.id !== productId);
+  DB.saveProducts(products);
+  showToast('Product deleted', 'info');
+  renderFarmerProducts();
+}
+
+function submitProductForm() {
+  const name = document.getElementById('pf-name').value.trim();
+  const price = document.getElementById('pf-price').value.trim();
+  const qty = document.getElementById('pf-qty').value.trim();
+
+  if (!name || !price || !qty) { showToast('Please fill required fields', 'error'); return; }
+  if (isNaN(parseFloat(price))) { showToast('Price must be a number', 'error'); return; }
+
+  const btn = document.getElementById('pf-submit-btn');
+  btn.disabled = true;
+
+  const products = DB.getProducts();
+
+  if (editingProductId) {
+    const idx = products.findIndex(p => p.id === editingProductId);
+    if (idx >= 0) {
+      products[idx] = {
+        ...products[idx],
+        name, price: parseFloat(price), qty,
+        category: document.getElementById('pf-category').value,
+        unit: document.getElementById('pf-unit').value,
+        location: document.getElementById('pf-location').value.trim(),
+        description: document.getElementById('pf-desc').value.trim(),
+        imageUrl: document.getElementById('pf-image').value.trim()
+      };
+    }
+    DB.saveProducts(products);
+    showToast('Product updated!', 'success');
+  } else {
+    const newProduct = {
+      id: DB.generateId(),
+      farmerId: currentUser.id,
+      farmerName: currentUser.name,
+      farmerPhone: currentUser.phone,
+      farmerEmail: currentUser.email,
+      name, price: parseFloat(price), qty,
+      category: document.getElementById('pf-category').value,
+      unit: document.getElementById('pf-unit').value,
+      location: document.getElementById('pf-location').value.trim(),
+      description: document.getElementById('pf-desc').value.trim(),
+      imageUrl: document.getElementById('pf-image').value.trim(),
+      createdAt: Date.now()
+    };
+    products.push(newProduct);
+    DB.saveProducts(products);
+    showToast('Product added!', 'success');
+  }
+
+  btn.disabled = false;
+  closeModal('modal-product-form');
+  renderFarmerProducts();
+  if (currentUser.role === 'farmer') renderFarmerDashboard();
+}
+
+// ===================================================
+// FARMER ORDERS
+// ===================================================
+function setFarmerOrderFilter(f, el) {
+  farmerOrderFilter = f;
+  document.querySelectorAll('#page-farmer-orders .filter-tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  renderFarmerOrders();
+}
+
+function renderFarmerOrders() {
+  let orders = DB.getOrders().filter(o => o.farmerId === currentUser.id);
+  if (farmerOrderFilter !== 'all') orders = orders.filter(o => o.status === farmerOrderFilter);
+  orders.sort((a,b) => b.createdAt - a.createdAt);
+
+  const list = document.getElementById('farmer-orders-list');
+  const empty = document.getElementById('farmer-orders-empty');
+  list.innerHTML = '';
+
+  if (!orders.length) { empty.classList.remove('hidden'); return; }
+  empty.classList.add('hidden');
+
+  orders.forEach(o => list.appendChild(buildOrderCard(o, 'farmer')));
+}
+
+// ===================================================
+// ORDER CARD BUILDER
+// ===================================================
+function buildOrderCard(order, viewAs) {
+  const card = document.createElement('div');
+  card.className = 'order-card animate-in';
+
+  const statusColors = {
+    pending: 'amber', accepted: 'blue', completed: 'green', rejected: 'red', cancelled: 'gray'
+  };
+  const badgeClass = 'badge-' + (statusColors[order.status] || 'gray');
+
+  card.innerHTML = `
+    <div class="order-header">
+      <div>
+        <div style="font-weight:700;font-size:15px;color:var(--gray-900)">${escHtml(order.productName)}</div>
+        <div class="order-id">Order #${order.id.toUpperCase()} • ${new Date(order.createdAt).toLocaleDateString()}</div>
+      </div>
+      <span class="badge ${badgeClass}">${order.status}</span>
+    </div>
+    <div class="order-details-grid">
+      <div class="order-detail">
+        <div class="order-detail-label">${viewAs==='buyer'?'Seller':'Buyer'}</div>
+        <div class="order-detail-value">${escHtml(viewAs==='buyer'?order.farmerName:order.buyerName)}</div>
+      </div>
+      <div class="order-detail">
+        <div class="order-detail-label">Quantity</div>
+        <div class="order-detail-value">${escHtml(order.qty)}</div>
+      </div>
+      <div class="order-detail">
+        <div class="order-detail-label">Total</div>
+        <div class="order-detail-value" style="color:var(--green-dark)">KES ${Number(order.total).toLocaleString()}</div>
+      </div>
+      <div class="order-detail">
+        <div class="order-detail-label">Payment</div>
+        <div class="order-detail-value">${order.paymentStatus||'pending'}</div>
+      </div>
+    </div>
+    <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap">
+      <button class="btn btn-ghost btn-sm" onclick="openOrderDetail('${order.id}')">View Details</button>
+      ${viewAs==='farmer' && order.status==='pending' ? `
+        <button class="btn btn-primary btn-sm" onclick="updateOrderStatus('${order.id}','accepted')">Accept</button>
+        <button class="btn btn-danger btn-sm" onclick="updateOrderStatus('${order.id}','rejected')">Reject</button>
+      ` : ''}
+      ${viewAs==='farmer' && order.status==='accepted' ? `
+        <button class="btn btn-primary btn-sm" onclick="updateOrderStatus('${order.id}','completed')">Mark Complete</button>
+      ` : ''}
+      ${viewAs==='buyer' && order.status==='pending' ? `
+        <button class="btn btn-danger btn-sm" onclick="updateOrderStatus('${order.id}','cancelled')">Cancel</button>
+      ` : ''}
+      ${viewAs==='buyer' ? `<button class="btn btn-outline btn-sm" onclick="startChatWithFarmer('${order.farmerId}')">Message Farmer</button>` : ''}
+    </div>
+  `;
+  return card;
+}
+
+function updateOrderStatus(orderId, newStatus) {
+  const orders = DB.getOrders();
+  const idx = orders.findIndex(o => o.id === orderId);
+  if (idx < 0) return;
+  orders[idx].status = newStatus;
+  DB.saveOrders(orders);
+  showToast('Order ' + newStatus, 'success');
+  if (currentUser.role === 'buyer') { renderBuyerOrders(); }
+  else { renderFarmerOrders(); renderFarmerDashboard(); }
+}
+
+function openOrderDetail(orderId) {
+  const order = DB.getOrderById(orderId);
+  if (!order) return;
+  const otherUser = DB.getUserById(currentUser.role==='buyer' ? order.farmerId : order.buyerId);
+  const statusColors = { pending:'amber', accepted:'blue', completed:'green', rejected:'red', cancelled:'gray' };
+
+  document.getElementById('order-detail-content').innerHTML = `
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
+      <div>
+        <div style="font-size:20px;font-weight:800;font-family:var(--font-display);color:var(--gray-900)">${escHtml(order.productName)}</div>
+        <div style="font-size:12px;color:var(--gray-400);margin-top:2px">Order #${order.id.toUpperCase()}</div>
+      </div>
+      <span class="badge badge-${statusColors[order.status]||'gray'}" style="font-size:13px;padding:6px 14px">${order.status}</span>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px">
+      <div class="order-detail"><div class="order-detail-label">Quantity</div><div class="order-detail-value">${escHtml(order.qty)}</div></div>
+      <div class="order-detail"><div class="order-detail-label">Unit Price</div><div class="order-detail-value">KES ${Number(order.unitPrice||0).toLocaleString()}</div></div>
+      <div class="order-detail"><div class="order-detail-label">Total Amount</div><div class="order-detail-value" style="color:var(--green-dark);font-size:18px">KES ${Number(order.total).toLocaleString()}</div></div>
+      <div class="order-detail"><div class="order-detail-label">Payment</div><div class="order-detail-value">${order.paymentStatus||'pending'}</div></div>
+      <div class="order-detail"><div class="order-detail-label">Date Placed</div><div class="order-detail-value">${new Date(order.createdAt).toLocaleDateString()}</div></div>
+      ${order.address ? `<div class="order-detail"><div class="order-detail-label">Delivery Address</div><div class="order-detail-value">${escHtml(order.address)}</div></div>` : ''}
+    </div>
+    ${order.notes ? `<div class="order-detail" style="margin-bottom:16px"><div class="order-detail-label">Notes</div><div class="order-detail-value">${escHtml(order.notes)}</div></div>` : ''}
+    ${otherUser ? `
+    <div style="background:var(--green-xpale);border-radius:var(--radius);padding:16px">
+      <div style="font-size:12px;font-weight:600;color:var(--gray-500);margin-bottom:10px">${currentUser.role==='buyer'?'SELLER':'BUYER'} INFO</div>
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
+        <div style="width:40px;height:40px;border-radius:50%;background:var(--green-mid);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;color:white">${otherUser.name.split(' ').map(n=>n[0]).join('').toUpperCase().slice(0,2)}</div>
+        <div><div style="font-weight:700;color:var(--gray-900)">${escHtml(otherUser.name)}</div>
+        <div style="font-size:12px;color:var(--gray-500)">${escHtml(otherUser.location||otherUser.farmName||'')}</div></div>
+      </div>
+      <div style="font-size:13px;color:var(--gray-700)">📞 <a href="tel:${escHtml(otherUser.phone)}" style="color:var(--green-dark);font-weight:600">${escHtml(otherUser.phone)}</a></div>
+      <div style="font-size:13px;color:var(--gray-700);margin-top:4px">✉️ <a href="mailto:${escHtml(otherUser.email)}" style="color:var(--green-dark);font-weight:600">${escHtml(otherUser.email)}</a></div>
+    </div>
+    ` : ''}
+  `;
+
+  const footer = document.getElementById('order-detail-footer');
+  footer.innerHTML = '';
+  if (currentUser.role === 'farmer' && order.status === 'pending') {
+    footer.innerHTML = `
+      <button class="btn btn-ghost" onclick="closeModal('modal-order-detail')">Close</button>
+      <button class="btn btn-danger" onclick="updateOrderStatus('${order.id}','rejected');closeModal('modal-order-detail')">Reject</button>
+      <button class="btn btn-primary" onclick="updateOrderStatus('${order.id}','accepted');closeModal('modal-order-detail')">Accept Order</button>
+    `;
+  } else if (currentUser.role === 'farmer' && order.status === 'accepted') {
+    footer.innerHTML = `
+      <button class="btn btn-ghost" onclick="closeModal('modal-order-detail')">Close</button>
+      <button class="btn btn-primary" onclick="updateOrderStatus('${order.id}','completed');closeModal('modal-order-detail')">Mark as Completed</button>
+    `;
+  } else {
+    footer.innerHTML = `<button class="btn btn-primary" onclick="closeModal('modal-order-detail')">Close</button>`;
+  }
+
+  openModal('modal-order-detail');
+}
+
+// ===================================================
+// MESSAGES
+// ===================================================
+function renderConversations() {
+  const messages = DB.getMessages();
+  const myId = currentUser.id;
+
+  // Build unique conversation map
+  const convMap = new Map();
+  messages.forEach(m => {
+    if (m.senderId !== myId && m.receiverId !== myId) return;
+    const otherId = m.senderId === myId ? m.receiverId : m.senderId;
+    const otherName = m.senderId === myId ? m.receiverName : m.senderName;
+    if (!convMap.has(otherId) || m.createdAt > convMap.get(otherId).lastTime) {
+      convMap.set(otherId, { otherId, otherName, lastMsg: m.text, lastTime: m.createdAt });
+    }
+  });
+
+  const list = document.getElementById('conversations-list');
+  const empty = document.getElementById('conversations-empty');
+  list.innerHTML = '';
+
+  if (!convMap.size) { empty.style.display = ''; return; }
+  empty.style.display = 'none';
+
+  const convs = [...convMap.values()].sort((a,b) => b.lastTime - a.lastTime);
+  convs.forEach(c => {
+    const item = document.createElement('div');
+    item.className = 'conv-item' + (activeChatWith === c.otherId ? ' active' : '');
+    item.innerHTML = `
+      <div class="conv-avatar">${c.otherName.split(' ').map(n=>n[0]).join('').toUpperCase().slice(0,2)}</div>
+      <div style="flex:1;min-width:0">
+        <div class="conv-name">${escHtml(c.otherName)}</div>
+        <div class="conv-last truncate">${escHtml(c.lastMsg)}</div>
+      </div>
+    `;
+    item.onclick = () => openConversation(c.otherId, c.otherName);
+    list.appendChild(item);
+  });
+}
+
+function startChatWithFarmer(farmerId) {
+  showPage('messages');
+  const farmer = DB.getUserById(farmerId);
+  if (farmer) openConversation(farmerId, farmer.name);
+}
+
+function openConversation(otherId, otherName) {
+  activeChatWith = otherId;
+  document.getElementById('chat-empty-state').style.display = 'none';
+  const chatActive = document.getElementById('chat-active');
+  chatActive.classList.remove('hidden');
+  chatActive.style.display = 'flex';
+
+  const otherUser = DB.getUserById(otherId);
+  document.getElementById('chat-header').innerHTML = `
+    <div style="width:36px;height:36px;border-radius:50%;background:var(--green-pale);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;color:var(--green-dark);flex-shrink:0">${otherName.split(' ').map(n=>n[0]).join('').toUpperCase().slice(0,2)}</div>
+    <div>
+      <div style="font-weight:700;color:var(--gray-900);font-size:15px">${escHtml(otherName)}</div>
+      ${otherUser ? `<div style="font-size:12px;color:var(--gray-500)">${escHtml(otherUser.role)} • ${escHtml(otherUser.phone||'')}</div>` : ''}
+    </div>
+  `;
+  renderChatMessages();
+  renderConversations();
+}
+
+function renderChatMessages() {
+  if (!activeChatWith) return;
+  const messages = DB.getMessages().filter(m =>
+    (m.senderId === currentUser.id && m.receiverId === activeChatWith) ||
+    (m.receiverId === currentUser.id && m.senderId === activeChatWith)
+  ).sort((a,b) => a.createdAt - b.createdAt);
+
+  const container = document.getElementById('chat-messages');
+  const prevScrollHeight = container.scrollHeight;
+  container.innerHTML = '';
+
+  messages.forEach(m => {
+    const isMine = m.senderId === currentUser.id;
+    const bubble = document.createElement('div');
+    bubble.className = 'msg-bubble ' + (isMine ? 'mine' : 'theirs');
+    bubble.innerHTML = `${escHtml(m.text)}<div class="msg-time">${new Date(m.createdAt).toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'})}</div>`;
+    container.appendChild(bubble);
+  });
+
+  // Auto scroll
+  if (container.scrollHeight !== prevScrollHeight || messages.length < 5) {
+    container.scrollTop = container.scrollHeight;
+  }
+}
+
+function sendMessage() {
+  const input = document.getElementById('chat-input');
+  const text = input.value.trim();
+  if (!text || !activeChatWith) return;
+
+  const otherUser = DB.getUserById(activeChatWith);
+  if (!otherUser) return;
+
+  const messages = DB.getMessages();
+  messages.push({
+    id: DB.generateId(),
+    senderId: currentUser.id,
+    senderName: currentUser.name,
+    receiverId: activeChatWith,
+    receiverName: otherUser.name,
+    text,
+    createdAt: Date.now()
+  });
+  DB.saveMessages(messages);
+  input.value = '';
+  input.style.height = 'auto';
+  renderChatMessages();
+  renderConversations();
+}
+
+function chatKeyDown(e) {
+  if (e.key === 'Enter' && !e.shiftKey) {
+    e.preventDefault();
+    sendMessage();
+  }
+}
+
+// ===================================================
+// PROFILE
+// ===================================================
+function renderProfile() {
+  const u = currentUser;
+  const initials = u.name.split(' ').map(n=>n[0]).join('').toUpperCase().slice(0,2);
+  document.getElementById('profile-avatar-big').textContent = initials;
+  document.getElementById('profile-name-big').textContent = u.name;
+  document.getElementById('profile-role-big').textContent = u.role === 'farmer' ? '🌾 Farmer' : '🛒 Buyer';
+  document.getElementById('profile-location-big').textContent = (u.farmName||u.location||'');
+
+  const myProducts = DB.getProducts().filter(p => p.farmerId === u.id);
+  const myOrders = u.role === 'buyer'
+    ? DB.getOrders().filter(o => o.buyerId === u.id)
+    : DB.getOrders().filter(o => o.farmerId === u.id);
+
+  document.getElementById('profile-grid').innerHTML = `
+    <div class="card">
+      <div class="card-header"><span style="font-weight:700;font-size:15px">Personal Details</span></div>
+      <div class="card-body" style="display:flex;flex-direction:column;gap:14px">
+        <div class="info-row">
+          <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          <div><div class="info-row-label">Full Name</div><div class="info-row-value">${escHtml(u.name)}</div></div>
+        </div>
+        <div class="info-row">
+          <svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.18 2 2 0 0 1 3.58 1h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.56a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+          <div><div class="info-row-label">Phone Number</div><div class="info-row-value"><a href="tel:${escHtml(u.phone)}" style="color:var(--green-mid)">${escHtml(u.phone)}</a></div></div>
+        </div>
+        <div class="info-row">
+          <svg viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+          <div><div class="info-row-label">Email Address</div><div class="info-row-value"><a href="mailto:${escHtml(u.email)}" style="color:var(--green-mid)">${escHtml(u.email)}</a></div></div>
+        </div>
+        <div class="info-row">
+          <svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          <div><div class="info-row-label">${u.role==='farmer'?'Farm Name':'Location'}</div><div class="info-row-value">${escHtml(u.farmName||u.location||'Not set')}</div></div>
+        </div>
+        <div class="info-row">
+          <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+          <div><div class="info-row-label">Member Since</div><div class="info-row-value">${new Date(u.createdAt).toLocaleDateString()}</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header"><span style="font-weight:700;font-size:15px">Activity Summary</span></div>
+      <div class="card-body" style="display:flex;flex-direction:column;gap:14px">
+        ${u.role === 'farmer' ? `
+        <div class="stat-card" style="box-shadow:none;border:1px solid var(--gray-100)">
+          <div class="stat-icon stat-icon-green"><svg viewBox="0 0 24 24"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/></svg></div>
+          <div><div class="stat-value">${myProducts.length}</div><div class="stat-label">Products Listed</div></div>
+        </div>
+        ` : ''}
+        <div class="stat-card" style="box-shadow:none;border:1px solid var(--gray-100)">
+          <div class="stat-icon stat-icon-amber"><svg viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg></div>
+          <div><div class="stat-value">${myOrders.length}</div><div class="stat-label">${u.role==='farmer'?'Orders Received':'Orders Placed'}</div></div>
+        </div>
+        ${u.role==='farmer' ? `
+        <div class="stat-card" style="box-shadow:none;border:1px solid var(--gray-100)">
+          <div class="stat-icon stat-icon-blue"><svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>
+          <div><div class="stat-value">KES ${myOrders.filter(o=>o.status==='completed').reduce((s,o)=>s+o.total,0).toLocaleString()}</div><div class="stat-label">Total Revenue</div></div>
+        </div>
+        ` : `
+        <div class="stat-card" style="box-shadow:none;border:1px solid var(--gray-100)">
+          <div class="stat-icon stat-icon-blue"><svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>
+          <div><div class="stat-value">KES ${myOrders.reduce((s,o)=>s+o.total,0).toLocaleString()}</div><div class="stat-label">Total Spent</div></div>
+        </div>
+        `}
+        <button class="btn btn-outline w-full" onclick="showChangePassword()">🔒 Change Password</button>
+      </div>
+    </div>
+  `;
+}
+
+function showChangePassword() {
+  const newPass = prompt('Enter your new password (min 6 characters):');
+  if (!newPass) return;
+  if (newPass.length < 6) { showToast('Password must be at least 6 characters', 'error'); return; }
+  const users = DB.getUsers();
+  const idx = users.findIndex(u => u.id === currentUser.id);
+  if (idx < 0) return;
+  users[idx].password = newPass;
+  currentUser.password = newPass;
+  DB.saveUsers(users);
+  DB.setCurrentUser(currentUser);
+  showToast('Password changed successfully!', 'success');
+}
+
+// ===================================================
+// MODAL HELPERS
+// ===================================================
+function openModal(id) {
+  const el = document.getElementById(id);
+  el.classList.remove('hidden');
+  el.style.display = 'flex';
+}
+function closeModal(id) {
+  const el = document.getElementById(id);
+  el.classList.add('hidden');
+  el.style.display = '';
+}
+function closeModalOnOverlay(event, id) {
+  if (event.target === document.getElementById(id)) closeModal(id);
+}
+
+// ===================================================
+// TOAST
+// ===================================================
+function showToast(msg, type = 'success') {
+  const container = document.getElementById('toast-container');
+  const toast = document.createElement('div');
+  toast.className = `toast toast-${type}`;
+  toast.textContent = msg;
+  container.appendChild(toast);
+  setTimeout(() => { toast.style.opacity = '0'; toast.style.transition = 'opacity 0.3s'; setTimeout(() => toast.remove(), 300); }, 3000);
+}
+
+// ===================================================
+// UTILS
+// ===================================================
+function escHtml(str) {
+  if (str === null || str === undefined) return '';
+  const d = document.createElement('div');
+  d.textContent = String(str);
+  return d.innerHTML;
+}
+
+// ===================================================
+// INIT
+// ===================================================
+window.addEventListener('DOMContentLoaded', () => {
+  // Check for existing session
+  const saved = DB.getCurrentUser();
+  if (saved) {
+    currentUser = saved;
+    currentRole = saved.role;
+    launchApp();
+  }
+
+  // Seed some demo products if none exist
+  if (!DB.getProducts().length && !DB.getUsers().length) {
+    // Create demo farmer
+    const demoFarmer = {
+      id: 'demo_farmer_1',
+      name: 'James Mwangi',
+      phone: '+254712345678',
+      email: 'james@farm.com',
+      password: 'demo123',
+      role: 'farmer',
+      farmName: 'Green Valley Farm',
+      location: 'Kiambu',
+      createdAt: Date.now() - 86400000
+    };
+    const users = [demoFarmer];
+    DB.saveUsers(users);
+
+    const demoProducts = [
+      { id:'dp1', farmerId:'demo_farmer_1', farmerName:'James Mwangi', farmerPhone:'+254712345678', farmerEmail:'james@farm.com', name:'Fresh Tomatoes', category:'vegetables', price:80, qty:'200 kg', unit:'kg', location:'Kiambu', description:'Farm-fresh tomatoes, harvested daily. Sweet and juicy.', imageUrl:'https://images.unsplash.com/photo-1546094096-0df4bcaaa337?w=400&q=80', createdAt:Date.now()-3600000 },
+      { id:'dp2', farmerId:'demo_farmer_1', farmerName:'James Mwangi', farmerPhone:'+254712345678', farmerEmail:'james@farm.com', name:'Organic Kale (Sukuma Wiki)', category:'vegetables', price:25, qty:'500 bunches', unit:'bunch', location:'Kiambu', description:'Tender organic kale grown without pesticides.', imageUrl:'https://images.unsplash.com/photo-1524179091875-bf99a9a6af57?w=400&q=80', createdAt:Date.now()-3200000 },
+      { id:'dp3', farmerId:'demo_farmer_1', farmerName:'James Mwangi', farmerPhone:'+254712345678', farmerEmail:'james@farm.com', name:'Maize (Dry)', category:'grains', price:45, qty:'2000 kg', unit:'kg', location:'Kiambu', description:'Quality dry maize, clean and well-dried. Ready for milling.', imageUrl:'https://images.unsplash.com/photo-1634467519719-c9ff4f2da6e6?w=400&q=80', createdAt:Date.now()-2800000 },
+      { id:'dp4', farmerId:'demo_farmer_1', farmerName:'James Mwangi', farmerPhone:'+254712345678', farmerEmail:'james@farm.com', name:'Fresh Avocados', category:'fruits', price:15, qty:'300 pieces', unit:'piece', location:'Kiambu', description:'Large ripe Hass avocados, ready to eat.', imageUrl:'https://images.unsplash.com/photo-1601039641847-7857b994d704?w=400&q=80', createdAt:Date.now()-2400000 },
+      { id:'dp5', farmerId:'demo_farmer_1', farmerName:'James Mwangi', farmerPhone:'+254712345678', farmerEmail:'james@farm.com', name:'Fresh Cow Milk', category:'dairy', price:60, qty:'50 liters/day', unit:'liter', location:'Kiambu', description:'Fresh whole milk from healthy grass-fed cows. Collected daily.', imageUrl:'https://images.unsplash.com/photo-1563636619-e9143da7973b?w=400&q=80', createdAt:Date.now()-2000000 },
+      { id:'dp6', farmerId:'demo_farmer_1', farmerName:'James Mwangi', farmerPhone:'+254712345678', farmerEmail:'james@farm.com', name:'Sweet Potatoes', category:'vegetables', price:30, qty:'800 kg', unit:'kg', location:'Kiambu', description:'Naturally sweet potatoes with rich orange flesh. No chemicals used.', imageUrl:'https://images.unsplash.com/photo-1576045057995-568f588f82fb?w=400&q=80', createdAt:Date.now()-1600000 },
+    ];
+    DB.saveProducts(demoProducts);
+  }
+});
+</script>
+</body>
+</html>
