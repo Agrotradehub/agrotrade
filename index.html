@@ -8,7 +8,7 @@
   <script src="https://cdn.jsdelivr.net/npm/lucide@0.263.0/dist/umd/lucide.min.js"></script>
   <script src="/_sdk/element_sdk.js"></script>
   <script src="/_sdk/data_sdk.js"></script>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&amp;family=Playfair+Display:wght@600;700&amp;display=swap" rel="stylesheet">
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     html, body { height: 100%; }
@@ -52,128 +52,77 @@
  </head>
  <body class="h-full">
   <div id="app-wrapper" class="w-full h-full flex flex-col" style="background: linear-gradient(135deg, #f0f7f0 0%, #e8f5e9 50%, #f1f8e9 100%); font-family: 'DM Sans', sans-serif;">
-
    <!-- Login Screen -->
    <div id="login-screen" class="w-full h-full flex items-center justify-center" style="background: linear-gradient(135deg, #1b5e20 0%, #2e7d32 60%, #388e3c 100%);">
-
     <!-- Role Selection Screen -->
     <div id="role-selection" class="w-full max-w-md" style="padding: 24px;">
      <div style="text-align: center; margin-bottom: 40px;">
-      <div style="background: #ffb300; width: 60px; height: 60px; border-radius: 14px; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px;">
-       <i data-lucide="shopping-cart" style="color: #1b5e20; width: 32px; height: 32px;"></i>
+      <div style="background: #ffb300; width: 60px; height: 60px; border-radius: 14px; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px;"><i data-lucide="shopping-cart" style="color: #1b5e20; width: 32px; height: 32px;"></i>
       </div>
       <h1 style="font-family: 'Playfair Display', serif; color: #ffffff; font-size: 28px; font-weight: 700; margin: 0;">AgroTrade</h1>
       <p style="color: #c8e6c9; font-size: 14px; margin: 4px 0 0 0;">Farm Direct Marketplace</p>
      </div>
      <div class="space-y-4">
-      <button onclick="selectRole('buyer')" class="w-full py-4 rounded-lg font-semibold text-base flex items-center justify-center gap-3 transition-all" style="background: #ffb300; color: #1b5e20; border: none; cursor: pointer;">
-       <i data-lucide="shopping-bag" style="width: 20px; height: 20px;"></i>
-       <span>I'm a Buyer</span>
-      </button>
-      <button onclick="selectRole('farmer')" class="w-full py-4 rounded-lg font-semibold text-base flex items-center justify-center gap-3 transition-all" style="background: rgba(255,255,255,0.2); color: #ffffff; border: 2px solid #c8e6c9; cursor: pointer;">
-       <i data-lucide="sprout" style="width: 20px; height: 20px;"></i>
-       <span>I'm a Farmer</span>
-      </button>
+      <button onclick="selectRole('buyer')" class="w-full py-4 rounded-lg font-semibold text-base flex items-center justify-center gap-3 transition-all" style="background: #ffb300; color: #1b5e20; border: none; cursor: pointer;"> <i data-lucide="shopping-bag" style="width: 20px; height: 20px;"></i> <span>I'm a Buyer</span> </button> <button onclick="selectRole('farmer')" class="w-full py-4 rounded-lg font-semibold text-base flex items-center justify-center gap-3 transition-all" style="background: rgba(255,255,255,0.2); color: #ffffff; border: 2px solid #c8e6c9; cursor: pointer;"> <i data-lucide="sprout" style="width: 20px; height: 20px;"></i> <span>I'm a Farmer</span> </button>
      </div>
-    </div>
-
-    <!-- Login Form -->
+    </div><!-- Login Form -->
     <div id="login-form" class="w-full max-w-md" style="padding: 24px; display: none;">
      <div style="text-align: center; margin-bottom: 40px;">
-      <button onclick="backToRoleSelection()" style="background: rgba(255,255,255,0.1); border: none; color: #c8e6c9; padding: 8px 12px; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 12px; display: flex; align-items: center; gap: 6px; margin-bottom: 16px;">
-       <i data-lucide="arrow-left" style="width: 14px; height: 14px;"></i>Back
-      </button>
-      <div style="background: #ffb300; width: 60px; height: 60px; border-radius: 14px; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px;">
-       <i id="role-icon" data-lucide="shopping-cart" style="color: #1b5e20; width: 32px; height: 32px;"></i>
+      <button onclick="backToRoleSelection()" style="background: rgba(255,255,255,0.1); border: none; color: #c8e6c9; padding: 8px 12px; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 12px; display: flex; align-items: center; gap: 6px; margin-bottom: 16px;"><i data-lucide="arrow-left" style="width: 14px; height: 14px;"></i>Back</button>
+      <div style="background: #ffb300; width: 60px; height: 60px; border-radius: 14px; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px;"><i id="role-icon" data-lucide="shopping-cart" style="color: #1b5e20; width: 32px; height: 32px;"></i>
       </div>
       <h1 id="role-title" style="font-family: 'Playfair Display', serif; color: #ffffff; font-size: 28px; font-weight: 700; margin: 0;">Sign In</h1>
       <p style="color: #c8e6c9; font-size: 14px; margin: 4px 0 0 0;">Access your account</p>
      </div>
      <div class="space-y-4">
-      <div style="margin-bottom: 16px;">
-       <label for="login-email" style="display: block; color: #c8e6c9; font-size: 13px; font-weight: 600; margin-bottom: 8px;">Email or Phone</label>
-       <input id="login-email" type="text" placeholder="your@email.com or +254712345678" class="w-full px-4 py-3 rounded-lg border-2 text-sm" style="border-color: #c8e6c9; background: rgba(255,255,255,0.1); color: #ffffff; font-family: 'DM Sans', sans-serif;">
+      <div style="margin-bottom: 16px;"><label for="login-email" style="display: block; color: #c8e6c9; font-size: 13px; font-weight: 600; margin-bottom: 8px;">Email or Phone</label> <input id="login-email" type="text" placeholder="your@email.com or +254712345678" class="w-full px-4 py-3 rounded-lg border-2 text-sm" style="border-color: #c8e6c9; background: rgba(255,255,255,0.1); color: #ffffff; font-family: 'DM Sans', sans-serif;">
       </div>
-      <div style="margin-bottom: 24px;">
-       <label for="login-password" style="display: block; color: #c8e6c9; font-size: 13px; font-weight: 600; margin-bottom: 8px;">Password</label>
-       <input id="login-password" type="password" placeholder="Enter your password" class="w-full px-4 py-3 rounded-lg border-2 text-sm" style="border-color: #c8e6c9; background: rgba(255,255,255,0.1); color: #ffffff; font-family: 'DM Sans', sans-serif;">
-      </div>
-      <button onclick="handleLogin()" class="w-full py-3 rounded-lg font-semibold text-sm flex items-center justify-center gap-2 transition-all" style="background: #ffb300; color: #1b5e20;">
-       <i data-lucide="log-in" style="width: 16px; height: 16px;"></i><span id="login-btn-text">Sign In</span>
-      </button>
+      <div style="margin-bottom: 24px;"><label for="login-password" style="display: block; color: #c8e6c9; font-size: 13px; font-weight: 600; margin-bottom: 8px;">Password</label> <input id="login-password" type="password" placeholder="Enter your password" class="w-full px-4 py-3 rounded-lg border-2 text-sm" style="border-color: #c8e6c9; background: rgba(255,255,255,0.1); color: #ffffff; font-family: 'DM Sans', sans-serif;">
+      </div><button onclick="handleLogin()" class="w-full py-3 rounded-lg font-semibold text-sm flex items-center justify-center gap-2 transition-all" style="background: #ffb300; color: #1b5e20;"> <i data-lucide="log-in" style="width: 16px; height: 16px;"></i><span id="login-btn-text">Sign In</span> </button>
       <p style="text-align: center; color: #c8e6c9; font-size: 12px; margin-top: 16px;">New here? <span onclick="toggleAuthMode()" style="color: #ffb300; cursor: pointer; font-weight: 600;">Create Account</span></p>
       <p style="text-align: center; color: #c8e6c9; font-size: 12px; margin-top: 8px;">Forgot password? <span onclick="toggleForgotPassword()" style="color: #ffb300; cursor: pointer; font-weight: 600;">Reset here</span></p>
      </div>
-    </div>
-
-    <!-- Forgot Password Form -->
+    </div><!-- Forgot Password Form -->
     <div id="forgot-password-form" class="w-full max-w-md" style="padding: 24px; display: none;">
      <div style="text-align: center; margin-bottom: 40px;">
-      <button onclick="backToRoleSelection()" style="background: rgba(255,255,255,0.1); border: none; color: #c8e6c9; padding: 8px 12px; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 12px; display: flex; align-items: center; gap: 6px; margin-bottom: 16px;">
-       <i data-lucide="arrow-left" style="width: 14px; height: 14px;"></i>Back
-      </button>
-      <div style="background: #ffb300; width: 60px; height: 60px; border-radius: 14px; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px;">
-       <i data-lucide="key" style="color: #1b5e20; width: 32px; height: 32px;"></i>
+      <button onclick="backToRoleSelection()" style="background: rgba(255,255,255,0.1); border: none; color: #c8e6c9; padding: 8px 12px; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 12px; display: flex; align-items: center; gap: 6px; margin-bottom: 16px;"><i data-lucide="arrow-left" style="width: 14px; height: 14px;"></i>Back</button>
+      <div style="background: #ffb300; width: 60px; height: 60px; border-radius: 14px; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px;"><i data-lucide="key" style="color: #1b5e20; width: 32px; height: 32px;"></i>
       </div>
       <h1 style="font-family: 'Playfair Display', serif; color: #ffffff; font-size: 28px; font-weight: 700; margin: 0;">Reset Password</h1>
       <p style="color: #c8e6c9; font-size: 14px; margin: 4px 0 0 0;">Recover your account</p>
      </div>
      <div class="space-y-4">
-      <div style="margin-bottom: 16px;">
-       <label for="forgot-phone" style="display: block; color: #c8e6c9; font-size: 13px; font-weight: 600; margin-bottom: 8px;">Phone Number</label>
-       <input id="forgot-phone" type="text" placeholder="+254712345678" class="w-full px-4 py-3 rounded-lg border-2 text-sm" style="border-color: #c8e6c9; background: rgba(255,255,255,0.1); color: #ffffff; font-family: 'DM Sans', sans-serif;">
+      <div style="margin-bottom: 16px;"><label for="forgot-phone" style="display: block; color: #c8e6c9; font-size: 13px; font-weight: 600; margin-bottom: 8px;">Phone Number</label> <input id="forgot-phone" type="text" placeholder="+254712345678" class="w-full px-4 py-3 rounded-lg border-2 text-sm" style="border-color: #c8e6c9; background: rgba(255,255,255,0.1); color: #ffffff; font-family: 'DM Sans', sans-serif;">
       </div>
-      <div style="margin-bottom: 24px;">
-       <label for="forgot-new-password" style="display: block; color: #c8e6c9; font-size: 13px; font-weight: 600; margin-bottom: 8px;">New Password</label>
-       <input id="forgot-new-password" type="password" placeholder="Enter new password" class="w-full px-4 py-3 rounded-lg border-2 text-sm" style="border-color: #c8e6c9; background: rgba(255,255,255,0.1); color: #ffffff; font-family: 'DM Sans', sans-serif;">
-      </div>
-      <button onclick="handleForgotPassword()" class="w-full py-3 rounded-lg font-semibold text-sm flex items-center justify-center gap-2 transition-all" style="background: #ffb300; color: #1b5e20;">
-       <i data-lucide="check-circle" style="width: 16px; height: 16px;"></i><span id="forgot-btn-text">Reset Password</span>
-      </button>
+      <div style="margin-bottom: 24px;"><label for="forgot-new-password" style="display: block; color: #c8e6c9; font-size: 13px; font-weight: 600; margin-bottom: 8px;">New Password</label> <input id="forgot-new-password" type="password" placeholder="Enter new password" class="w-full px-4 py-3 rounded-lg border-2 text-sm" style="border-color: #c8e6c9; background: rgba(255,255,255,0.1); color: #ffffff; font-family: 'DM Sans', sans-serif;">
+      </div><button onclick="handleForgotPassword()" class="w-full py-3 rounded-lg font-semibold text-sm flex items-center justify-center gap-2 transition-all" style="background: #ffb300; color: #1b5e20;"> <i data-lucide="check-circle" style="width: 16px; height: 16px;"></i><span id="forgot-btn-text">Reset Password</span> </button>
       <p style="text-align: center; color: #c8e6c9; font-size: 12px; margin-top: 16px;">Remember your password? <span onclick="toggleForgotPassword()" style="color: #ffb300; cursor: pointer; font-weight: 600;">Sign In</span></p>
      </div>
-    </div>
-
-    <!-- Signup Form -->
+    </div><!-- Signup Form -->
     <div id="signup-form" class="w-full max-w-md" style="padding: 24px; display: none;">
      <div style="text-align: center; margin-bottom: 40px;">
-      <button onclick="backToRoleSelection()" style="background: rgba(255,255,255,0.1); border: none; color: #c8e6c9; padding: 8px 12px; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 12px; display: flex; align-items: center; gap: 6px; margin-bottom: 16px;">
-       <i data-lucide="arrow-left" style="width: 14px; height: 14px;"></i>Back
-      </button>
-      <div style="background: #ffb300; width: 60px; height: 60px; border-radius: 14px; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px;">
-       <i data-lucide="user-plus" style="color: #1b5e20; width: 32px; height: 32px;"></i>
+      <button onclick="backToRoleSelection()" style="background: rgba(255,255,255,0.1); border: none; color: #c8e6c9; padding: 8px 12px; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 12px; display: flex; align-items: center; gap: 6px; margin-bottom: 16px;"><i data-lucide="arrow-left" style="width: 14px; height: 14px;"></i>Back</button>
+      <div style="background: #ffb300; width: 60px; height: 60px; border-radius: 14px; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px;"><i data-lucide="user-plus" style="color: #1b5e20; width: 32px; height: 32px;"></i>
       </div>
       <h1 style="font-family: 'Playfair Display', serif; color: #ffffff; font-size: 28px; font-weight: 700; margin: 0;">Create Account</h1>
       <p style="color: #c8e6c9; font-size: 14px; margin: 4px 0 0 0;">Join AgroTrade Today</p>
      </div>
      <div class="space-y-4">
-      <div style="margin-bottom: 16px;">
-       <label for="signup-name" style="display: block; color: #c8e6c9; font-size: 13px; font-weight: 600; margin-bottom: 8px;">Full Name</label>
-       <input id="signup-name" type="text" placeholder="Your name" class="w-full px-4 py-3 rounded-lg border-2 text-sm" style="border-color: #c8e6c9; background: rgba(255,255,255,0.1); color: #ffffff; font-family: 'DM Sans', sans-serif;">
+      <div style="margin-bottom: 16px;"><label for="signup-name" style="display: block; color: #c8e6c9; font-size: 13px; font-weight: 600; margin-bottom: 8px;">Full Name</label> <input id="signup-name" type="text" placeholder="Your name" class="w-full px-4 py-3 rounded-lg border-2 text-sm" style="border-color: #c8e6c9; background: rgba(255,255,255,0.1); color: #ffffff; font-family: 'DM Sans', sans-serif;">
       </div>
-      <div style="margin-bottom: 16px;">
-       <label for="signup-email" style="display: block; color: #c8e6c9; font-size: 13px; font-weight: 600; margin-bottom: 8px;">Email or Phone</label>
-       <input id="signup-email" type="text" placeholder="your@email.com or +254712345678" class="w-full px-4 py-3 rounded-lg border-2 text-sm" style="border-color: #c8e6c9; background: rgba(255,255,255,0.1); color: #ffffff; font-family: 'DM Sans', sans-serif;">
+      <div style="margin-bottom: 16px;"><label for="signup-email" style="display: block; color: #c8e6c9; font-size: 13px; font-weight: 600; margin-bottom: 8px;">Email or Phone</label> <input id="signup-email" type="text" placeholder="your@email.com or +254712345678" class="w-full px-4 py-3 rounded-lg border-2 text-sm" style="border-color: #c8e6c9; background: rgba(255,255,255,0.1); color: #ffffff; font-family: 'DM Sans', sans-serif;">
       </div>
-      <div style="margin-bottom: 24px;">
-       <label for="signup-password" style="display: block; color: #c8e6c9; font-size: 13px; font-weight: 600; margin-bottom: 8px;">Password</label>
-       <input id="signup-password" type="password" placeholder="Create a password" class="w-full px-4 py-3 rounded-lg border-2 text-sm" style="border-color: #c8e6c9; background: rgba(255,255,255,0.1); color: #ffffff; font-family: 'DM Sans', sans-serif;">
-      </div>
-      <button onclick="handleSignup()" class="w-full py-3 rounded-lg font-semibold text-sm flex items-center justify-center gap-2 transition-all" style="background: #ffb300; color: #1b5e20;">
-       <i data-lucide="user-plus" style="width: 16px; height: 16px;"></i><span id="signup-btn-text">Create Account</span>
-      </button>
+      <div style="margin-bottom: 24px;"><label for="signup-password" style="display: block; color: #c8e6c9; font-size: 13px; font-weight: 600; margin-bottom: 8px;">Password</label> <input id="signup-password" type="password" placeholder="Create a password" class="w-full px-4 py-3 rounded-lg border-2 text-sm" style="border-color: #c8e6c9; background: rgba(255,255,255,0.1); color: #ffffff; font-family: 'DM Sans', sans-serif;">
+      </div><button onclick="handleSignup()" class="w-full py-3 rounded-lg font-semibold text-sm flex items-center justify-center gap-2 transition-all" style="background: #ffb300; color: #1b5e20;"> <i data-lucide="user-plus" style="width: 16px; height: 16px;"></i><span id="signup-btn-text">Create Account</span> </button>
       <p style="text-align: center; color: #c8e6c9; font-size: 12px; margin-top: 16px;">Already have an account? <span onclick="toggleAuthMode()" style="color: #ffb300; cursor: pointer; font-weight: 600;">Sign In</span></p>
      </div>
     </div>
-   </div>
-
-   <!-- Header -->
+   </div><!-- Header -->
    <header class="w-full flex-shrink-0" style="background: linear-gradient(135deg, #1b5e20 0%, #2e7d32 60%, #388e3c 100%); box-shadow: 0 4px 12px rgba(27, 94, 32, 0.15);">
     <div class="max-w-7xl mx-auto px-4 py-5">
      <div class="flex items-center justify-between">
       <div class="flex items-center gap-3">
-       <div style="background: #ffb300; width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center;">
-        <i data-lucide="shopping-cart" style="color: #1b5e20; width: 22px; height: 22px;"></i>
+       <div style="background: #ffb300; width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center;"><i data-lucide="shopping-cart" style="color: #1b5e20; width: 22px; height: 22px;"></i>
        </div>
        <div>
         <h1 id="app-title" style="font-family: 'Playfair Display', serif; color: #ffffff; font-size: 24px; font-weight: 700; margin: 0;">AgroTrade Buyer</h1>
@@ -181,98 +130,53 @@
        </div>
       </div>
       <div style="display: flex; gap: 2px; background: rgba(255,255,255,0.1); border-radius: 8px; padding: 4px;">
-       <button onclick="switchTab('browse')" class="tab-nav px-4 py-2 rounded-lg font-semibold text-sm transition-all" id="tab-browse-btn" style="color: #ffffff; background: transparent;"><i data-lucide="store" style="width: 16px; height: 16px; display: inline; margin-right: 4px;"></i><span id="browse-label">Browse</span></button>
-       <button onclick="switchTab('orders')" class="tab-nav px-4 py-2 rounded-lg font-semibold text-sm transition-all" id="tab-orders-btn" style="color: rgba(255,255,255,0.6); background: transparent;"><i data-lucide="package" style="width: 16px; height: 16px; display: inline; margin-right: 4px;"></i><span id="orders-label">Orders</span></button>
-       <button onclick="switchTab('chats')" class="tab-nav px-4 py-2 rounded-lg font-semibold text-sm transition-all" id="tab-chats-btn" style="color: rgba(255,255,255,0.6); background: transparent;"><i data-lucide="message-circle" style="width: 16px; height: 16px; display: inline; margin-right: 4px;"></i>Messages</button>
-       <button onclick="switchTab('products')" class="tab-nav px-4 py-2 rounded-lg font-semibold text-sm transition-all" id="tab-products-btn" style="color: rgba(255,255,255,0.6); background: transparent; display: none;"><i data-lucide="seedling" style="width: 16px; height: 16px; display: inline; margin-right: 4px;"></i>My Products</button>
-       <button onclick="switchTab('incoming')" class="tab-nav px-4 py-2 rounded-lg font-semibold text-sm transition-all" id="tab-incoming-btn" style="color: rgba(255,255,255,0.6); background: transparent; display: none;"><i data-lucide="inbox" style="width: 16px; height: 16px; display: inline; margin-right: 4px;"></i>Orders</button>
-      </div>
-      <button onclick="logout()" style="background: rgba(255,255,255,0.1); border: none; color: #c8e6c9; padding: 8px 12px; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 12px; display: flex; align-items: center; gap: 6px; transition: all 0.2s ease;"><i data-lucide="log-out" style="width: 14px; height: 14px;"></i>Logout</button>
+       <button onclick="switchTab('browse')" class="tab-nav px-4 py-2 rounded-lg font-semibold text-sm transition-all" id="tab-browse-btn" style="color: #ffffff; background: transparent;"><i data-lucide="store" style="width: 16px; height: 16px; display: inline; margin-right: 4px;"></i>Browse</button> <button onclick="switchTab('orders')" class="tab-nav px-4 py-2 rounded-lg font-semibold text-sm transition-all" id="tab-orders-btn" style="color: rgba(255,255,255,0.6); background: transparent;"><i data-lucide="package" style="width: 16px; height: 16px; display: inline; margin-right: 4px;"></i>Orders</button> <button onclick="switchTab('chats')" class="tab-nav px-4 py-2 rounded-lg font-semibold text-sm transition-all" id="tab-chats-btn" style="color: rgba(255,255,255,0.6); background: transparent;"><i data-lucide="message-circle" style="width: 16px; height: 16px; display: inline; margin-right: 4px;"></i>Messages</button>
+      </div><button onclick="logout()" style="background: rgba(255,255,255,0.1); border: none; color: #c8e6c9; padding: 8px 12px; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 12px; display: flex; align-items: center; gap: 6px; transition: all 0.2s ease;"><i data-lucide="log-out" style="width: 14px; height: 14px;"></i>Logout</button>
      </div>
     </div>
-   </header>
-
-   <!-- Main Content -->
+   </header><!-- Main Content -->
    <main class="flex-1 overflow-auto max-w-7xl mx-auto w-full px-4 py-6">
-
-    <!-- Browse Tab -->
+    <!-- Browse Tab - Products View -->
     <div id="tab-browse" class="animate-fade-in">
      <div class="mb-6">
       <div class="flex gap-2 mb-4">
-       <div class="flex-1 relative">
-        <i data-lucide="search" style="position: absolute; left: 14px; top: 50%; transform: translateY(-50%); width: 18px; height: 18px; color: #66bb6a;"></i>
-        <input id="search-products" type="text" placeholder="Search products or farmers..." oninput="filterProducts()" class="w-full pl-11 pr-4 py-3 rounded-xl border-2 text-sm" style="border-color: #c8e6c9; background: #ffffff; color: #1b5e20;">
-       </div>
-       <button onclick="toggleViewMode()" class="px-4 py-3 rounded-xl border-2 font-semibold text-sm flex items-center gap-2" id="view-toggle-btn" style="border-color: #c8e6c9; background: #ffffff; color: #1b5e20;"><i data-lucide="grid-3x3" style="width: 16px; height: 16px;"></i><span id="view-mode-text">List</span></button>
+       <div class="flex-1 relative"><i data-lucide="search" style="position: absolute; left: 14px; top: 50%; transform: translateY(-50%); width: 18px; height: 18px; color: #66bb6a;"></i> <input id="search-products" type="text" placeholder="Search products or farmers..." oninput="filterProducts()" class="w-full pl-11 pr-4 py-3 rounded-xl border-2 text-sm" style="border-color: #c8e6c9; background: #ffffff; color: #1b5e20;">
+       </div><button onclick="toggleViewMode()" class="px-4 py-3 rounded-xl border-2 font-semibold text-sm flex items-center gap-2" id="view-toggle-btn" style="border-color: #c8e6c9; background: #ffffff; color: #1b5e20;"><i data-lucide="grid-3x3" style="width: 16px; height: 16px;"></i><span id="view-mode-text">List</span></button>
       </div>
-     </div>
-     <div id="products-grid" class="grid grid-cols-1 gap-4" style="grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); display: grid;"></div>
+     </div><!-- Products Grid View -->
+     <div id="products-grid" class="grid grid-cols-1 gap-4" style="grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); display: grid;">
+     </div><!-- Products List View -->
      <div id="products-list" class="space-y-3" style="display: none;"></div>
      <div id="browse-empty" class="text-center py-16 animate-fade-in" style="display: none;">
-      <div style="width: 80px; height: 80px; border-radius: 50%; background: #c8e6c9; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px;">
-       <i data-lucide="package-open" style="width: 36px; height: 36px; color: #2e7d32;"></i>
+      <div style="width: 80px; height: 80px; border-radius: 50%; background: #c8e6c9; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px;"><i data-lucide="package-open" style="width: 36px; height: 36px; color: #2e7d32;"></i>
       </div>
       <p style="color: #2e7d32; font-size: 18px; font-weight: 600;">No products found</p>
       <p style="color: #66bb6a; font-size: 14px; margin-top: 4px;">Try adjusting your search</p>
      </div>
-    </div>
-
-    <!-- Orders Tab -->
+    </div><!-- Orders Tab -->
     <div id="tab-orders" class="animate-fade-in hidden">
      <h2 style="color: #1b5e20; font-size: 20px; font-weight: 700; margin-bottom: 16px;">My Orders</h2>
      <div id="orders-list" class="space-y-3"></div>
      <div id="orders-empty" class="text-center py-16 animate-fade-in" style="display: none;">
-      <div style="width: 80px; height: 80px; border-radius: 50%; background: #c8e6c9; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px;">
-       <i data-lucide="inbox" style="width: 36px; height: 36px; color: #2e7d32;"></i>
+      <div style="width: 80px; height: 80px; border-radius: 50%; background: #c8e6c9; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px;"><i data-lucide="inbox" style="width: 36px; height: 36px; color: #2e7d32;"></i>
       </div>
       <p style="color: #2e7d32; font-size: 18px; font-weight: 600;">No orders yet</p>
       <p style="color: #66bb6a; font-size: 14px; margin-top: 4px;">Create an order to get started</p>
      </div>
-    </div>
-
-    <!-- Products Tab (Farmer) -->
-    <div id="tab-products" class="animate-fade-in hidden">
-     <div class="flex items-center justify-between mb-6">
-      <h2 style="color: #1b5e20; font-size: 20px; font-weight: 700; margin: 0;">My Products</h2>
-      <button onclick="openAddProductModal()" class="px-4 py-2 rounded-lg font-semibold text-sm flex items-center gap-2" style="background: #ffb300; color: #1b5e20; border: none; cursor: pointer;"><i data-lucide="plus" style="width: 16px; height: 16px;"></i>Add Product</button>
-     </div>
-     <div id="farmer-products-list" class="space-y-3"></div>
-     <div id="products-empty" class="text-center py-16 animate-fade-in" style="display: none;">
-      <div style="width: 80px; height: 80px; border-radius: 50%; background: #c8e6c9; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px;">
-       <i data-lucide="box-open" style="width: 36px; height: 36px; color: #2e7d32;"></i>
-      </div>
-      <p style="color: #2e7d32; font-size: 18px; font-weight: 600;">No products yet</p>
-      <p style="color: #66bb6a; font-size: 14px; margin-top: 4px;">Add your first product to get started</p>
-     </div>
-    </div>
-
-    <!-- Incoming Orders Tab (Farmer) -->
-    <div id="tab-incoming" class="animate-fade-in hidden">
-     <h2 style="color: #1b5e20; font-size: 20px; font-weight: 700; margin-bottom: 16px;">Buyer Orders</h2>
-     <div id="incoming-orders-list" class="space-y-3"></div>
-     <div id="incoming-empty" class="text-center py-16 animate-fade-in" style="display: none;">
-      <div style="width: 80px; height: 80px; border-radius: 50%; background: #c8e6c9; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px;">
-       <i data-lucide="inbox" style="width: 36px; height: 36px; color: #2e7d32;"></i>
-      </div>
-      <p style="color: #2e7d32; font-size: 18px; font-weight: 600;">No buyer orders yet</p>
-      <p style="color: #66bb6a; font-size: 14px; margin-top: 4px;">Incoming orders will appear here</p>
-     </div>
-    </div>
-
-    <!-- Messages Tab -->
+    </div><!-- Messages Tab -->
     <div id="tab-chats" class="animate-fade-in hidden h-full flex flex-col">
      <div class="flex gap-4 h-full" style="min-height: 500px;">
+      <!-- Chat List -->
       <div style="flex: 0 0 280px; background: #ffffff; border-radius: 16px; border: 1px solid #e8f5e9; display: flex; flex-direction: column; box-shadow: 0 2px 8px rgba(0,0,0,0.04);">
        <div style="padding: 16px; border-bottom: 1px solid #e8f5e9;">
         <h3 style="color: #1b5e20; font-weight: 700; font-size: 16px; margin: 0;">Conversations</h3>
        </div>
        <div id="chats-list" class="flex-1 overflow-y-auto" style="padding: 8px;"></div>
-      </div>
+      </div><!-- Chat Window -->
       <div style="flex: 1; background: #ffffff; border-radius: 16px; border: 1px solid #e8f5e9; display: flex; flex-direction: column; box-shadow: 0 2px 8px rgba(0,0,0,0.04);">
        <div id="chat-empty" class="flex-1 flex items-center justify-center text-center">
         <div>
-         <div style="width: 80px; height: 80px; border-radius: 50%; background: #c8e6c9; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px;">
-          <i data-lucide="message-circle" style="width: 36px; height: 36px; color: #2e7d32;"></i>
+         <div style="width: 80px; height: 80px; border-radius: 50%; background: #c8e6c9; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px;"><i data-lucide="message-circle" style="width: 36px; height: 36px; color: #2e7d32;"></i>
          </div>
          <p style="color: #2e7d32; font-size: 16px; font-weight: 600;">Select a conversation</p>
         </div>
@@ -280,27 +184,22 @@
        <div id="chat-window" class="flex-1 overflow-y-auto hidden" style="padding: 20px; display: flex; flex-direction: column; gap: 12px;"></div>
        <div id="chat-input-area" class="hidden p-4 border-t" style="border-color: #e8f5e9;">
         <form onsubmit="sendMessage(event)" style="display: flex; gap: 8px;">
-         <textarea id="message-input" placeholder="Type a message..." class="flex-1 px-4 py-2.5 rounded-lg border-2 text-sm resize-none" style="border-color: #c8e6c9; color: #1b5e20; max-height: 100px; font-family: 'DM Sans', sans-serif;" rows="2"></textarea>
-         <button type="submit" class="px-4 py-2.5 rounded-lg font-semibold flex items-center gap-2" style="background: #1b5e20; color: #ffffff;"><i data-lucide="send" style="width: 16px; height: 16px;"></i></button>
+         <textarea id="message-input" placeholder="Type a message..." class="flex-1 px-4 py-2.5 rounded-lg border-2 text-sm resize-none" style="border-color: #c8e6c9; color: #1b5e20; max-height: 100px; font-family: 'DM Sans', sans-serif;" rows="2"></textarea> <button type="submit" class="px-4 py-2.5 rounded-lg font-semibold flex items-center gap-2" style="background: #1b5e20; color: #ffffff;"><i data-lucide="send" style="width: 16px; height: 16px;"></i></button>
         </form>
        </div>
       </div>
      </div>
     </div>
-   </main>
-
-   <!-- Product Details Modal -->
+   </main><!-- Product Details Modal -->
    <div id="product-modal" style="position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 50; display: none; align-items: center; justify-content: center; padding: 16px;">
     <div class="w-full max-w-2xl rounded-2xl overflow-hidden" style="background: #ffffff; box-shadow: 0 25px 60px rgba(0,0,0,0.3); max-height: 90vh; overflow-y: auto;">
      <div style="position: sticky; top: 0; background: #ffffff; display: flex; align-items: center; justify-content: space-between; padding: 16px; border-bottom: 1px solid #e8f5e9; z-index: 10;">
-      <h2 id="product-modal-title" style="font-family: 'Playfair Display', serif; color: #1b5e20; font-size: 20px; font-weight: 700; margin: 0;">Product Details</h2>
-      <button onclick="closeProductModal()" style="color: #999; background: none; border: none; cursor: pointer;"><i data-lucide="x" style="width: 20px; height: 20px;"></i></button>
+      <h2 id="product-modal-title" style="font-family: 'Playfair Display', serif; color: #1b5e20; font-size: 20px; font-weight: 700; margin: 0;">Product Details</h2><button onclick="closeProductModal()" style="color: #999; background: none; border: none; cursor: pointer;"><i data-lucide="x" style="width: 20px; height: 20px;"></i></button>
      </div>
      <div style="padding: 24px;">
-      <div class="grid gap-6" style="grid-template-columns: 1fr 1fr;">
-       <div>
-        <img id="product-modal-image" src="" alt="Product" class="product-image rounded-lg" style="border-radius: 12px; width: 100%; height: auto;">
-       </div>
+      <div class="grid gap-6" style="grid-template-columns: 1fr 1fr;"><!-- Image Section -->
+       <div><img id="product-modal-image" src="" alt="Product" class="product-image rounded-lg" style="border-radius: 12px; width: 100%; height: auto;">
+       </div><!-- Info Section -->
        <div>
         <h3 id="product-modal-name" style="color: #1b5e20; font-size: 22px; font-weight: 700; margin: 0 0 8px 0;"></h3>
         <p id="product-modal-farmer" style="color: #66bb6a; font-size: 14px; margin: 0 0 16px 0;"></p>
@@ -329,63 +228,890 @@
          <p style="color: #999; font-size: 12px; margin: 0 0 8px 0; font-weight: 600;">DESCRIPTION</p>
          <p id="product-modal-description" style="color: #1b5e20; font-size: 13px; line-height: 1.6; margin: 0;"></p>
         </div>
-        <div style="display: flex; gap: 8px; margin-bottom: 12px;">
-         <a id="product-modal-call" href="tel:" class="flex-1 flex items-center justify-center gap-2 py-3 rounded-lg font-semibold text-sm" style="background: #1b5e20; color: #fff; text-decoration: none;"><i data-lucide="phone" style="width: 16px; height: 16px;"></i>Call Farmer</a>
-         <button onclick="openOrderFromProduct()" class="flex-1 flex items-center justify-center gap-2 py-3 rounded-lg font-semibold text-sm" style="background: #ffb300; color: #1b5e20; border: none; cursor: pointer;"><i data-lucide="shopping-cart" style="width: 16px; height: 16px;"></i>Order</button>
-        </div>
-        <button onclick="startChatFromProduct()" class="w-full py-3 rounded-lg font-semibold text-sm flex items-center justify-center gap-2" style="background: #e8f5e9; color: #1b5e20; border: none; cursor: pointer;"><i data-lucide="message-circle" style="width: 16px; height: 16px;"></i>Chat with Farmer</button>
+        <div style="display: flex; gap: 8px; margin-bottom: 12px;"><a id="product-modal-call" href="tel:" class="flex-1 flex items-center justify-center gap-2 py-3 rounded-lg font-semibold text-sm" style="background: #1b5e20; color: #fff; text-decoration: none;"><i data-lucide="phone" style="width: 16px; height: 16px;"></i>Call Farmer</a> <button onclick="openOrderFromProduct()" class="flex-1 flex items-center justify-center gap-2 py-3 rounded-lg font-semibold text-sm" style="background: #ffb300; color: #1b5e20; border: none; cursor: pointer;"><i data-lucide="shopping-cart" style="width: 16px; height: 16px;"></i>Order</button>
+        </div><button onclick="startChatFromProduct()" class="w-full py-3 rounded-lg font-semibold text-sm flex items-center justify-center gap-2" style="background: #e8f5e9; color: #1b5e20; border: none; cursor: pointer;"><i data-lucide="message-circle" style="width: 16px; height: 16px;"></i>Chat with Farmer</button>
        </div>
       </div>
      </div>
     </div>
-   </div>
-
-   <!-- Order Modal -->
+   </div><!-- Order Modal -->
    <div id="order-modal" style="position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 50; display: none; align-items: center; justify-content: center; padding: 16px;">
     <div class="w-full max-w-md rounded-2xl p-6 relative" style="background: #ffffff; box-shadow: 0 25px 60px rgba(0,0,0,0.2);">
-     <button onclick="closeOrderModal()" class="absolute top-4 right-4" style="color: #999; background: none; border: none; cursor: pointer;"><i data-lucide="x" style="width: 20px; height: 20px;"></i></button>
+     <button onclick="closeOrderModal()" class="absolute top-4 right-4" style="color: #999;"><i data-lucide="x" style="width: 20px; height: 20px;"></i></button>
      <h2 style="font-family: 'Playfair Display', serif; color: #1b5e20; font-size: 24px; font-weight: 700; margin-bottom: 4px;" id="order-modal-title">Place Order</h2>
      <p style="color: #66bb6a; font-size: 13px; margin-bottom: 20px;" id="order-modal-farmer">from Farmer</p>
      <form id="order-form" onsubmit="submitOrder(event)">
-      <div class="mb-4">
-       <label for="order-item" class="block text-sm font-semibold mb-1" style="color: #1b5e20;">Product *</label>
-       <input id="order-item" type="text" required placeholder="e.g. Fresh Tomatoes" class="w-full px-4 py-2.5 rounded-lg border-2 text-sm" style="border-color: #c8e6c9; color: #1b5e20; font-family: 'DM Sans', sans-serif;">
+      <div class="mb-4"><label for="order-item" class="block text-sm font-semibold mb-1" style="color: #1b5e20;">Product *</label> <input id="order-item" type="text" required placeholder="e.g. Fresh Tomatoes" class="w-full px-4 py-2.5 rounded-lg border-2 text-sm" style="border-color: #c8e6c9; color: #1b5e20; font-family: 'DM Sans', sans-serif;">
       </div>
-      <div class="mb-4">
-       <label for="order-quantity" class="block text-sm font-semibold mb-1" style="color: #1b5e20;">Quantity *</label>
-       <input id="order-quantity" type="text" required placeholder="e.g. 50 kg" class="w-full px-4 py-2.5 rounded-lg border-2 text-sm" style="border-color: #c8e6c9; color: #1b5e20; font-family: 'DM Sans', sans-serif;">
+      <div class="mb-4"><label for="order-quantity" class="block text-sm font-semibold mb-1" style="color: #1b5e20;">Quantity *</label> <input id="order-quantity" type="text" required placeholder="e.g. 50 kg" class="w-full px-4 py-2.5 rounded-lg border-2 text-sm" style="border-color: #c8e6c9; color: #1b5e20; font-family: 'DM Sans', sans-serif;">
       </div>
-      <div class="mb-5">
-       <label for="order-price" class="block text-sm font-semibold mb-1" style="color: #1b5e20;">Total Price (KES) *</label>
-       <input id="order-price" type="number" required placeholder="e.g. 5000" class="w-full px-4 py-2.5 rounded-lg border-2 text-sm" style="border-color: #c8e6c9; color: #1b5e20; font-family: 'DM Sans', sans-serif;">
-      </div>
-      <button type="submit" class="w-full py-3 rounded-xl font-semibold text-base flex items-center justify-center gap-2 transition-all" style="background: #1b5e20; color: #ffffff;"><i data-lucide="check-circle" style="width: 18px; height: 18px;"></i><span>Place Order</span></button>
+      <div class="mb-5"><label for="order-price" class="block text-sm font-semibold mb-1" style="color: #1b5e20;">Total Price (KES) *</label> <input id="order-price" type="number" required placeholder="e.g. 5000" class="w-full px-4 py-2.5 rounded-lg border-2 text-sm" style="border-color: #c8e6c9; color: #1b5e20; font-family: 'DM Sans', sans-serif;">
+      </div><button type="submit" class="w-full py-3 rounded-xl font-semibold text-base flex items-center justify-center gap-2 transition-all" style="background: #1b5e20; color: #ffffff;"><i data-lucide="check-circle" style="width: 18px; height: 18px;"></i><span>Place Order</span></button>
      </form>
     </div>
-   </div>
+   </div><!-- Toast -->
+   <div id="toast" style="position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); padding: 12px 24px; border-radius: 12px; font-size: 14px; font-weight: 600; z-index: 70; background: #1b5e20; color: #ffffff; box-shadow: 0 8px 24px rgba(0,0,0,0.2); display: none;"></div>
+  </div>
+  <script>
+    // State
+    let allProducts = [];
+    let allOrders = [];
+    let allMessages = [];
+    let currentTab = 'browse';
+    let currentChatFarmerId = null;
+    let selectedFarmerForOrder = null;
+    let selectedProductForOrder = null;
+    let viewMode = 'grid';
+    let currentUser = null; // { id, name, email, phone, role: 'buyer' or 'farmer' }
+    let allBuyers = [];
+    let allFarmers = [];
+    let userRole = null; // 'buyer' or 'farmer'
 
-   <!-- Add Product Modal (Farmer) -->
-   <div id="add-product-modal" style="position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 50; display: none; align-items: center; justify-content: center; padding: 16px;">
-    <div class="w-full max-w-md rounded-2xl p-6 relative" style="background: #ffffff; box-shadow: 0 25px 60px rgba(0,0,0,0.2); max-height: 90vh; overflow-y: auto;">
-     <button onclick="closeAddProductModal()" class="absolute top-4 right-4" style="color: #999; background: none; border: none; cursor: pointer;"><i data-lucide="x" style="width: 20px; height: 20px;"></i></button>
-     <h2 style="font-family: 'Playfair Display', serif; color: #1b5e20; font-size: 24px; font-weight: 700; margin-bottom: 16px;">Add Product</h2>
-     <form id="product-form" onsubmit="submitProduct(event)">
-      <div class="mb-4">
-       <label for="product-name" class="block text-sm font-semibold mb-1" style="color: #1b5e20;">Product Name *</label>
-       <input id="product-name" type="text" required placeholder="e.g. Fresh Tomatoes" class="w-full px-4 py-2.5 rounded-lg border-2 text-sm" style="border-color: #c8e6c9; color: #1b5e20; font-family: 'DM Sans', sans-serif;">
-      </div>
-      <div class="mb-4">
-       <label for="product-price" class="block text-sm font-semibold mb-1" style="color: #1b5e20;">Price (KES) *</label>
-       <input id="product-price" type="number" required placeholder="e.g. 50" class="w-full px-4 py-2.5 rounded-lg border-2 text-sm" style="border-color: #c8e6c9; color: #1b5e20; font-family: 'DM Sans', sans-serif;">
-      </div>
-      <div class="mb-4">
-       <label for="product-quantity" class="block text-sm font-semibold mb-1" style="color: #1b5e20;">Quantity Available *</label>
-       <input id="product-quantity" type="text" required placeholder="e.g. 100 kg" class="w-full px-4 py-2.5 rounded-lg border-2 text-sm" style="border-color: #c8e6c9; color: #1b5e20; font-family: 'DM Sans', sans-serif;">
-      </div>
-      <div class="mb-4">
-       <label for="product-location" class="block text-sm font-semibold mb-1" style="color: #1b5e20;">Location *</label>
-       <input id="product-location" type="text" required placeholder="e.g. Kiambu" class="w-full px-4 py-2.5 rounded-lg border-2 text-sm" style="border-color: #c8e6c9; color: #1b5e20; font-family: 'DM Sans', sans-serif;">
-      </div>
-      <div class="mb-4">
-       <label for="product-description" class="block text-sm font-semibold mb-1" style="color: #1b5e20;">Description</label>
-       <textarea id="product-description" placeholder="e.g. Fresh, organic tomatoes..." class="w-full px-4 py-2.5 rounded-lg border-2 text-sm resize-none" style="border-color
+    const defaultConfig = {
+      app_title: 'AgroTrade Buyer',
+      app_subtitle: 'Find fresh products from local farmers',
+      primary_color: '#1b5e20',
+      accent_color: '#ffb300',
+      surface_color: '#ffffff',
+      text_color: '#ffffff',
+      font_family: 'DM Sans',
+      font_size: 16
+    };
+
+    // Authentication
+    function selectRole(role) {
+      userRole = role;
+      document.getElementById('role-selection').style.display = 'none';
+      document.getElementById('login-form').style.display = 'block';
+      
+      const roleTitle = document.getElementById('role-title');
+      const roleIcon = document.getElementById('role-icon');
+      
+      if (role === 'farmer') {
+        roleTitle.textContent = 'Farmer Portal';
+        roleIcon.setAttribute('data-lucide', 'sprout');
+      } else {
+        roleTitle.textContent = 'Sign In';
+        roleIcon.setAttribute('data-lucide', 'shopping-cart');
+      }
+      lucide.createIcons();
+    }
+
+    function backToRoleSelection() {
+      userRole = null;
+      document.getElementById('role-selection').style.display = 'block';
+      document.getElementById('login-form').style.display = 'none';
+      document.getElementById('signup-form').style.display = 'none';
+      document.getElementById('login-email').value = '';
+      document.getElementById('login-password').value = '';
+      lucide.createIcons();
+    }
+
+    async function handleLogin() {
+      const email = document.getElementById('login-email').value.trim();
+      const password = document.getElementById('login-password').value.trim();
+
+      if (!email || !password) {
+        showToastLogin('Please enter email/phone and password', true);
+        return;
+      }
+
+      const btn = document.querySelector('#login-form button[onclick="handleLogin()"]');
+      const btnText = btn.querySelector('span') || btn;
+      btn.disabled = true;
+      btnText.textContent = 'Signing in...';
+
+      await new Promise(r => setTimeout(r, 600));
+
+      let user = null;
+      if (userRole === 'buyer') {
+        user = allBuyers.find(b => (b.buyer_email === email || b.buyer_phone === email) && b.buyer_password === password);
+        if (user) {
+          currentUser = { id: user.buyer_id, name: user.buyer_name, email: user.buyer_email, phone: user.buyer_phone, role: 'buyer' };
+        }
+      } else if (userRole === 'farmer') {
+        user = allFarmers.find(f => (f.farmer_email === email) && f.farmer_password === password);
+        if (user) {
+          currentUser = { id: user.farmer_id, name: user.farmer_name, email: user.farmer_email, role: 'farmer' };
+        }
+      }
+
+      if (user && currentUser) {
+        btn.disabled = false;
+        btnText.textContent = 'Sign In';
+        document.getElementById('login-screen').style.display = 'none';
+        document.querySelector('header').style.display = '';
+        document.querySelector('main').style.display = '';
+        lucide.createIcons();
+        showToast('Welcome ' + currentUser.name + '!');
+      } else {
+        btn.disabled = false;
+        btnText.textContent = 'Sign In';
+        showToastLogin('Invalid email/phone or password', true);
+      }
+    }
+
+    async function handleSignup() {
+      const name = document.getElementById('signup-name').value.trim();
+      const email = document.getElementById('signup-email').value.trim();
+      const password = document.getElementById('signup-password').value.trim();
+
+      if (!name || !email || !password) {
+        showToastLogin('Please fill all fields', true);
+        return;
+      }
+
+      if (password.length < 6) {
+        showToastLogin('Password must be at least 6 characters', true);
+        return;
+      }
+
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$|^[+]?[0-9]{10,}$/;
+      if (!emailRegex.test(email)) {
+        showToastLogin('Enter valid email or phone number', true);
+        return;
+      }
+
+      const btn = document.querySelector('#signup-form button[onclick="handleSignup()"]');
+      const btnText = btn.querySelector('span') || btn;
+      btn.disabled = true;
+      btnText.textContent = 'Creating...';
+
+      const isEmail = email.includes('@');
+
+      if (userRole === 'buyer') {
+        const exists = allBuyers.find(b => b.buyer_email === email || b.buyer_phone === email);
+        if (exists) {
+          showToastLogin('Account already exists', true);
+          btn.disabled = false;
+          btnText.textContent = 'Create Account';
+          return;
+        }
+
+        const newBuyer = {
+          buyer_id: 'buyer_' + Date.now(),
+          buyer_name: name,
+          buyer_email: isEmail ? email : '',
+          buyer_phone: !isEmail ? email : '',
+          buyer_password: password
+        };
+
+        const result = await window.dataSdk.create(newBuyer);
+        btn.disabled = false;
+        btnText.textContent = 'Create Account';
+
+        if (result.isOk) {
+          allBuyers.push(newBuyer);
+          showToastLogin('Account created! Now sign in', false);
+          toggleAuthMode();
+          document.getElementById('login-email').value = email;
+          document.getElementById('login-password').value = '';
+        } else {
+          showToastLogin('Failed to create account', true);
+        }
+      } else if (userRole === 'farmer') {
+        if (!isEmail) {
+          showToastLogin('Farmers must register with email', true);
+          btn.disabled = false;
+          btnText.textContent = 'Create Account';
+          return;
+        }
+
+        const exists = allFarmers.find(f => f.farmer_email === email);
+        if (exists) {
+          showToastLogin('Account already exists', true);
+          btn.disabled = false;
+          btnText.textContent = 'Create Account';
+          return;
+        }
+
+        const newFarmer = {
+          farmer_id: 'farmer_' + Date.now(),
+          farmer_name: name,
+          farmer_email: email,
+          farmer_password: password,
+          farmer_rating: '5.0'
+        };
+
+        const result = await window.dataSdk.create(newFarmer);
+        btn.disabled = false;
+        btnText.textContent = 'Create Account';
+
+        if (result.isOk) {
+          allFarmers.push(newFarmer);
+          showToastLogin('Account created! Now sign in', false);
+          toggleAuthMode();
+          document.getElementById('login-email').value = email;
+          document.getElementById('login-password').value = '';
+        } else {
+          showToastLogin('Failed to create account', true);
+        }
+      }
+    }
+
+    function toggleAuthMode() {
+      const loginForm = document.getElementById('login-form');
+      const signupForm = document.getElementById('signup-form');
+      const forgotForm = document.getElementById('forgot-password-form');
+
+      if (signupForm.style.display === 'none') {
+        loginForm.style.display = 'none';
+        signupForm.style.display = 'block';
+        forgotForm.style.display = 'none';
+      } else {
+        loginForm.style.display = 'block';
+        signupForm.style.display = 'none';
+        forgotForm.style.display = 'none';
+        document.getElementById('signup-name').value = '';
+        document.getElementById('signup-email').value = '';
+        document.getElementById('signup-password').value = '';
+      }
+    }
+
+    function toggleForgotPassword() {
+      const loginForm = document.getElementById('login-form');
+      const forgotForm = document.getElementById('forgot-password-form');
+
+      if (forgotForm.style.display === 'none') {
+        loginForm.style.display = 'none';
+        forgotForm.style.display = 'block';
+        document.getElementById('forgot-phone').value = '';
+        document.getElementById('forgot-new-password').value = '';
+      } else {
+        loginForm.style.display = 'block';
+        forgotForm.style.display = 'none';
+        document.getElementById('login-email').value = '';
+        document.getElementById('login-password').value = '';
+      }
+    }
+
+    async function handleForgotPassword() {
+      const phone = document.getElementById('forgot-phone').value.trim();
+      const newPassword = document.getElementById('forgot-new-password').value.trim();
+
+      if (!phone || !newPassword) {
+        showToastLogin('Please enter phone number and new password', true);
+        return;
+      }
+
+      if (newPassword.length < 6) {
+        showToastLogin('Password must be at least 6 characters', true);
+        return;
+      }
+
+      const btn = document.querySelector('#forgot-password-form button[onclick="handleForgotPassword()"]');
+      const btnText = btn.querySelector('span') || btn;
+      btn.disabled = true;
+      btnText.textContent = 'Resetting...';
+
+      await new Promise(r => setTimeout(r, 800));
+
+      let found = false;
+      let updatedUser = null;
+
+      if (userRole === 'buyer') {
+        const buyer = allBuyers.find(b => b.buyer_phone === phone);
+        if (buyer) {
+          found = true;
+          updatedUser = { ...buyer, buyer_password: newPassword };
+          const result = await window.dataSdk.update(updatedUser);
+          
+          if (result.isOk) {
+            const index = allBuyers.findIndex(b => b.buyer_id === buyer.buyer_id);
+            if (index !== -1) allBuyers[index] = updatedUser;
+          }
+        }
+      } else if (userRole === 'farmer') {
+        showToastLogin('Farmers must reset via email. Contact support.', true);
+        btn.disabled = false;
+        btnText.textContent = 'Reset Password';
+        return;
+      }
+
+      btn.disabled = false;
+      btnText.textContent = 'Reset Password';
+
+      if (found && updatedUser) {
+        showToastLogin('✓ Password reset successfully! Sign in with your new password', false);
+        toggleForgotPassword();
+        document.getElementById('login-email').value = phone;
+        document.getElementById('login-password').value = '';
+      } else {
+        showToastLogin('Phone number not found. Check and try again.', true);
+      }
+    }
+
+    function showToastLogin(msg, isError = false) {
+      const existingToast = document.getElementById('login-toast');
+      if (existingToast) existingToast.remove();
+
+      const toast = document.createElement('div');
+      toast.id = 'login-toast';
+      toast.textContent = msg;
+      toast.style.position = 'fixed';
+      toast.style.bottom = '24px';
+      toast.style.left = '50%';
+      toast.style.transform = 'translateX(-50%)';
+      toast.style.padding = '12px 24px';
+      toast.style.borderRadius = '12px';
+      toast.style.fontSize = '14px';
+      toast.style.fontWeight = '600';
+      toast.style.zIndex = '70';
+      toast.style.background = isError ? '#d32f2f' : '#4caf50';
+      toast.style.color = '#ffffff';
+      toast.style.boxShadow = '0 8px 24px rgba(0,0,0,0.2)';
+      document.body.appendChild(toast);
+
+      setTimeout(() => {
+        if (toast.parentNode) toast.remove();
+      }, 3000);
+    }
+
+    function logout() {
+      currentUser = null;
+      userRole = null;
+      document.getElementById('login-screen').style.display = 'flex';
+      document.querySelector('header').style.display = 'none';
+      document.querySelector('main').style.display = 'none';
+      document.getElementById('login-email').value = '';
+      document.getElementById('login-password').value = '';
+      document.getElementById('role-selection').style.display = 'block';
+      document.getElementById('login-form').style.display = 'none';
+      document.getElementById('signup-form').style.display = 'none';
+    }
+
+    // Element SDK
+    window.elementSdk.init({
+      defaultConfig,
+      onConfigChange: async (config) => {
+        const c = { ...defaultConfig, ...config };
+        const font = c.font_family || defaultConfig.font_family;
+        const size = c.font_size || defaultConfig.font_size;
+
+        document.getElementById('app-title').textContent = c.app_title;
+        document.getElementById('app-title').style.fontSize = `${size * 1.5}px`;
+        document.getElementById('app-subtitle').textContent = c.app_subtitle;
+        document.getElementById('app-subtitle').style.fontSize = `${size * 0.75}px`;
+      },
+      mapToCapabilities: (config) => {
+        const c = { ...defaultConfig, ...config };
+        return {
+          recolorables: [
+            { get: () => c.primary_color, set: (v) => { c.primary_color = v; window.elementSdk.setConfig({ primary_color: v }); } },
+            { get: () => c.accent_color, set: (v) => { c.accent_color = v; window.elementSdk.setConfig({ accent_color: v }); } },
+            { get: () => c.surface_color, set: (v) => { c.surface_color = v; window.elementSdk.setConfig({ surface_color: v }); } },
+            { get: () => c.text_color, set: (v) => { c.text_color = v; window.elementSdk.setConfig({ text_color: v }); } }
+          ],
+          borderables: [],
+          fontEditable: { get: () => c.font_family, set: (v) => { c.font_family = v; window.elementSdk.setConfig({ font_family: v }); } },
+          fontSizeable: { get: () => c.font_size, set: (v) => { c.font_size = v; window.elementSdk.setConfig({ font_size: v }); } }
+        };
+      },
+      mapToEditPanelValues: (config) => {
+        const c = { ...defaultConfig, ...config };
+        return new Map([
+          ['app_title', c.app_title],
+          ['app_subtitle', c.app_subtitle]
+        ]);
+      }
+    });
+
+    // Data SDK
+    const dataHandler = {
+      onDataChanged(data) {
+        allBuyers = data.filter(d => d.buyer_id);
+        allFarmers = data.filter(d => d.farmer_id && !d.message_id && !d.order_id && !d.product_id);
+        allProducts = data.filter(d => !d.message_id && !d.order_id && !d.buyer_id && !d.farmer_id);
+        allOrders = data.filter(d => d.order_id && currentUser && d.buyer_id === currentUser.id);
+        allMessages = data.filter(d => d.message_id && currentUser && d.buyer_id === currentUser.id);
+
+        renderProducts(allProducts);
+        renderOrders(allOrders);
+        renderChats(allMessages);
+      }
+    };
+
+    (async () => {
+      const result = await window.dataSdk.init(dataHandler);
+      if (!result.isOk) console.error('Data SDK init failed');
+    })();
+
+    // Tab Switching
+    function switchTab(tab) {
+      currentTab = tab;
+      document.querySelectorAll('[id^="tab-"]').forEach(el => {
+        if (!el.id.includes('-btn')) {
+          el.classList.add('hidden');
+          el.style.display = 'none';
+        }
+      });
+      document.getElementById('tab-' + tab).classList.remove('hidden');
+      document.getElementById('tab-' + tab).style.display = '';
+
+      document.querySelectorAll('[id$="-btn"]').forEach(btn => btn.style.color = 'rgba(255,255,255,0.6)');
+      document.getElementById('tab-' + tab + '-btn').style.color = '#ffffff';
+      document.getElementById('tab-' + tab + '-btn').style.borderBottom = '3px solid #ffb300';
+
+      lucide.createIcons();
+    }
+
+    // View Mode Toggle
+    function toggleViewMode() {
+      viewMode = viewMode === 'grid' ? 'list' : 'grid';
+      document.getElementById('view-mode-text').textContent = viewMode === 'grid' ? 'List' : 'Grid';
+      document.getElementById('products-grid').style.display = viewMode === 'grid' ? 'grid' : 'none';
+      document.getElementById('products-list').style.display = viewMode === 'list' ? 'block' : 'none';
+      renderProducts(allProducts);
+    }
+
+    // BROWSE TAB - Products
+    function renderProducts(products) {
+      const grid = document.getElementById('products-grid');
+      const list = document.getElementById('products-list');
+      const empty = document.getElementById('browse-empty');
+      const query = (document.getElementById('search-products').value || '').toLowerCase();
+
+      const filtered = query ? products.filter(p =>
+        (p.product_name || '').toLowerCase().includes(query) ||
+        (p.farmer_name || '').toLowerCase().includes(query)) : products;
+
+      empty.style.display = filtered.length === 0 ? '' : 'none';
+
+      if (viewMode === 'grid') {
+        grid.innerHTML = '';
+        filtered.forEach((product, i) => {
+          const card = createProductCard(product, i);
+          grid.appendChild(card);
+        });
+      } else {
+        list.innerHTML = '';
+        filtered.forEach((product, i) => {
+          const item = createProductListItem(product, i);
+          list.appendChild(item);
+        });
+      }
+    }
+
+    function createProductCard(product, index) {
+      const card = document.createElement('div');
+      card.className = 'product-card animate-scale-in';
+      card.style.background = '#ffffff';
+      card.style.borderRadius = '12px';
+      card.style.border = '1px solid #e8f5e9';
+      card.style.overflow = 'hidden';
+      card.style.animationDelay = `${index * 0.05}s`;
+      card.style.opacity = '0';
+      card.onclick = () => openProductModal(product);
+      
+      const img = document.createElement('img');
+      img.src = product.image_url || '';
+      img.alt = product.product_name || 'Product';
+      img.className = 'product-image';
+      img.onerror = () => { img.style.background = 'linear-gradient(135deg, #c8e6c9 0%, #e8f5e9 100%)'; };
+      
+      const content = document.createElement('div');
+      content.style.padding = '12px';
+      content.innerHTML = `
+        <h3 style="color: #1b5e20; font-weight: 700; font-size: 14px; margin: 0 0 4px 0; line-height: 1.3;">${escapeHtml(product.product_name || 'Product')}</h3>
+        <p style="color: #66bb6a; font-size: 12px; margin: 0 0 8px 0;">${escapeHtml(product.farmer_name || 'Farmer')}</p>
+        <div style="display: flex; align-items: center; justify-content: space-between;">
+          <span style="color: #1b5e20; font-weight: 700; font-size: 16px;">KES ${escapeHtml(product.price || '0')}</span>
+          <span style="background: #e8f5e9; color: #1b5e20; font-size: 11px; font-weight: 600; padding: 4px 8px; border-radius: 6px;">${escapeHtml(product.quantity_available || '0')}</span>
+        </div>
+      `;
+      
+      card.appendChild(img);
+      card.appendChild(content);
+      return card;
+    }
+
+    function createProductListItem(product, index) {
+      const item = document.createElement('div');
+      item.className = 'product-card animate-slide-up';
+      item.style.background = '#ffffff';
+      item.style.padding = '12px';
+      item.style.borderRadius = '12px';
+      item.style.border = '1px solid #e8f5e9';
+      item.style.display = 'flex';
+      item.style.gap = '12px';
+      item.style.cursor = 'pointer';
+      item.style.animationDelay = `${index * 0.05}s`;
+      item.style.opacity = '0';
+      item.onclick = () => openProductModal(product);
+      
+      const img = document.createElement('img');
+      img.src = product.image_url || '';
+      img.alt = product.product_name || 'Product';
+      img.style.width = '80px';
+      img.style.height = '80px';
+      img.style.borderRadius = '8px';
+      img.style.objectFit = 'cover';
+      img.style.flexShrink = '0';
+      img.style.background = 'linear-gradient(135deg, #c8e6c9 0%, #e8f5e9 100%)';
+      img.onerror = () => { img.style.background = 'linear-gradient(135deg, #c8e6c9 0%, #e8f5e9 100%)'; };
+      
+      const content = document.createElement('div');
+      content.style.flex = '1';
+      content.style.display = 'flex';
+      content.style.justifyContent = 'space-between';
+      content.style.alignItems = 'flex-start';
+      content.innerHTML = `
+        <div style="flex: 1;">
+          <h3 style="color: #1b5e20; font-weight: 700; font-size: 14px; margin: 0 0 2px 0;">${escapeHtml(product.product_name || 'Product')}</h3>
+          <p style="color: #66bb6a; font-size: 12px; margin: 0 0 4px 0;">${escapeHtml(product.farmer_name || 'Farmer')}</p>
+          <p style="color: #999; font-size: 11px; margin: 0;">Qty: ${escapeHtml(product.quantity_available || '0')}</p>
+        </div>
+        <div style="text-align: right;">
+          <p style="color: #1b5e20; font-weight: 700; font-size: 16px; margin: 0;">KES ${escapeHtml(product.price || '0')}</p>
+        </div>
+      `;
+      
+      item.appendChild(img);
+      item.appendChild(content);
+      return item;
+    }
+
+    function openProductModal(product) {
+      document.getElementById('product-modal-title').textContent = escapeHtml(product.product_name || 'Product');
+      document.getElementById('product-modal-image').src = product.image_url || '';
+      document.getElementById('product-modal-name').textContent = escapeHtml(product.product_name || 'Product');
+      document.getElementById('product-modal-farmer').textContent = `by ${escapeHtml(product.farmer_name || 'Farmer')} • ${escapeHtml(product.location || 'Location')}`;
+      document.getElementById('product-modal-price').textContent = `KES ${escapeHtml(product.price || '0')}`;
+      document.getElementById('product-modal-quantity').textContent = escapeHtml(product.quantity_available || '0');
+      document.getElementById('product-modal-rating').textContent = product.farmer_rating || '4.8';
+      document.getElementById('product-modal-location').textContent = escapeHtml(product.location || 'N/A');
+      document.getElementById('product-modal-description').textContent = escapeHtml(product.description || 'No description available');
+      document.getElementById('product-modal-call').href = `tel:${encodeURIComponent(product.phone_number || '')}`;
+      
+      selectedProductForOrder = product;
+      document.getElementById('product-modal').style.display = 'flex';
+      lucide.createIcons();
+    }
+
+    function closeProductModal() {
+      document.getElementById('product-modal').style.display = 'none';
+      selectedProductForOrder = null;
+    }
+
+    function openOrderFromProduct() {
+      if (!selectedProductForOrder) return;
+      closeProductModal();
+      selectedFarmerForOrder = { id: selectedProductForOrder.farmer_id, name: selectedProductForOrder.farmer_name };
+      document.getElementById('order-item').value = selectedProductForOrder.product_name || '';
+      document.getElementById('order-quantity').value = '';
+      document.getElementById('order-price').value = selectedProductForOrder.price || '';
+      document.getElementById('order-modal-title').textContent = `Order ${selectedProductForOrder.product_name}`;
+      document.getElementById('order-modal-farmer').textContent = `from ${selectedProductForOrder.farmer_name}`;
+      document.getElementById('order-modal').style.display = 'flex';
+    }
+
+    function startChatFromProduct() {
+      if (!selectedProductForOrder) return;
+      closeProductModal();
+      startChat(selectedProductForOrder.farmer_id, selectedProductForOrder.farmer_name);
+    }
+
+    function filterProducts() { renderProducts(allProducts); lucide.createIcons(); }
+
+    // ORDERS TAB
+    function renderOrders(orders) {
+      const list = document.getElementById('orders-list');
+      const empty = document.getElementById('orders-empty');
+
+      empty.style.display = orders.length === 0 ? '' : 'none';
+
+      const existingItems = new Map([...list.children].map(el => [el.dataset.orderId, el]));
+      const newIds = new Set(orders.map(o => o.__backendId));
+
+      existingItems.forEach((el, id) => { if (!newIds.has(id)) el.remove(); });
+
+      orders.forEach((order, i) => {
+        const id = order.__backendId;
+        if (existingItems.has(id)) {
+          updateOrderCard(existingItems.get(id), order);
+        } else {
+          const card = createOrderCard(order, i);
+          list.appendChild(card);
+        }
+      });
+    }
+
+    function createOrderCard(order, index) {
+      const card = document.createElement('div');
+      card.className = 'order-card animate-slide-up';
+      card.dataset.orderId = order.__backendId;
+      card.style.background = '#ffffff';
+      card.style.padding = '16px';
+      card.style.borderRadius = '12px';
+      card.style.border = '1px solid #e8f5e9';
+      card.style.animationDelay = `${index * 0.05}s`;
+      card.style.opacity = '0';
+      card.innerHTML = buildOrderCardHTML(order);
+      return card;
+    }
+
+    function updateOrderCard(card, order) {
+      card.innerHTML = buildOrderCardHTML(order);
+      card.style.opacity = '1';
+    }
+
+    function buildOrderCardHTML(order) {
+      const statusColor = order.order_status === 'completed' ? '#4caf50' : order.order_status === 'pending' ? '#ff9800' : '#999';
+      const deliveryColor = order.delivery_status === 'delivered' ? '#4caf50' : order.delivery_status === 'in-transit' ? '#2196f3' : '#999';
+      const paymentColor = order.payment_status === 'paid' ? '#4caf50' : order.payment_status === 'pending' ? '#ff9800' : '#999';
+      return `
+        <div class="flex items-start gap-3">
+          <div style="width: 48px; height: 48px; border-radius: 10px; background: #e8f5e9; display: flex; align-items: center; justify-content: center; flex-shrink: 0;"><i data-lucide="package" style="width: 24px; height: 24px; color: #1b5e20;"></i></div>
+          <div class="flex-1">
+            <div class="flex items-start justify-between">
+              <div>
+                <h3 style="color: #1b5e20; font-weight: 700; font-size: 15px; margin: 0;">${escapeHtml(order.item_name || 'Order')}</h3>
+                <p style="color: #66bb6a; font-size: 12px; margin: 2px 0 0 0;">${escapeHtml(order.farmer_name || 'Farmer')}</p>
+              </div>
+              <span style="background: ${statusColor}; color: #fff; font-size: 11px; font-weight: 600; padding: 4px 12px; border-radius: 20px;">${escapeHtml(order.order_status || 'pending').toUpperCase()}</span>
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-top: 10px;">
+              <div style="background: #f5f9f5; padding: 8px; border-radius: 6px; font-size: 12px;">
+                <p style="color: #999; margin: 0 0 2px 0; font-weight: 600;">Delivery</p>
+                <p style="color: ${deliveryColor}; margin: 0; font-weight: 600;">${escapeHtml((order.delivery_status || 'pending')).replace('-', ' ').toUpperCase()}</p>
+              </div>
+              <div style="background: #f5f9f5; padding: 8px; border-radius: 6px; font-size: 12px;">
+                <p style="color: #999; margin: 0 0 2px 0; font-weight: 600;">Payment</p>
+                <p style="color: ${paymentColor}; margin: 0; font-weight: 600;">${escapeHtml((order.payment_status || 'pending')).toUpperCase()}</p>
+              </div>
+              <div style="background: #f5f9f5; padding: 8px; border-radius: 6px; font-size: 12px;">
+                <p style="color: #999; margin: 0 0 2px 0; font-weight: 600;">Total</p>
+                <p style="color: #1b5e20; margin: 0; font-weight: 600;">KES ${escapeHtml(order.order_price || '0')}</p>
+              </div>
+            </div>
+            <div style="display: flex; gap: 12px; margin-top: 8px; color: #999; font-size: 13px;">
+              <span><i data-lucide="box" style="width: 12px; height: 12px; display: inline; margin-right: 4px; vertical-align: -2px;"></i>${escapeHtml(order.quantity || 'N/A')}</span>
+              <span><i data-lucide="calendar" style="width: 12px; height: 12px; display: inline; margin-right: 4px; vertical-align: -2px;"></i>${new Date(order.created_at).toLocaleDateString()}</span>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    // CHATS TAB
+    function renderChats(messages) {
+      const chatsList = document.getElementById('chats-list');
+      
+      const farmerMap = new Map();
+      messages.forEach(msg => {
+        if (!farmerMap.has(msg.farmer_id)) {
+          farmerMap.set(msg.farmer_id, { farmer_id: msg.farmer_id, farmer_name: msg.farmer_name, lastMessage: msg.message_text, timestamp: msg.timestamp });
+        } else {
+          const existing = farmerMap.get(msg.farmer_id);
+          if (new Date(msg.timestamp) > new Date(existing.timestamp)) {
+            existing.lastMessage = msg.message_text;
+            existing.timestamp = msg.timestamp;
+          }
+        }
+      });
+
+      const existingItems = new Map([...chatsList.children].map(el => [el.dataset.farmerId, el]));
+      const newIds = new Set(farmerMap.keys());
+
+      existingItems.forEach((el, id) => { if (!newIds.has(id)) el.remove(); });
+
+      Array.from(farmerMap.values()).forEach((convo, i) => {
+        const id = convo.farmer_id;
+        if (existingItems.has(id)) {
+          updateChatItem(existingItems.get(id), convo);
+        } else {
+          const item = createChatItem(convo, i);
+          chatsList.appendChild(item);
+        }
+      });
+    }
+
+    function createChatItem(convo, index) {
+      const item = document.createElement('button');
+      item.dataset.farmerId = convo.farmer_id;
+      item.style.width = '100%';
+      item.style.padding = '12px';
+      item.style.border = 'none';
+      item.style.background = '#f9f9f9';
+      item.style.borderRadius = '8px';
+      item.style.cursor = 'pointer';
+      item.style.marginBottom = '4px';
+      item.style.textAlign = 'left';
+      item.style.transition = 'all 0.2s ease';
+      item.onclick = () => selectChat(convo.farmer_id);
+      item.innerHTML = `
+        <h4 style="color: #1b5e20; font-weight: 600; font-size: 14px; margin: 0; margin-bottom: 4px;">${escapeHtml(convo.farmer_name)}</h4>
+        <p style="color: #999; font-size: 12px; margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${escapeHtml(convo.lastMessage)}</p>
+      `;
+      return item;
+    }
+
+    function updateChatItem(item, convo) {
+      item.innerHTML = `
+        <h4 style="color: #1b5e20; font-weight: 600; font-size: 14px; margin: 0; margin-bottom: 4px;">${escapeHtml(convo.farmer_name)}</h4>
+        <p style="color: #999; font-size: 12px; margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${escapeHtml(convo.lastMessage)}</p>
+      `;
+    }
+
+    function selectChat(farmerId) {
+      currentChatFarmerId = farmerId;
+      const chatWindow = document.getElementById('chat-window');
+      chatWindow.innerHTML = '';
+
+      const messages = allMessages.filter(m => m.farmer_id === farmerId);
+      messages.forEach((msg, i) => {
+        const isMe = msg.buyer_name && msg.buyer_name !== '';
+        const bubble = document.createElement('div');
+        bubble.className = 'chat-message';
+        bubble.style.alignSelf = isMe ? 'flex-end' : 'flex-start';
+        bubble.style.maxWidth = '70%';
+        bubble.style.padding = '10px 14px';
+        bubble.style.borderRadius = '12px';
+        bubble.style.background = isMe ? '#1b5e20' : '#e8f5e9';
+        bubble.style.color = isMe ? '#fff' : '#1b5e20';
+        bubble.style.fontSize = '13px';
+        bubble.style.animationDelay = `${i * 0.05}s`;
+        bubble.textContent = msg.message_text;
+        chatWindow.appendChild(bubble);
+      });
+
+      chatWindow.scrollTop = chatWindow.scrollHeight;
+      document.getElementById('chat-empty').classList.add('hidden');
+      document.getElementById('chat-empty').style.display = 'none';
+      chatWindow.classList.remove('hidden');
+      chatWindow.style.display = 'flex';
+      document.getElementById('chat-input-area').classList.remove('hidden');
+      document.getElementById('chat-input-area').style.display = '';
+    }
+
+    function startChat(farmerId, farmerName) {
+      switchTab('chats');
+      const hasConvo = allMessages.some(m => m.farmer_id === farmerId);
+      if (!hasConvo) {
+        currentChatFarmerId = farmerId;
+        document.getElementById('chat-empty').classList.add('hidden');
+        document.getElementById('chat-empty').style.display = 'none';
+        document.getElementById('chat-window').classList.remove('hidden');
+        document.getElementById('chat-window').style.display = 'flex';
+        document.getElementById('chat-input-area').classList.remove('hidden');
+        document.getElementById('chat-input-area').style.display = '';
+      } else {
+        selectChat(farmerId);
+      }
+    }
+
+    async function sendMessage(e) {
+      e.preventDefault();
+      if (!currentChatFarmerId) return;
+
+      const input = document.getElementById('message-input');
+      const text = input.value.trim();
+      if (!text) return;
+
+      input.disabled = true;
+      const farmer = allProducts.find(p => p.farmer_id === currentChatFarmerId);
+
+      const record = {
+        message_id: 'msg_' + Date.now(),
+        buyer_id: currentUser.id,
+        buyer_name: currentUser.name,
+        farmer_id: currentChatFarmerId,
+        farmer_name: farmer ? farmer.farmer_name : 'Farmer',
+        message_text: text,
+        timestamp: new Date().toISOString()
+      };
+
+      const result = await window.dataSdk.create(record);
+      input.disabled = false;
+
+      if (result.isOk) {
+        input.value = '';
+        selectChat(currentChatFarmerId);
+      } else {
+        showToast('Failed to send message', true);
+      }
+    }
+
+    // ORDER MODAL
+    function closeOrderModal() {
+      document.getElementById('order-modal').style.display = 'none';
+      document.getElementById('order-form').reset();
+      selectedFarmerForOrder = null;
+    }
+
+    async function submitOrder(e) {
+      e.preventDefault();
+      if (!selectedFarmerForOrder) return;
+
+      if (allOrders.length >= 999) {
+        showToast('Maximum limit of 999 orders reached', true);
+        return;
+      }
+
+      const btn = document.querySelector('#order-form button[type="submit"]');
+      btn.disabled = true;
+      btn.textContent = 'Placing...';
+
+      const record = {
+        order_id: 'ord_' + Date.now(),
+        buyer_id: currentUser.id,
+        buyer_name: currentUser.name,
+        farmer_id: selectedFarmerForOrder.id,
+        farmer_name: selectedFarmerForOrder.name,
+        item_name: document.getElementById('order-item').value.trim(),
+        quantity: document.getElementById('order-quantity').value.trim(),
+        order_price: document.getElementById('order-price').value.trim(),
+        order_status: 'pending',
+        delivery_status: 'pending',
+        payment_status: 'pending',
+        created_at: new Date().toISOString()
+      };
+
+      const result = await window.dataSdk.create(record);
+
+      btn.disabled = false;
+      btn.textContent = 'Place Order';
+
+      if (result.isOk) {
+        closeOrderModal();
+        showToast('Order placed successfully!');
+      } else {
+        showToast('Failed to place order', true);
+      }
+    }
+
+    // Utils
+    function escapeHtml(str) {
+      const div = document.createElement('div');
+      div.textContent = str;
+      return div.innerHTML;
+    }
+
+    function escapeHtmlAttr(str) {
+      return str.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+    }
+
+    function showToast(msg, isError = false) {
+      const toast = document.getElementById('toast');
+      toast.textContent = msg;
+      toast.style.background = isError ? '#d32f2f' : '#1b5e20';
+      toast.style.display = 'block';
+      clearTimeout(toast._timeout);
+      toast._timeout = setTimeout(() => { toast.style.display = 'none'; }, 3000);
+    }
+
+    // Init
+    window.addEventListener('DOMContentLoaded', () => {
+      lucide.createIcons();
+      document.querySelector('header').style.display = 'none';
+      document.querySelector('main').style.display = 'none';
+    });
+
+    const origRenderProducts = renderProducts;
+    renderProducts = function(data) {
+      origRenderProducts(data);
+      setTimeout(() => lucide.createIcons(), 10);
+    };
+  </script>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9dbccebe3518933f',t:'MTc3MzQyMzQ1Ny4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+ </html>
