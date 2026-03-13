@@ -431,7 +431,7 @@
   .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
   @media (max-width: 500px) { .two-col { grid-template-columns: 1fr; } }
 </style>
-</head>
+  </head>
 <body>
 
 <!-- ===================== AUTH SCREEN ===================== -->
@@ -916,34 +916,72 @@
   </div>
 </div>
 
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 <script>
+// ⚠️  IMPORTANT: Replace the values below with YOUR Firebase project config
+// Go to: https://console.firebase.google.com → Your Project → Project Settings → Your apps → Config
+const firebaseConfig = {
+  apiKey: "AIzaSyAbvUYaTnssuyt6sjQ7DvZvzZTWoI7VQbw",
+  authDomain: "agrotrade-6116c.firebaseapp.com",
+  databaseURL: "https://agrotrade-6116c-default-rtdb.firebaseio.com",
+  projectId: "agrotrade-6116c",
+  storageBucket: "agrotrade-6116c.firebasestorage.app",
+  messagingSenderId: "598521022385",
+  appId: "1:598521022385:web:3142aedc1e28fc74da9f90",
+  measurementId: "G-QG1SETVY8W"
+};
+
+// Initialize Firebase
+if (typeof firebase === 'undefined') {
+  document.body.innerHTML = '<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100vh;font-family:sans-serif;text-align:center;padding:24px;background:#0a3d0a;color:white"><h2>⚠️ No Internet Connection</h2><p style="margin-top:12px;opacity:0.8">AgroTrade requires internet to connect to the database.<br>Please connect to the internet and reload.</p><button onclick="location.reload()" style="margin-top:20px;padding:12px 24px;background:#f59e0b;color:#0a3d0a;border:none;border-radius:8px;font-size:16px;font-weight:700;cursor:pointer">Reload</button></div>';
+  throw new Error("Firebase SDK not loaded - no internet connection");
+}
+const firebaseApp = firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+
 // ===================================================
-// DATA STORE
+// DATA STORE  (Firebase Realtime Database — shared across all users)
 // ===================================================
 const DB = {
-  // Storage keys
-  KEYS: { users: 'at_users', products: 'at_products', orders: 'at_orders', messages: 'at_messages', currentUser: 'at_current' },
+  generateId() { return Date.now().toString(36) + Math.random().toString(36).substr(2, 5); },
 
-  load(key) { try { return JSON.parse(localStorage.getItem(key) || 'null'); } catch { return null; } },
-  save(key, val) { localStorage.setItem(key, JSON.stringify(val)); },
+  // LOCAL SESSION only (stays on this device)
+  getCurrentUser() { try { return JSON.parse(localStorage.getItem('at_current') || 'null'); } catch { return null; } },
+  setCurrentUser(u) { localStorage.setItem('at_current', JSON.stringify(u)); },
+  clearCurrentUser() { localStorage.removeItem('at_current'); },
 
-  getUsers() { return this.load(this.KEYS.users) || []; },
-  saveUsers(u) { this.save(this.KEYS.users, u); },
-  getProducts() { return this.load(this.KEYS.products) || []; },
-  saveProducts(p) { this.save(this.KEYS.products, p); },
-  getOrders() { return this.load(this.KEYS.orders) || []; },
-  saveOrders(o) { this.save(this.KEYS.orders, o); },
-  getMessages() { return this.load(this.KEYS.messages) || []; },
-  saveMessages(m) { this.save(this.KEYS.messages, m); },
-  getCurrentUser() { return this.load(this.KEYS.currentUser); },
-  setCurrentUser(u) { this.save(this.KEYS.currentUser, u); },
-  clearCurrentUser() { localStorage.removeItem(this.KEYS.currentUser); },
+  // IN-MEMORY CACHE (populated by realtime listeners below)
+  _users: {}, _products: {}, _orders: {}, _messages: {},
 
-  getUserById(id) { return this.getUsers().find(u => u.id === id); },
-  getProductById(id) { return this.getProducts().find(p => p.id === id); },
-  getOrderById(id) { return this.getOrders().find(o => o.id === id); },
+  getUsers()    { return Object.values(this._users); },
+  getProducts() { return Object.values(this._products); },
+  getOrders()   { return Object.values(this._orders); },
+  getMessages() { return Object.values(this._messages); },
 
-  generateId() { return Date.now().toString(36) + Math.random().toString(36).substr(2, 5); }
+  getUserById(id)    { return this._users[id]    || null; },
+  getProductById(id) { return this._products[id] || null; },
+  getOrderById(id)   { return this._orders[id]   || null; },
+
+  // FIREBASE WRITE OPERATIONS (compat SDK)
+  async saveUser(user)            { await db.ref('users/'    + user.id).set(user); },
+  async updateUser(id, data)      { await db.ref('users/'    + id).update(data); },
+  async saveProduct(p)            { await db.ref('products/' + p.id).set(p); },
+  async updateProduct(id, data)   { await db.ref('products/' + id).update(data); },
+  async deleteProduct(id)         { await db.ref('products/' + id).remove(); },
+  async saveOrder(o)              { await db.ref('orders/'   + o.id).set(o); },
+  async updateOrder(id, data)     { await db.ref('orders/'   + id).update(data); },
+  async saveMessage(m)            { await db.ref('messages/' + m.id).set(m); },
+
+  // START REALTIME LISTENERS — all devices stay in sync automatically
+  listenAll(onReady) {
+    let count = 0;
+    const done = () => { if (++count === 4) onReady(); };
+    db.ref('users').on('value',    s => { this._users    = s.val() || {}; done(); renderCurrentPage(); });
+    db.ref('products').on('value', s => { this._products = s.val() || {}; done(); renderCurrentPage(); });
+    db.ref('orders').on('value',   s => { this._orders   = s.val() || {}; done(); renderCurrentPage(); });
+    db.ref('messages').on('value', s => { this._messages = s.val() || {}; done(); if(activeChatWith) renderChatMessages(); renderConversations(); });
+  }
 };
 
 // ===================================================
@@ -1020,6 +1058,11 @@ function handleSignIn() {
   const password = document.getElementById('signin-password').value.trim();
   if (!emailOrPhone || !password) { showToast('Please fill all fields', 'error'); return; }
 
+  const btn = document.getElementById('signin-btn');
+  btn.disabled = true;
+  document.getElementById('signin-btn-text').innerHTML = '<div class="spinner"></div>';
+
+  // Search cached users (loaded from Firebase)
   const users = DB.getUsers();
   const user = users.find(u =>
     (u.email === emailOrPhone || u.phone === emailOrPhone) &&
@@ -1027,16 +1070,15 @@ function handleSignIn() {
     u.role === currentRole
   );
 
-  if (!user) { showToast('Invalid credentials or wrong role selected', 'error'); return; }
+  if (!user) {
+    btn.disabled = false;
+    document.getElementById('signin-btn-text').textContent = 'Sign In';
+    showToast('Invalid credentials or wrong role selected', 'error'); return;
+  }
 
-  const btn = document.getElementById('signin-btn');
-  btn.disabled = true;
-  document.getElementById('signin-btn-text').innerHTML = '<div class="spinner"></div>';
-  setTimeout(() => {
-    currentUser = user;
-    DB.setCurrentUser(user);
-    launchApp();
-  }, 700);
+  currentUser = user;
+  DB.setCurrentUser(user);
+  launchApp();
 }
 
 function handleSignUp() {
@@ -1059,21 +1101,25 @@ function handleSignUp() {
   btn.disabled = true;
   document.getElementById('signup-btn-text').innerHTML = '<div class="spinner"></div>';
 
-  setTimeout(() => {
-    const newUser = {
-      id: DB.generateId(),
-      name, phone, email, password,
-      role: currentRole,
-      location: currentRole === 'farmer' ? location : location,
-      farmName: currentRole === 'farmer' ? location : null,
-      createdAt: Date.now()
-    };
-    users.push(newUser);
-    DB.saveUsers(users);
+  const newUser = {
+    id: DB.generateId(),
+    name, phone, email, password,
+    role: currentRole,
+    location: location,
+    farmName: currentRole === 'farmer' ? location : null,
+    createdAt: Date.now()
+  };
+
+  DB.saveUser(newUser).then(() => {
     currentUser = newUser;
     DB.setCurrentUser(newUser);
     launchApp();
-  }, 700);
+  }).catch(err => {
+    btn.disabled = false;
+    document.getElementById('signup-btn-text').textContent = 'Create Account';
+    showToast('Error saving account. Check your internet connection.', 'error');
+    console.error(err);
+  });
 }
 
 function handleForgotPassword() {
@@ -1093,16 +1139,20 @@ function handleForgotPassword() {
   btn.disabled = true;
   document.getElementById('forgot-btn-text').innerHTML = '<div class="spinner"></div>';
 
-  setTimeout(() => {
-    users[idx].password = newPass;
-    DB.saveUsers(users);
+  const userId = users[idx].id;
+  DB.updateUser(userId, { password: newPass }).then(() => {
     btn.disabled = false;
     document.getElementById('forgot-btn-text').textContent = 'Reset Password';
     showToast('Password reset successfully! Please sign in.', 'success');
     showSignIn();
     document.getElementById('signin-email').value = phone;
     document.getElementById('signin-password').value = '';
-  }, 700);
+  }).catch(err => {
+    btn.disabled = false;
+    document.getElementById('forgot-btn-text').textContent = 'Reset Password';
+    showToast('Error resetting password. Check connection.', 'error');
+    console.error(err);
+  });
 }
 
 function logout() {
@@ -1155,11 +1205,7 @@ function launchApp() {
     renderFarmerDashboard();
   }
 
-  // Chat polling
-  chatPollInterval = setInterval(() => {
-    if (activeChatWith) renderChatMessages();
-    renderConversations();
-  }, 3000);
+  // Firebase listeners handle real-time updates — no polling needed
 }
 
 function buildNav() {
@@ -1404,7 +1450,6 @@ function submitOrder() {
   const btn = document.getElementById('order-submit-btn');
   btn.disabled = true;
 
-  const orders = DB.getOrders();
   const newOrder = {
     id: DB.generateId(),
     productId: selectedProductForOrder.id,
@@ -1423,13 +1468,16 @@ function submitOrder() {
     paymentStatus: 'pending',
     createdAt: Date.now()
   };
-  orders.push(newOrder);
-  DB.saveOrders(orders);
 
-  btn.disabled = false;
-  closeModal('modal-order');
-  showToast('Order placed successfully!', 'success');
-  renderBuyerOrders();
+  DB.saveOrder(newOrder).then(() => {
+    btn.disabled = false;
+    closeModal('modal-order');
+    showToast('Order placed successfully!', 'success');
+  }).catch(err => {
+    btn.disabled = false;
+    showToast('Error placing order. Check connection.', 'error');
+    console.error(err);
+  });
 }
 
 // ===================================================
@@ -1571,11 +1619,12 @@ function editProduct(productId) {
 
 function deleteProduct(productId) {
   if (!confirm('Delete this product?')) return;
-  let products = DB.getProducts();
-  products = products.filter(p => p.id !== productId);
-  DB.saveProducts(products);
-  showToast('Product deleted', 'info');
-  renderFarmerProducts();
+  DB.deleteProduct(productId).then(() => {
+    showToast('Product deleted', 'info');
+  }).catch(err => {
+    showToast('Error deleting product', 'error');
+    console.error(err);
+  });
 }
 
 function submitProductForm() {
@@ -1589,23 +1638,18 @@ function submitProductForm() {
   const btn = document.getElementById('pf-submit-btn');
   btn.disabled = true;
 
-  const products = DB.getProducts();
+  const productData = {
+    name, price: parseFloat(price), qty,
+    category: document.getElementById('pf-category').value,
+    unit: document.getElementById('pf-unit').value,
+    location: document.getElementById('pf-location').value.trim(),
+    description: document.getElementById('pf-desc').value.trim(),
+    imageUrl: document.getElementById('pf-image').value.trim()
+  };
 
+  let promise;
   if (editingProductId) {
-    const idx = products.findIndex(p => p.id === editingProductId);
-    if (idx >= 0) {
-      products[idx] = {
-        ...products[idx],
-        name, price: parseFloat(price), qty,
-        category: document.getElementById('pf-category').value,
-        unit: document.getElementById('pf-unit').value,
-        location: document.getElementById('pf-location').value.trim(),
-        description: document.getElementById('pf-desc').value.trim(),
-        imageUrl: document.getElementById('pf-image').value.trim()
-      };
-    }
-    DB.saveProducts(products);
-    showToast('Product updated!', 'success');
+    promise = DB.updateProduct(editingProductId, productData).then(() => showToast('Product updated!', 'success'));
   } else {
     const newProduct = {
       id: DB.generateId(),
@@ -1613,23 +1657,20 @@ function submitProductForm() {
       farmerName: currentUser.name,
       farmerPhone: currentUser.phone,
       farmerEmail: currentUser.email,
-      name, price: parseFloat(price), qty,
-      category: document.getElementById('pf-category').value,
-      unit: document.getElementById('pf-unit').value,
-      location: document.getElementById('pf-location').value.trim(),
-      description: document.getElementById('pf-desc').value.trim(),
-      imageUrl: document.getElementById('pf-image').value.trim(),
-      createdAt: Date.now()
+      createdAt: Date.now(),
+      ...productData
     };
-    products.push(newProduct);
-    DB.saveProducts(products);
-    showToast('Product added!', 'success');
+    promise = DB.saveProduct(newProduct).then(() => showToast('Product added! Buyers can now see it.', 'success'));
   }
 
-  btn.disabled = false;
-  closeModal('modal-product-form');
-  renderFarmerProducts();
-  if (currentUser.role === 'farmer') renderFarmerDashboard();
+  promise.then(() => {
+    btn.disabled = false;
+    closeModal('modal-product-form');
+  }).catch(err => {
+    btn.disabled = false;
+    showToast('Error saving product. Check connection.', 'error');
+    console.error(err);
+  });
 }
 
 // ===================================================
@@ -1714,14 +1755,12 @@ function buildOrderCard(order, viewAs) {
 }
 
 function updateOrderStatus(orderId, newStatus) {
-  const orders = DB.getOrders();
-  const idx = orders.findIndex(o => o.id === orderId);
-  if (idx < 0) return;
-  orders[idx].status = newStatus;
-  DB.saveOrders(orders);
-  showToast('Order ' + newStatus, 'success');
-  if (currentUser.role === 'buyer') { renderBuyerOrders(); }
-  else { renderFarmerOrders(); renderFarmerDashboard(); }
+  DB.updateOrder(orderId, { status: newStatus }).then(() => {
+    showToast('Order ' + newStatus, 'success');
+  }).catch(err => {
+    showToast('Error updating order', 'error');
+    console.error(err);
+  });
 }
 
 function openOrderDetail(orderId) {
@@ -1880,8 +1919,7 @@ function sendMessage() {
   const otherUser = DB.getUserById(activeChatWith);
   if (!otherUser) return;
 
-  const messages = DB.getMessages();
-  messages.push({
+  const msg = {
     id: DB.generateId(),
     senderId: currentUser.id,
     senderName: currentUser.name,
@@ -1889,12 +1927,13 @@ function sendMessage() {
     receiverName: otherUser.name,
     text,
     createdAt: Date.now()
-  });
-  DB.saveMessages(messages);
+  };
   input.value = '';
   input.style.height = 'auto';
-  renderChatMessages();
-  renderConversations();
+  DB.saveMessage(msg).catch(err => {
+    showToast('Failed to send message', 'error');
+    console.error(err);
+  });
 }
 
 function chatKeyDown(e) {
@@ -1980,14 +2019,14 @@ function showChangePassword() {
   const newPass = prompt('Enter your new password (min 6 characters):');
   if (!newPass) return;
   if (newPass.length < 6) { showToast('Password must be at least 6 characters', 'error'); return; }
-  const users = DB.getUsers();
-  const idx = users.findIndex(u => u.id === currentUser.id);
-  if (idx < 0) return;
-  users[idx].password = newPass;
-  currentUser.password = newPass;
-  DB.saveUsers(users);
-  DB.setCurrentUser(currentUser);
-  showToast('Password changed successfully!', 'success');
+  DB.updateUser(currentUser.id, { password: newPass }).then(() => {
+    currentUser.password = newPass;
+    DB.setCurrentUser(currentUser);
+    showToast('Password changed successfully!', 'success');
+  }).catch(err => {
+    showToast('Error changing password. Check connection.', 'error');
+    console.error(err);
+  });
 }
 
 // ===================================================
@@ -2032,17 +2071,60 @@ function escHtml(str) {
 // ===================================================
 // INIT
 // ===================================================
-window.addEventListener('DOMContentLoaded', () => {
-  // Check for existing session
-  const saved = DB.getCurrentUser();
-  if (saved) {
-    currentUser = saved;
-    currentRole = saved.role;
-    launchApp();
-  }
+// ===================================================
+// GLOBAL renderCurrentPage helper (called by Firebase listeners)
+// ===================================================
+function renderCurrentPage() {
+  if (!currentUser) return;
+  const active = document.querySelector('.page.active');
+  if (!active) return;
+  const id = active.id.replace('page-', '');
+  if (id === 'browse') renderBrowse();
+  else if (id === 'buyer-orders') renderBuyerOrders();
+  else if (id === 'farmer-dashboard') renderFarmerDashboard();
+  else if (id === 'farmer-products') renderFarmerProducts();
+  else if (id === 'farmer-orders') renderFarmerOrders();
+  else if (id === 'profile') renderProfile();
+}
 
+// ===================================================
+// INIT
+// ===================================================
+// Show loading spinner while Firebase connects
+document.addEventListener('DOMContentLoaded', () => {
+  document.body.insertAdjacentHTML('beforeend', `
+    <div id="firebase-loading" style="position:fixed;inset:0;background:linear-gradient(135deg,#0a3d0a,#1a6b1a);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:999;color:white;gap:16px">
+      <div style="width:52px;height:52px;background:#f59e0b;border-radius:14px;display:flex;align-items:center;justify-content:center">
+        <svg style="width:28px;height:28px;stroke:white;fill:none;stroke-width:2" viewBox="0 0 24 24"><path d="M12 2a10 10 0 0 0-10 10c0 5.52 4.48 10 10 10s10-4.48 10-10S17.52 2 12 2z"/><path d="M7 13s0-5 5-5 5 5 5 5"/></svg>
+      </div>
+      <div style="font-family:'Syne',sans-serif;font-size:22px;font-weight:800">AgroTrade</div>
+      <div style="display:flex;gap:6px">
+        <div style="width:8px;height:8px;background:rgba(255,255,255,0.6);border-radius:50%;animation:bounce 1s infinite 0s"></div>
+        <div style="width:8px;height:8px;background:rgba(255,255,255,0.6);border-radius:50%;animation:bounce 1s infinite 0.2s"></div>
+        <div style="width:8px;height:8px;background:rgba(255,255,255,0.6);border-radius:50%;animation:bounce 1s infinite 0.4s"></div>
+      </div>
+      <style>@keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}</style>
+    </div>
+  `);
 
+  // Start Firebase realtime listeners — data is shared across ALL users
+  DB.listenAll(() => {
+    document.getElementById('firebase-loading')?.remove();
+
+    // Restore session if user was already logged in
+    const saved = DB.getCurrentUser();
+    if (saved) {
+      // Refresh user data from Firebase in case it was updated
+      const fresh = DB.getUserById(saved.id);
+      currentUser = fresh || saved;
+      currentRole = currentUser.role;
+      DB.setCurrentUser(currentUser);
+      launchApp();
+    }
+  });
 });
+
+
 </script>
 </body>
 </html>
