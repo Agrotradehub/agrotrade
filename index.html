@@ -2041,33 +2041,7 @@ window.addEventListener('DOMContentLoaded', () => {
     launchApp();
   }
 
-  // Seed some demo products if none exist
-  if (!DB.getProducts().length && !DB.getUsers().length) {
-    // Create demo farmer
-    const demoFarmer = {
-      id: 'demo_farmer_1',
-      name: 'James Mwangi',
-      phone: '+254712345678',
-      email: 'james@farm.com',
-      password: 'demo123',
-      role: 'farmer',
-      farmName: 'Green Valley Farm',
-      location: 'Kiambu',
-      createdAt: Date.now() - 86400000
-    };
-    const users = [demoFarmer];
-    DB.saveUsers(users);
 
-    const demoProducts = [
-      { id:'dp1', farmerId:'demo_farmer_1', farmerName:'James Mwangi', farmerPhone:'+254712345678', farmerEmail:'james@farm.com', name:'Fresh Tomatoes', category:'vegetables', price:80, qty:'200 kg', unit:'kg', location:'Kiambu', description:'Farm-fresh tomatoes, harvested daily. Sweet and juicy.', imageUrl:'https://images.unsplash.com/photo-1546094096-0df4bcaaa337?w=400&q=80', createdAt:Date.now()-3600000 },
-      { id:'dp2', farmerId:'demo_farmer_1', farmerName:'James Mwangi', farmerPhone:'+254712345678', farmerEmail:'james@farm.com', name:'Organic Kale (Sukuma Wiki)', category:'vegetables', price:25, qty:'500 bunches', unit:'bunch', location:'Kiambu', description:'Tender organic kale grown without pesticides.', imageUrl:'https://images.unsplash.com/photo-1524179091875-bf99a9a6af57?w=400&q=80', createdAt:Date.now()-3200000 },
-      { id:'dp3', farmerId:'demo_farmer_1', farmerName:'James Mwangi', farmerPhone:'+254712345678', farmerEmail:'james@farm.com', name:'Maize (Dry)', category:'grains', price:45, qty:'2000 kg', unit:'kg', location:'Kiambu', description:'Quality dry maize, clean and well-dried. Ready for milling.', imageUrl:'https://images.unsplash.com/photo-1634467519719-c9ff4f2da6e6?w=400&q=80', createdAt:Date.now()-2800000 },
-      { id:'dp4', farmerId:'demo_farmer_1', farmerName:'James Mwangi', farmerPhone:'+254712345678', farmerEmail:'james@farm.com', name:'Fresh Avocados', category:'fruits', price:15, qty:'300 pieces', unit:'piece', location:'Kiambu', description:'Large ripe Hass avocados, ready to eat.', imageUrl:'https://images.unsplash.com/photo-1601039641847-7857b994d704?w=400&q=80', createdAt:Date.now()-2400000 },
-      { id:'dp5', farmerId:'demo_farmer_1', farmerName:'James Mwangi', farmerPhone:'+254712345678', farmerEmail:'james@farm.com', name:'Fresh Cow Milk', category:'dairy', price:60, qty:'50 liters/day', unit:'liter', location:'Kiambu', description:'Fresh whole milk from healthy grass-fed cows. Collected daily.', imageUrl:'https://images.unsplash.com/photo-1563636619-e9143da7973b?w=400&q=80', createdAt:Date.now()-2000000 },
-      { id:'dp6', farmerId:'demo_farmer_1', farmerName:'James Mwangi', farmerPhone:'+254712345678', farmerEmail:'james@farm.com', name:'Sweet Potatoes', category:'vegetables', price:30, qty:'800 kg', unit:'kg', location:'Kiambu', description:'Naturally sweet potatoes with rich orange flesh. No chemicals used.', imageUrl:'https://images.unsplash.com/photo-1576045057995-568f588f82fb?w=400&q=80', createdAt:Date.now()-1600000 },
-    ];
-    DB.saveProducts(demoProducts);
-  }
 });
 </script>
 </body>
