@@ -4,7 +4,25 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>AgroTrade — Farm Direct Marketplace</title>
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <!-- ===== PWA META TAGS ===== -->
+  <meta name="application-name" content="AgroTrade">
+  <meta name="description" content="Buy and sell fresh farm products directly from local farmers across Ghana. Fast delivery, best prices.">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="AgroTrade">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="theme-color" content="#1a6b1a">
+  <meta name="msapplication-TileColor" content="#1a6b1a">
+  <meta name="msapplication-TileImage" content="icon-192.png">
+  <meta property="og:title" content="AgroTrade - Farm Direct Marketplace">
+  <meta property="og:description" content="Buy fresh farm products directly from local farmers across Ghana">
+  <meta property="og:image" content="icon-512.png">
+  <meta property="og:type" content="website">
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="icon-192.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+  <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png">
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
   :root {
     --green-dark: #0a3d0a;
@@ -3703,5 +3721,71 @@ window.startChatWithAgrotrade = startChatWithAgrotrade;
 .admin-action-btn { padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 700; border: none; cursor: pointer; font-family: var(--font-body); }
 </style>
 
+
+<script>
+// SERVICE WORKER
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", function() {
+    navigator.serviceWorker.register("sw.js")
+      .then(function(r) { console.log("[SW] Registered"); })
+      .catch(function(e) { console.log("[SW] Failed", e); });
+  });
+}
+
+// INSTALL PROMPT
+var deferredInstallPrompt = null;
+window.addEventListener("beforeinstallprompt", function(e) {
+  e.preventDefault();
+  deferredInstallPrompt = e;
+  setTimeout(showPWABanner, 15000);
+});
+
+function showPWABanner() {
+  if (!deferredInstallPrompt) return;
+  if (document.getElementById("pwa-install-banner")) return;
+  var b = document.createElement("div");
+  b.id = "pwa-install-banner";
+  b.style.cssText = "position:fixed;bottom:80px;left:16px;right:16px;z-index:9999;background:linear-gradient(135deg,#0a3d0a,#1a6b1a);color:white;border-radius:16px;padding:14px;box-shadow:0 8px 32px rgba(0,0,0,0.3);display:flex;align-items:center;gap:12px";
+  b.innerHTML = "<div style='width:44px;height:44px;background:#f59e0b;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0'>🌿</div>" +
+    "<div style='flex:1'><div style='font-weight:800;font-size:14px'>Install AgroTrade App</div><div style='font-size:11px;opacity:0.8'>Add to home screen for quick access</div></div>" +
+    "<div style='display:flex;flex-direction:column;gap:4px'>" +
+    "<button onclick='doInstallPWA()' style='background:#f59e0b;color:#0a3d0a;border:none;padding:7px 14px;border-radius:20px;font-weight:800;font-size:12px;cursor:pointer'>Install</button>" +
+    "<button onclick='dismissPWABanner()' style='background:rgba(255,255,255,0.15);color:white;border:none;padding:5px 10px;border-radius:20px;font-size:10px;cursor:pointer'>Later</button>" +
+    "</div>";
+  document.body.appendChild(b);
+}
+
+function dismissPWABanner() {
+  var b = document.getElementById("pwa-install-banner");
+  if (b) b.remove();
+}
+
+function doInstallPWA() {
+  if (!deferredInstallPrompt) return;
+  deferredInstallPrompt.prompt();
+  deferredInstallPrompt.userChoice.then(function(c) {
+    if (c.outcome === "accepted") dismissPWABanner();
+    deferredInstallPrompt = null;
+  });
+}
+
+window.addEventListener("appinstalled", function() {
+  dismissPWABanner();
+  deferredInstallPrompt = null;
+});
+
+// iOS Safari instructions
+if (/iphone|ipad|ipod/i.test(navigator.userAgent) && !window.navigator.standalone) {
+  setTimeout(function() {
+    var b = document.createElement("div");
+    b.style.cssText = "position:fixed;bottom:80px;left:16px;right:16px;z-index:9999;background:linear-gradient(135deg,#0a3d0a,#1a6b1a);color:white;border-radius:16px;padding:16px;box-shadow:0 8px 32px rgba(0,0,0,0.3)";
+    b.innerHTML = "<div style='display:flex;justify-content:space-between;align-items:center;margin-bottom:10px'>" +
+      "<div style='font-weight:800;font-size:14px'>📱 Install on iPhone</div>" +
+      "<button onclick='this.parentElement.parentElement.remove()' style='background:rgba(255,255,255,0.2);border:none;color:white;padding:4px 10px;border-radius:10px;cursor:pointer;font-size:12px'>✕</button></div>" +
+      "<div style='font-size:12px;line-height:1.8;opacity:0.9'>1. Tap <b>Share</b> (□↑) at bottom of Safari<br>2. Tap <b>Add to Home Screen</b><br>3. Tap <b>Add</b> — done! 🎉</div>";
+    document.body.appendChild(b);
+  }, 8000);
+}
+</script>
 </body>
-</html>
+                                       </html>
