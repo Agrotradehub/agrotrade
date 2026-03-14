@@ -3371,46 +3371,69 @@ function initLivePrices() {
 function updatePriceTicker() {
   const ticker = document.getElementById('prices-ticker');
   if (!ticker) return;
+  const usdToGhs = 15.2;
   ticker.innerHTML = priceData.map(c => {
     const isUp = c.change >= 0;
     const col = isUp ? '#4ade80' : '#f87171';
     const arr = isUp ? '▲' : '▼';
+    const ghs = (c.price * usdToGhs).toFixed(0);
     return '<div style="display:flex;align-items:center;gap:4px;white-space:nowrap;flex-shrink:0">' +
       '<span style="font-size:13px">' + c.flag + '</span>' +
       '<span style="color:white;font-size:11px;font-weight:700">' + c.name + '</span>' +
-      '<span style="color:' + col + ';font-size:11px;font-weight:700">$' + c.price.toFixed(2) + '</span>' +
+      '<span style="color:' + col + ';font-size:11px;font-weight:700">GHS ' + Number(ghs).toLocaleString() + '</span>' +
+      '<span style="color:rgba(255,255,255,0.5);font-size:10px">/$' + c.price.toFixed(0) + '</span>' +
       '<span style="color:' + col + ';font-size:10px">' + arr + Math.abs(c.change).toFixed(1) + '%</span>' +
       '</div>';
   }).join('<span style="color:rgba(255,255,255,0.2);margin:0 2px">|</span>');
 }
 
+function closePricesModal() {
+  const m = document.getElementById('prices-modal');
+  if (m) m.remove();
+}
+
 function showFullPrices() {
+  // Close existing modal if open
+  closePricesModal();
+
+  // USD to GHS exchange rate (approximate)
+  const usdToGhs = 15.2;
+
   let rows = priceData.map(c => {
     const isUp = c.change >= 0;
-    const col = isUp ? 'var(--green-mid)' : 'var(--red)';
+    const col = isUp ? '#16a34a' : '#dc2626';
     const arr = isUp ? '▲' : '▼';
-    return '<div style="display:flex;align-items:center;justify-content:space-between;padding:12px 14px;background:var(--gray-50);border-radius:10px">' +
+    const ghsPrice = (c.price * usdToGhs).toFixed(2);
+    return '<div style="display:flex;align-items:center;justify-content:space-between;padding:12px 14px;background:#f9fafb;border-radius:10px;margin-bottom:6px">' +
       '<div style="display:flex;align-items:center;gap:10px">' +
       '<span style="font-size:24px">' + c.flag + '</span>' +
       '<div><div style="font-weight:700;font-size:14px">' + c.name + '</div>' +
-      '<div style="font-size:11px;color:var(--gray-400)">per ' + c.unit + ' (USD)</div></div></div>' +
+      '<div style="font-size:11px;color:#9ca3af">per ' + c.unit + '</div></div></div>' +
       '<div style="text-align:right">' +
-      '<div style="font-family:var(--font-display);font-size:18px;font-weight:800">$' + c.price.toFixed(2) + '</div>' +
+      '<div style="font-weight:800;font-size:15px;color:#111827">GHS ' + Number(ghsPrice).toLocaleString() + '</div>' +
+      '<div style="font-size:11px;color:#6b7280">$' + c.price.toFixed(2) + ' USD</div>' +
       '<div style="font-size:12px;font-weight:700;color:' + col + '">' + arr + ' ' + Math.abs(c.change).toFixed(2) + '%</div>' +
       '</div></div>';
   }).join('');
 
-  const modal = '<div id="prices-modal" style="position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:300;display:flex;align-items:center;justify-content:center;padding:16px" onclick="if(event.target===this)this.remove()">' +
+  const div = document.createElement('div');
+  div.id = 'prices-modal';
+  div.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:300;display:flex;align-items:center;justify-content:center;padding:16px';
+  div.onclick = function(e) { if (e.target === div) closePricesModal(); };
+  div.innerHTML =
     '<div style="background:white;border-radius:20px;width:100%;max-width:500px;max-height:85vh;overflow-y:auto;padding:24px">' +
     '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">' +
-    '<div style="font-family:var(--font-display);font-size:20px;font-weight:800">📈 Global Agro Prices</div>' +
-    '<button onclick="document.getElementById(\"prices-modal\").remove()" style="background:var(--gray-100);border:none;padding:8px 14px;border-radius:8px;cursor:pointer;font-weight:700;font-family:var(--font-body)">Close</button>' +
+    '<div style="font-family:Syne,sans-serif;font-size:20px;font-weight:800">📈 Global Agro Prices</div>' +
+    '<button id="prices-close-btn" style="background:#f3f4f6;border:none;padding:8px 18px;border-radius:8px;cursor:pointer;font-weight:700;font-size:14px;font-family:inherit">✕ Close</button>' +
     '</div>' +
-    '<div style="font-size:12px;color:var(--gray-400);margin-bottom:14px">International commodity prices • USD • Updates every 30s</div>' +
-    '<div style="display:flex;flex-direction:column;gap:8px">' + rows + '</div>' +
-    '<div style="margin-top:14px;font-size:11px;color:var(--gray-400);text-align:center">Prices are indicative. Actual market prices may vary.</div>' +
-    '</div></div>';
-  document.body.insertAdjacentHTML('beforeend', modal);
+    '<div style="background:#fef3c7;border-radius:10px;padding:10px 14px;margin-bottom:14px;font-size:12px;color:#92400e">💱 Exchange rate: 1 USD ≈ GHS ' + usdToGhs + ' (indicative)</div>' +
+    '<div>' + rows + '</div>' +
+    '<div style="margin-top:12px;font-size:11px;color:#9ca3af;text-align:center">Prices update every 30 seconds. For reference only.</div>' +
+    '</div>';
+  document.body.appendChild(div);
+
+  // Attach close button event after element is in DOM
+  document.getElementById('prices-close-btn').onclick = closePricesModal;
 }
 
 // ===================================================
@@ -3596,6 +3619,7 @@ window.closePublicSheet = closePublicSheet;
 window.switchRole = switchRole;
 window.updateRoleSwitchBtn = updateRoleSwitchBtn;
 window.showFullPrices = showFullPrices;
+window.closePricesModal = closePricesModal;
 window.updateFarmingServices = updateFarmingServices;
 window.initLivePrices = initLivePrices;
 window.updateAllStatDisplays = updateAllStatDisplays;
