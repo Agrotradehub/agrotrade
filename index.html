@@ -456,7 +456,7 @@
       <div style="width:1px;background:var(--gray-200)"></div>
       <div style="text-align:center">
         <div style="font-family:var(--font-display);font-size:20px;font-weight:800;color:var(--green-dark)" id="stat-farmers">0</div>
-        <div style="font-size:10px;color:var(--gray-500);font-weight:600;text-transform:uppercase;letter-spacing:0.5px">Farmers</div>
+        <div style="font-size:10px;color:var(--gray-500);font-weight:600;text-transform:uppercase;letter-spacing:0.5px">Sellers</div>
       </div>
       <div style="width:1px;background:var(--gray-200)"></div>
       <div style="text-align:center">
@@ -482,8 +482,8 @@
         </div>
         <div class="role-btn" id="role-farmer-btn" onclick="selectRole('farmer')">
           <svg viewBox="0 0 24 24"><path d="M2 20h20"/><path d="M6 20V10l6-6 6 6v10"/><path d="M10 20v-6h4v6"/></svg>
-          <span class="role-btn-label">I'm a Farmer</span>
-          <div style="font-size:11px;color:var(--gray-400);margin-top:4px;">Sell products</div>
+          <span class="role-btn-label">I'm a Seller</span>
+          <div style="font-size:11px;color:var(--gray-400);margin-top:4px;">List &amp; sell products</div>
         </div>
       </div>
       <div style="text-align:center">
@@ -540,8 +540,8 @@
         <input class="form-input" id="signup-location" type="text" placeholder="e.g. Nairobi, Kiambu, Meru">
       </div>
       <div class="form-group" id="signup-farm-group" style="display:none">
-        <label class="form-label">Farm Name *</label>
-        <input class="form-input" id="signup-farm" type="text" placeholder="e.g. Green Valley Farm">
+        <label class="form-label">Business / Farm Name *</label>
+        <input class="form-input" id="signup-farm" type="text" placeholder="e.g. Kofi Farms, Fresh Vegs Shop">
       </div>
       <div class="form-group">
         <label class="form-label">Password * <span class="form-hint">(min 6 characters)</span></label>
@@ -668,7 +668,7 @@
       <div class="page-header">
         <div>
           <div class="page-title" id="farmer-welcome">Welcome!</div>
-          <div class="page-subtitle">Your farm business at a glance</div>
+          <div class="page-subtitle">Your seller dashboard at a glance</div>
         </div>
 
       </div>
@@ -732,6 +732,7 @@
           <div id="conversations-empty" class="empty-state" style="padding:30px 16px">
             <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
             <p style="font-size:12px">No conversations yet</p>
+          <button onclick="startChatWithAgrotrade()" style="margin-top:10px;background:var(--green-mid);color:white;border:none;padding:8px 14px;border-radius:8px;cursor:pointer;font-size:12px;font-weight:600;font-family:var(--font-body)">💬 Chat with AgroTrade</button>
           </div>
         </div>
         <div class="chat-panel">
@@ -1121,8 +1122,8 @@ function goToAuthForm() {
   if (!currentRole) { showToast('Please select Buyer or Farmer first', 'error'); return; }
   document.getElementById('auth-role-step').classList.add('hidden');
   document.getElementById('auth-signin-step').classList.remove('hidden');
-  document.getElementById('signin-title').textContent = currentRole === 'farmer' ? 'Farmer Sign In' : 'Buyer Sign In';
-  document.getElementById('signin-subtitle').textContent = currentRole === 'farmer' ? 'Access your farm portal' : 'Access your account';
+  document.getElementById('signin-title').textContent = currentRole === 'farmer' ? 'Seller Sign In' : 'Buyer Sign In';
+  document.getElementById('signin-subtitle').textContent = currentRole === 'farmer' ? 'Access your seller account' : 'Access your account';
 }
 
 function backToRole() {
@@ -1142,7 +1143,7 @@ function showSignIn() {
 function showSignup() {
   document.getElementById('auth-signin-step').classList.add('hidden');
   document.getElementById('auth-signup-step').classList.remove('hidden');
-  document.getElementById('signup-subtitle').textContent = currentRole === 'farmer' ? 'Create your farmer account' : 'Create your buyer account';
+  document.getElementById('signup-subtitle').textContent = currentRole === 'farmer' ? 'Create your seller account' : 'Create your buyer account';
   if (currentRole === 'farmer') {
     document.getElementById('signup-location-group').style.display = 'none';
     document.getElementById('signup-farm-group').style.display = 'block';
@@ -1293,7 +1294,7 @@ function launchApp() {
   const initials = currentUser.name.split(' ').map(n=>n[0]).join('').toUpperCase().slice(0,2);
   document.getElementById('header-avatar').textContent = initials;
   document.getElementById('header-name').textContent = currentUser.name;
-  document.getElementById('header-role').textContent = currentUser.role;
+  document.getElementById('header-role').textContent = currentUser.role === 'farmer' ? 'SELLER' : 'BUYER';
 
   // Profile avatar
   document.getElementById('profile-avatar-big').textContent = initials;
@@ -1499,23 +1500,24 @@ function openProductDetail(productId) {
         <div><div class="info-row-label">Location</div><div class="info-row-value">${escHtml(farmerLoc||'N/A')}</div></div>
       </div>
       <div style="background:var(--green-pale);border-radius:var(--radius);padding:14px">
-        <div style="font-size:12px;font-weight:600;color:var(--green-dark);margin-bottom:10px">FARMER INFO</div>
+        <div style="font-size:12px;font-weight:600;color:var(--green-dark);margin-bottom:10px">SOLD & DELIVERED BY</div>
         <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
-          <div style="width:40px;height:40px;border-radius:50%;background:var(--green-mid);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;color:white;flex-shrink:0">${farmerInitials}</div>
+          <div style="width:40px;height:40px;border-radius:10px;background:var(--green-mid);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0">🌿</div>
           <div>
-            <div style="font-weight:700;font-size:15px;color:var(--gray-900)">${escHtml(farmerName)}</div>
-            <div style="font-size:12px;color:var(--green-mid)">${escHtml(farmerFarm)}</div>
+            <div style="font-weight:700;font-size:15px;color:var(--gray-900)">AgroTrade</div>
+            <div style="font-size:12px;color:var(--green-mid)">Farm Direct Marketplace • Ghana</div>
           </div>
         </div>
         <div style="display:flex;flex-direction:column;gap:6px">
-          ${farmerPhone ? `<div style="display:flex;align-items:center;gap:6px;font-size:13px">
+          <div style="display:flex;align-items:center;gap:6px;font-size:13px">
             <svg style="width:14px;height:14px;stroke:var(--green-mid);fill:none;stroke-width:2;flex-shrink:0" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.18 2 2 0 0 1 3.58 1h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.56a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
-            <a href="tel:${escHtml(farmerPhone)}" style="color:var(--green-dark);font-weight:600">${escHtml(farmerPhone)}</a>
-          </div>` : ''}
-          ${farmerEmail ? `<div style="display:flex;align-items:center;gap:6px;font-size:13px">
-            <svg style="width:14px;height:14px;stroke:var(--green-mid);fill:none;stroke-width:2;flex-shrink:0" viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
-            <a href="mailto:${escHtml(farmerEmail)}" style="color:var(--green-dark);font-weight:600">${escHtml(farmerEmail)}</a>
-          </div>` : ''}
+            <a href="tel:0554737934" style="color:var(--green-dark);font-weight:600">0554737934</a>
+          </div>
+          <div style="display:flex;align-items:center;gap:6px;font-size:13px">
+            <svg style="width:14px;height:14px;stroke:var(--green-mid);fill:none;stroke-width:2;flex-shrink:0" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+            <span style="color:var(--green-dark);font-weight:600">Chat with AgroTrade on Messages</span>
+          </div>
+          <div style="font-size:11px;color:var(--gray-500);margin-top:4px;background:white;border-radius:6px;padding:8px">🚚 We handle all deliveries. Order now and we contact you to arrange.</div>
         </div>
       </div>
       <div style="display:flex;gap:8px;flex-wrap:wrap">
@@ -1523,9 +1525,9 @@ function openProductDetail(productId) {
           <svg style="width:16px;height:16px;stroke:white;fill:none;stroke-width:2" viewBox="0 0 24 24"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
           Order Now
         </button>
-        <button class="btn btn-outline flex-1" onclick="closeModal('modal-product');startChatWithFarmer('${farmerId}','${farmerName}')">
+        <button class="btn btn-outline flex-1" onclick="closeModal('modal-product');startChatWithAgrotrade()">
           <svg style="width:16px;height:16px;stroke:var(--green-mid);fill:none;stroke-width:2" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-          Message
+          Ask AgroTrade
         </button>
       </div>
     </div>
@@ -1689,7 +1691,7 @@ function renderFarmerDashboard() {
         </div>
         <div style="background:var(--amber-light);border-radius:var(--radius-sm);padding:12px;text-align:center">
           <div style="font-family:var(--font-display);font-size:22px;font-weight:800;color:var(--amber-dark)">${totalFarmers}</div>
-          <div style="font-size:10px;color:var(--gray-500);font-weight:600;text-transform:uppercase;margin-top:2px">Farmers</div>
+          <div style="font-size:10px;color:var(--gray-500);font-weight:600;text-transform:uppercase;margin-top:2px">Sellers</div>
         </div>
         <div style="background:var(--blue-light);border-radius:var(--radius-sm);padding:12px;text-align:center">
           <div style="font-family:var(--font-display);font-size:22px;font-weight:800;color:var(--blue)">${totalBuyers}</div>
@@ -1950,13 +1952,7 @@ function buildOrderCard(order, viewAs) {
     </div>
     <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap">
       <button class="btn btn-ghost btn-sm" onclick="openOrderDetail('${order.id}')">View Details</button>
-      ${viewAs==='farmer' && order.status==='pending' ? `
-        <button class="btn btn-primary btn-sm" onclick="updateOrderStatus('${order.id}','accepted')">Accept</button>
-        <button class="btn btn-danger btn-sm" onclick="updateOrderStatus('${order.id}','rejected')">Reject</button>
-      ` : ''}
-      ${viewAs==='farmer' && order.status==='accepted' ? `
-        <button class="btn btn-primary btn-sm" onclick="updateOrderStatus('${order.id}','completed')">Mark Complete</button>
-      ` : ''}
+      ${viewAs==='farmer' ? `<div style="font-size:12px;color:var(--gray-500);padding:6px 10px;background:var(--gray-50);border-radius:6px">📋 AgroTrade is managing this order</div>` : ''}
       ${viewAs==='buyer' && order.status==='pending' ? `
         <button class="btn btn-danger btn-sm" onclick="updateOrderStatus('${order.id}','cancelled')">Cancel</button>
       ` : ''}
@@ -2017,16 +2013,10 @@ function openOrderDetail(orderId) {
 
   const footer = document.getElementById('order-detail-footer');
   footer.innerHTML = '';
-  if (currentUser.role === 'farmer' && order.status === 'pending') {
+  if (currentUser.role === 'farmer') {
     footer.innerHTML = `
-      <button class="btn btn-ghost" onclick="closeModal('modal-order-detail')">Close</button>
-      <button class="btn btn-danger" onclick="updateOrderStatus('${order.id}','rejected');closeModal('modal-order-detail')">Reject</button>
-      <button class="btn btn-primary" onclick="updateOrderStatus('${order.id}','accepted');closeModal('modal-order-detail')">Accept Order</button>
-    `;
-  } else if (currentUser.role === 'farmer' && order.status === 'accepted') {
-    footer.innerHTML = `
-      <button class="btn btn-ghost" onclick="closeModal('modal-order-detail')">Close</button>
-      <button class="btn btn-primary" onclick="updateOrderStatus('${order.id}','completed');closeModal('modal-order-detail')">Mark as Completed</button>
+      <div style="font-size:12px;color:var(--gray-500);flex:1">📋 AgroTrade handles order management. We will contact you when needed.</div>
+      <button class="btn btn-primary" onclick="closeModal('modal-order-detail')">Close</button>
     `;
   } else {
     if (currentUser.role === 'buyer' && order.paymentStatus !== 'paid') {
@@ -2086,8 +2076,13 @@ function renderConversations() {
 function startChatWithFarmer(farmerId, farmerName) {
   showPage('messages');
   const farmer = DB.getUserById(farmerId);
-  const name = (farmer && farmer.name) ? farmer.name : (farmerName || 'Farmer');
+  const name = (farmer && farmer.name) ? farmer.name : (farmerName || 'Seller');
   openConversation(farmerId, name);
+}
+
+function startChatWithAgrotrade() {
+  showPage('messages');
+  openConversation('agrotrade_admin', 'AgroTrade Support');
 }
 
 function openConversation(otherId, otherName) {
@@ -2177,7 +2172,7 @@ function renderProfile() {
   const initials = u.name.split(' ').map(n=>n[0]).join('').toUpperCase().slice(0,2);
   document.getElementById('profile-avatar-big').textContent = initials;
   document.getElementById('profile-name-big').textContent = u.name;
-  document.getElementById('profile-role-big').textContent = u.role === 'farmer' ? '🌾 Farmer' : '🛒 Buyer';
+  document.getElementById('profile-role-big').textContent = u.role === 'farmer' ? '🌿 Seller' : '🛒 Buyer';
   document.getElementById('profile-location-big').textContent = (u.farmName||u.location||'');
 
   const myProducts = DB.getProducts().filter(p => p.farmerId === u.id);
@@ -2486,6 +2481,7 @@ function showAdminTab(tab) {
   if (tab === 'farmers')   renderAdminFarmers(content);
   if (tab === 'buyers')    renderAdminBuyers(content);
   if (tab === 'products')  renderAdminProducts(content);
+  if (tab === 'messages')  renderAdminMessages(content);
 }
 
 function renderAdminOverview(el) {
@@ -2503,7 +2499,7 @@ function renderAdminOverview(el) {
 
   el.innerHTML = `
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:16px;margin-bottom:28px">
-      ${adminStatCard('🌾', 'Farmers', farmers.length, '#e8f5e9', '#1a6b1a')}
+      ${adminStatCard('🌾', 'Sellers', farmers.length, '#e8f5e9', '#1a6b1a')}
       ${adminStatCard('🛒', 'Buyers', buyers.length, '#dbeafe', '#2563eb')}
       ${adminStatCard('📦', 'Products', products.length, '#fef3c7', '#d97706')}
       ${adminStatCard('🧾', 'Total Orders', orders.length, '#f3f4f6', '#374151')}
@@ -2754,6 +2750,122 @@ function renderAdminProducts(el) {
   `;
 }
 
+function renderAdminMessages(el) {
+  const messages = DB.getMessages().sort((a,b) => b.createdAt - a.createdAt);
+  // Group conversations
+  const convMap = new Map();
+  messages.forEach(m => {
+    const key = [m.senderId, m.receiverId].sort().join('_');
+    if (!convMap.has(key) || m.createdAt > convMap.get(key).lastTime) {
+      const isFromUser = m.senderId !== 'agrotrade_admin';
+      const userId = isFromUser ? m.senderId : m.receiverId;
+      const userName = isFromUser ? m.senderName : m.receiverName;
+      convMap.set(key, { key, userId, userName, lastMsg: m.text, lastTime: m.createdAt, senderId: m.senderId, receiverId: m.receiverId });
+    }
+  });
+
+  const convs = [...convMap.values()].sort((a,b) => b.lastTime - a.lastTime);
+
+  el.innerHTML = `
+    <div style="font-family:var(--font-display);font-size:20px;font-weight:700;margin-bottom:16px">💬 All Messages</div>
+    <div style="display:grid;grid-template-columns:300px 1fr;gap:16px;height:calc(100vh - 220px)">
+      <div class="card" style="overflow-y:auto">
+        <div style="padding:14px;border-bottom:1px solid var(--gray-100);font-weight:700;font-size:13px;color:var(--gray-600)">CONVERSATIONS (${convs.length})</div>
+        ${convs.map(c => `
+          <div onclick="adminOpenConversation('${c.userId}','${escHtml(c.userName)}')" style="padding:14px;border-bottom:1px solid var(--gray-50);cursor:pointer;transition:background 0.15s" onmouseover="this.style.background='var(--gray-50)'" onmouseout="this.style.background='white'">
+            <div style="display:flex;align-items:center;gap:10px">
+              <div style="width:36px;height:36px;border-radius:50%;background:var(--green-pale);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;color:var(--green-dark);flex-shrink:0">${c.userName.split(' ').map(n=>n[0]).join('').toUpperCase().slice(0,2)}</div>
+              <div style="flex:1;min-width:0">
+                <div style="font-weight:600;font-size:13px">${escHtml(c.userName)}</div>
+                <div style="font-size:11px;color:var(--gray-400);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${escHtml(c.lastMsg)}</div>
+              </div>
+            </div>
+          </div>
+        `).join('')}
+        ${convs.length === 0 ? '<div style="padding:30px;text-align:center;color:var(--gray-400);font-size:13px">No messages yet</div>' : ''}
+      </div>
+      <div class="card" style="display:flex;flex-direction:column;overflow:hidden" id="admin-chat-panel">
+        <div id="admin-chat-content" style="flex:1;display:flex;align-items:center;justify-content:center;color:var(--gray-400);font-size:14px">
+          Select a conversation to view messages
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+let adminActiveChatUserId = null;
+let adminActiveChatUserName = null;
+
+function adminOpenConversation(userId, userName) {
+  adminActiveChatUserId = userId;
+  adminActiveChatUserName = userName;
+  const panel = document.getElementById('admin-chat-content');
+  if (!panel) return;
+
+  const messages = DB.getMessages().filter(m =>
+    (m.senderId === userId && m.receiverId === 'agrotrade_admin') ||
+    (m.receiverId === userId && m.senderId === 'agrotrade_admin')
+  ).sort((a,b) => a.createdAt - b.createdAt);
+
+  const user = DB.getUserById(userId);
+
+  panel.innerHTML = `
+    <div style="display:flex;flex-direction:column;height:100%">
+      <div style="padding:14px 16px;border-bottom:1px solid var(--gray-100);display:flex;align-items:center;justify-content:space-between;background:white">
+        <div>
+          <div style="font-weight:700;font-size:15px">${escHtml(userName)}</div>
+          ${user ? `<div style="font-size:12px;color:var(--gray-500)">${user.role} • <a href="tel:${escHtml(user.phone)}" style="color:var(--green-mid)">${escHtml(user.phone)}</a></div>` : ''}
+        </div>
+        ${user ? `<a href="https://wa.me/${(user.phone||'').replace(/[^0-9]/g,'')}" target="_blank" class="btn btn-ghost btn-sm" style="text-decoration:none">💬 WhatsApp</a>` : ''}
+      </div>
+      <div style="flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:8px;background:var(--gray-50)" id="admin-msg-list">
+        ${messages.map(m => {
+          const isAdmin = m.senderId === 'agrotrade_admin';
+          return `<div style="display:flex;justify-content:${isAdmin?'flex-end':'flex-start'}">
+            <div style="max-width:70%;padding:10px 14px;border-radius:16px;font-size:13px;line-height:1.5;${isAdmin?'background:var(--green-mid);color:white;border-bottom-right-radius:4px':'background:white;color:var(--gray-800);border:1px solid var(--gray-200);border-bottom-left-radius:4px'}">
+              ${escHtml(m.text)}
+              <div style="font-size:10px;margin-top:4px;opacity:0.6">${new Date(m.createdAt).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})}</div>
+            </div>
+          </div>`;
+        }).join('')}
+        ${messages.length === 0 ? '<div style="text-align:center;color:var(--gray-400);font-size:13px;padding:20px">No messages yet</div>' : ''}
+      </div>
+      <div style="padding:12px 16px;background:white;border-top:1px solid var(--gray-200);display:flex;gap:8px">
+        <input type="text" id="admin-msg-input" placeholder="Type a message..." style="flex:1;padding:10px 14px;border:2px solid var(--gray-200);border-radius:var(--radius);font-family:var(--font-body);font-size:14px;outline:none" onkeydown="if(event.key==='Enter')adminSendMessage()" onfocus="this.style.borderColor='var(--green-mid)'" onblur="this.style.borderColor='var(--gray-200)'">
+        <button onclick="adminSendMessage()" style="background:var(--green-mid);color:white;border:none;padding:10px 16px;border-radius:var(--radius);cursor:pointer;font-weight:600;font-family:var(--font-body)">Send</button>
+      </div>
+    </div>
+  `;
+  // Scroll to bottom
+  setTimeout(() => {
+    const list = document.getElementById('admin-msg-list');
+    if (list) list.scrollTop = list.scrollHeight;
+  }, 50);
+}
+
+function adminSendMessage() {
+  if (!adminActiveChatUserId) return;
+  const input = document.getElementById('admin-msg-input');
+  if (!input) return;
+  const text = input.value.trim();
+  if (!text) return;
+
+  const receiverUser = DB.getUserById(adminActiveChatUserId);
+  const msg = {
+    id: DB.generateId(),
+    senderId: 'agrotrade_admin',
+    senderName: 'AgroTrade Support',
+    receiverId: adminActiveChatUserId,
+    receiverName: adminActiveChatUserName,
+    text,
+    createdAt: Date.now()
+  };
+  input.value = '';
+  DB.saveMessage(msg).then(() => {
+    adminOpenConversation(adminActiveChatUserId, adminActiveChatUserName);
+  });
+}
+
 function adminGetFarmerPhone(farmerId) {
   const farmer = DB.getUserById(farmerId);
   return farmer ? farmer.phone : '';
@@ -2876,6 +2988,9 @@ window.adminContactFarmer = adminContactFarmer;
 window.adminDeleteUser = adminDeleteUser;
 window.adminDeleteProduct = adminDeleteProduct;
 window.handleSecretAdminTap = handleSecretAdminTap;
+window.adminOpenConversation = adminOpenConversation;
+window.adminSendMessage = adminSendMessage;
+window.startChatWithAgrotrade = startChatWithAgrotrade;
 </script>
 
 <!-- ===================================================== -->
@@ -2904,9 +3019,10 @@ window.handleSecretAdminTap = handleSecretAdminTap;
     <button class="admin-tab active" id="atab-overview" onclick="showAdminTab('overview')">📊 Overview</button>
     <button class="admin-tab" id="atab-orders" onclick="showAdminTab('orders')">📦 Orders</button>
     <button class="admin-tab" id="atab-payments" onclick="showAdminTab('payments')">💰 Payments</button>
-    <button class="admin-tab" id="atab-farmers" onclick="showAdminTab('farmers')">🌾 Farmers</button>
+    <button class="admin-tab" id="atab-farmers" onclick="showAdminTab('farmers')">🌿 Sellers</button>
     <button class="admin-tab" id="atab-buyers" onclick="showAdminTab('buyers')">🛒 Buyers</button>
     <button class="admin-tab" id="atab-products" onclick="showAdminTab('products')">📦 Products</button>
+    <button class="admin-tab" id="atab-messages" onclick="showAdminTab('messages')">💬 Messages</button>
   </div>
 
   <!-- Admin Content -->
