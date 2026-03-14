@@ -9,8 +9,8 @@ const PRECACHE_URLS = [
   '/agrotrade/',
   '/agrotrade/index.html',
   '/agrotrade/manifest.json',
-  '/agrotrade/icons/icon-192.png',
-  '/agrotrade/icons/icon-512.png',
+  '/agrotrade/icon-192.png',
+  '/agrotrade/icon-512.png',
   'https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap',
   'https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js',
   'https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js',
@@ -102,7 +102,7 @@ self.addEventListener('push', event => {
 
   const options = {
     body: data.body || 'You have a new notification',
-    icon: '/agrotrade/icons/icon-192.png',
+    icon: '/agrotrade/icon-192.png',
     badge: '/agrotrade/icons/icon-72.png',
     vibrate: [200, 100, 200],
     data: { url: data.url || '/agrotrade/' },
