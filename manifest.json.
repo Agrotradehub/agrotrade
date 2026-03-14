@@ -1,40 +1,58 @@
 {
-  "background_color": "#1a6b1a",
-  "description": "Buy and sell fresh farm products directly from local farmers across Ghana. Fast delivery, best prices.",
-  "dir": "ltr",
-  "display": "standalone",
-  "name": "AgroTrade",
-  "orientation": "any",
-  "scope": "/",
+  "name": "AgroTrade - Farm Direct Marketplace",
   "short_name": "AgroTrade",
-  "start_url": "/",
+  "description": "Buy and sell fresh farm products directly from local farmers across Ghana. Fast delivery, best prices guaranteed.",
+  "start_url": "/agrotrade/",
+  "scope": "/agrotrade/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#0a3d0a",
   "theme_color": "#1a6b1a",
+  "lang": "en-GH",
+  "dir": "ltr",
+  "categories": ["shopping", "food", "lifestyle"],
   "icons": [
     {
-      "src": "https://agrotradehub.github.io/icon-192.png",
-      "type": "image/png",
+      "src": "icon-192.png",
       "sizes": "192x192",
-      "isSquare": true,
-      "isPng": true,
-      "isWebp": false,
-      "isJpg": false,
-      "width": 192,
-      "is512x512": false,
-      "is256x256": false,
-      "is192x192": true
+      "type": "image/png",
+      "purpose": "any"
     },
     {
-      "src": "https://agrotradehub.github.io/icon-512.png",
+      "src": "icon-192.png",
+      "sizes": "192x192",
       "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "icon-512.png",
       "sizes": "512x512",
-      "isSquare": true,
-      "isPng": true,
-      "isWebp": false,
-      "isJpg": false,
-      "width": 512,
-      "is512x512": true,
-      "is256x256": false,
-      "is192x192": false
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Browse Products",
+      "short_name": "Browse",
+      "description": "Browse fresh farm products",
+      "url": "/agrotrade/",
+      "icons": [{ "src": "icon-192.png", "sizes": "192x192" }]
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "AgroTrade home screen"
     }
   ]
 }
