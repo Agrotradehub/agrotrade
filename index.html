@@ -1209,8 +1209,8 @@ const DB = {
   listenAll(onReady) {
     let count = 0;
     const done = () => { if (++count === 4) onReady(); };
-    db.ref('users').on('value',    s => { this._users    = s.val() || {}; done(); renderCurrentPage(); });
-    db.ref('products').on('value', s => { this._products = s.val() || {}; done(); renderCurrentPage(); });
+    db.ref('users').on('value',    s => { this._users    = s.val() || {}; done(); renderCurrentPage(); updateAllStatDisplays(); });
+    db.ref('products').on('value', s => { this._products = s.val() || {}; done(); renderCurrentPage(); updateAllStatDisplays(); });
     db.ref('orders').on('value',   s => { this._orders   = s.val() || {}; done(); renderCurrentPage(); checkNotifications(); });
     db.ref('messages').on('value', s => { this._messages = s.val() || {}; done(); if(activeChatWith) renderChatMessages(); renderConversations(); checkNotifications(); });
   }
@@ -2469,34 +2469,32 @@ function trackVisitAndLoadStats() {
   // Increment visitor count
   db.ref('stats/visitors').transaction(current => (current || 0) + 1);
 
-  // Listen to stats in realtime and update the auth screen
+  // Listen to visitor count
   db.ref('stats/visitors').on('value', s => {
     DB._visitorCount = s.val() || 0;
-    const el = document.getElementById('stat-visitors');
-    if (el) el.textContent = formatStatNum(DB._visitorCount);
-    // Refresh dashboard stats if visible
-    renderCurrentPage();
+    updateAllStatDisplays();
   });
+}
 
-  // Count farmers and buyers from users
-  db.ref('users').on('value', s => {
-    const users = s.val() || {};
-    const allUsers = Object.values(users);
-    const farmers = allUsers.filter(u => u.role === 'farmer').length;
-    const buyers  = allUsers.filter(u => u.role === 'buyer').length;
-    const fel = document.getElementById('stat-farmers');
-    const bel = document.getElementById('stat-buyers');
-    if (fel) fel.textContent = formatStatNum(farmers);
-    if (bel) bel.textContent = formatStatNum(buyers);
-  });
+function updateAllStatDisplays() {
+  const visitors = DB._visitorCount || 0;
+  const allUsers = DB.getUsers();
+  const farmers  = allUsers.filter(u => u.role === 'farmer').length;
+  const buyers   = allUsers.filter(u => u.role === 'buyer').length;
+  const products = DB.getProducts().length;
 
-  // Count products
-  db.ref('products').on('value', s => {
-    const products = s.val() || {};
-    const count = Object.keys(products).length;
-    const pel = document.getElementById('stat-products');
-    if (pel) pel.textContent = formatStatNum(count);
-  });
+  // Auth screen stats
+  const sv = document.getElementById('stat-visitors');
+  const sf = document.getElementById('stat-farmers');
+  const sb = document.getElementById('stat-buyers');
+  const sp = document.getElementById('stat-products');
+  if (sv) sv.textContent = formatStatNum(visitors);
+  if (sf) sf.textContent = formatStatNum(farmers);
+  if (sb) sb.textContent = formatStatNum(buyers);
+  if (sp) sp.textContent = formatStatNum(products);
+
+  // Also refresh public page stats if showing
+  renderPublicStats();
 }
 
 function formatStatNum(n) {
@@ -3111,7 +3109,9 @@ function handleSecretAdminTap() {
 let publicCat = 'all';
 
 function showPublicPage() {
-  document.getElementById('public-page').style.display = 'flex';
+  const pg = document.getElementById('public-page');
+  pg.style.display = 'block';
+  pg.style.minHeight = '100vh';
   document.getElementById('auth-screen').style.display = 'none';
   document.getElementById('app').classList.add('hidden');
   renderPublicStats();
@@ -3391,7 +3391,7 @@ function showFullPrices() {
     '<div style="background:white;border-radius:20px;width:100%;max-width:500px;max-height:85vh;overflow-y:auto;padding:24px">' +
     '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">' +
     '<div style="font-family:var(--font-display);font-size:20px;font-weight:800">📈 Global Agro Prices</div>' +
-    '<button onclick="document.getElementById('prices-modal').remove()" style="background:var(--gray-100);border:none;padding:8px 14px;border-radius:8px;cursor:pointer;font-weight:700;font-family:var(--font-body)">Close</button>' +
+    '<button onclick="document.getElementById(\"prices-modal\").remove()" style="background:var(--gray-100);border:none;padding:8px 14px;border-radius:8px;cursor:pointer;font-weight:700;font-family:var(--font-body)">Close</button>' +
     '</div>' +
     '<div style="font-size:12px;color:var(--gray-400);margin-bottom:14px">International commodity prices • USD • Updates every 30s</div>' +
     '<div style="display:flex;flex-direction:column;gap:8px">' + rows + '</div>' +
@@ -3494,7 +3494,7 @@ function sendBrowserNotif(title, body) {
 function renderCurrentPage() {
   // Always refresh public page products if visible
   const pubPage = document.getElementById('public-page');
-  if (pubPage && pubPage.style.display !== 'none') {
+  if (pubPage && pubPage.style.display !== 'none' && pubPage.style.display !== '') {
     renderPublicProducts();
     renderPublicStats();
   }
@@ -3536,6 +3536,8 @@ document.addEventListener('DOMContentLoaded', () => {
   // Start Firebase realtime listeners — data is shared across ALL users
   DB.listenAll(() => {
     document.getElementById('firebase-loading')?.remove();
+    // Update stats now that Firebase data is loaded
+    updateAllStatDisplays();
 
     // Restore session if user was already logged in
     const saved = DB.getCurrentUser();
@@ -3584,6 +3586,7 @@ window.updateRoleSwitchBtn = updateRoleSwitchBtn;
 window.showFullPrices = showFullPrices;
 window.updateFarmingServices = updateFarmingServices;
 window.initLivePrices = initLivePrices;
+window.updateAllStatDisplays = updateAllStatDisplays;
 window.startChatWithAgrotrade = startChatWithAgrotrade;
 </script>
 
