@@ -670,6 +670,7 @@
           <div class="page-title" id="farmer-welcome">Welcome!</div>
           <div class="page-subtitle">Your farm business at a glance</div>
         </div>
+
       </div>
       <div class="stats-grid" id="farmer-stats"></div>
       <div class="card" id="farmer-community-stats" style="padding:16px;margin-bottom:24px"></div>
@@ -825,11 +826,15 @@
       </div>
       <div class="form-group">
         <label class="form-label">Delivery Address</label>
-        <input class="form-input" id="order-address" type="text" placeholder="Where should it be delivered?">
+        <input class="form-input" id="order-address" type="text" placeholder="Your full delivery address">
       </div>
       <div class="form-group">
         <label class="form-label">Notes (optional)</label>
         <textarea class="form-input form-textarea" id="order-notes" placeholder="Any special instructions..."></textarea>
+      </div>
+      <div style="background:var(--blue-light);border-radius:var(--radius-sm);padding:12px;font-size:13px;color:var(--blue);display:flex;gap:8px;align-items:flex-start">
+        <span style="font-size:16px">🚚</span>
+        <div><b>AgroTrade Delivery:</b> We will contact you to confirm delivery details after your payment is received. Our team handles all deliveries.</div>
       </div>
     </div>
     <div class="modal-footer">
@@ -951,6 +956,68 @@
     <div class="modal-footer" id="order-detail-footer"></div>
   </div>
 </div>
+
+
+<!-- ===== PAYMENT MODAL ===== -->
+<div id="modal-payment" class="modal-overlay hidden" onclick="closeModalOnOverlay(event,'modal-payment')">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-header">
+      <span class="modal-title" id="payment-modal-title">Complete Payment</span>
+      <button class="btn btn-ghost btn-icon" onclick="closeModal('modal-payment')">
+        <svg style="width:18px;height:18px;stroke:var(--gray-600);fill:none;stroke-width:2" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <!-- Payment Summary -->
+      <div id="payment-summary" style="background:var(--green-xpale);border-radius:var(--radius);padding:16px;margin-bottom:20px"></div>
+
+      <!-- Mobile Money Options -->
+      <div style="font-size:13px;font-weight:700;color:var(--gray-700);margin-bottom:10px">Select Payment Method</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:20px">
+        <div class="momo-option" id="momo-mtn" onclick="selectMomo('mtn')" style="border:2px solid var(--gray-200);border-radius:var(--radius);padding:12px;text-align:center;cursor:pointer;transition:var(--transition)">
+          <div style="font-size:22px;margin-bottom:4px">📱</div>
+          <div style="font-size:11px;font-weight:700;color:var(--gray-700)">MTN MoMo</div>
+          <div style="font-size:10px;color:var(--gray-400)">Mobile Money</div>
+        </div>
+        <div class="momo-option" id="momo-vodafone" onclick="selectMomo('vodafone')" style="border:2px solid var(--gray-200);border-radius:var(--radius);padding:12px;text-align:center;cursor:pointer;transition:var(--transition)">
+          <div style="font-size:22px;margin-bottom:4px">📲</div>
+          <div style="font-size:11px;font-weight:700;color:var(--gray-700)">Vodafone</div>
+          <div style="font-size:10px;color:var(--gray-400)">Cash</div>
+        </div>
+        <div class="momo-option" id="momo-airteltigo" onclick="selectMomo('airteltigo')" style="border:2px solid var(--gray-200);border-radius:var(--radius);padding:12px;text-align:center;cursor:pointer;transition:var(--transition)">
+          <div style="font-size:22px;margin-bottom:4px">💳</div>
+          <div style="font-size:11px;font-weight:700;color:var(--gray-700)">AirtelTigo</div>
+          <div style="font-size:10px;color:var(--gray-400)">Money</div>
+        </div>
+      </div>
+
+      <!-- Payment Instructions -->
+      <div id="payment-instructions" class="hidden" style="background:var(--amber-light);border-radius:var(--radius);padding:16px;margin-bottom:16px;border-left:4px solid var(--amber)">
+        <div style="font-weight:700;font-size:14px;color:var(--gray-800);margin-bottom:10px">📋 Payment Instructions</div>
+        <div id="payment-steps" style="font-size:13px;color:var(--gray-700);line-height:2"></div>
+      </div>
+
+      <!-- Reference Number -->
+      <div class="form-group">
+        <label class="form-label">Your Mobile Money Number *</label>
+        <input class="form-input" id="payer-phone" type="tel" placeholder="e.g. 0554737934">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Transaction Reference / ID *</label>
+        <input class="form-input" id="payment-ref" type="text" placeholder="Enter reference after paying">
+        <div class="form-hint">After sending the money, enter the transaction ID you received</div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('modal-payment')">Cancel</button>
+      <button class="btn btn-amber btn-lg" onclick="confirmPayment()" id="confirm-payment-btn">
+        ✅ Confirm Payment
+      </button>
+    </div>
+  </div>
+</div>
+
+
 
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
@@ -1535,7 +1602,8 @@ function submitOrder() {
   DB.saveOrder(newOrder).then(() => {
     btn.disabled = false;
     closeModal('modal-order');
-    showToast('Order placed successfully!', 'success');
+    // Open payment modal for the buyer
+    openPaymentModal(newOrder);
   }).catch(err => {
     btn.disabled = false;
     showToast('Error placing order. Check connection.', 'error');
@@ -1581,6 +1649,8 @@ function renderFarmerDashboard() {
   const totalRevenue = myOrders.filter(o=>o.status==='completed').reduce((s,o)=>s+o.total,0);
 
   document.getElementById('farmer-welcome').textContent = 'Welcome, ' + currentUser.name.split(' ')[0] + '!';
+
+
 
   document.getElementById('farmer-stats').innerHTML = `
     <div class="stat-card animate-in">
@@ -1781,10 +1851,19 @@ function submitProductForm() {
     imageUrl: document.getElementById('pf-image').value.trim()
   };
 
-  let promise;
   if (editingProductId) {
-    promise = DB.updateProduct(editingProductId, productData).then(() => showToast('Product updated!', 'success'));
+    // Editing — no subscription check needed
+    DB.updateProduct(editingProductId, productData).then(() => {
+      showToast('Product updated!', 'success');
+      btn.disabled = false;
+      closeModal('modal-product-form');
+      renderFarmerProducts();
+    }).catch(err => {
+      btn.disabled = false;
+      showToast('Error saving product.', 'error');
+    });
   } else {
+    // New product — check subscription
     const newProduct = {
       id: DB.generateId(),
       farmerId: currentUser.id,
@@ -1794,17 +1873,16 @@ function submitProductForm() {
       createdAt: Date.now(),
       ...productData
     };
-    promise = DB.saveProduct(newProduct).then(() => showToast('Product added! Buyers can now see it.', 'success'));
-  }
-
-  promise.then(() => {
     btn.disabled = false;
     closeModal('modal-product-form');
-  }).catch(err => {
-    btn.disabled = false;
-    showToast('Error saving product. Check connection.', 'error');
-    console.error(err);
-  });
+    DB.saveProduct(newProduct).then(() => {
+      showToast('Product added! Buyers can now see it. 🎉', 'success');
+      renderFarmerProducts();
+      renderFarmerDashboard();
+    }).catch(err => {
+      showToast('Error saving product. Check connection.', 'error');
+    });
+  }
 }
 
 // ===================================================
@@ -1882,7 +1960,8 @@ function buildOrderCard(order, viewAs) {
       ${viewAs==='buyer' && order.status==='pending' ? `
         <button class="btn btn-danger btn-sm" onclick="updateOrderStatus('${order.id}','cancelled')">Cancel</button>
       ` : ''}
-      ${viewAs==='buyer' ? `<button class="btn btn-outline btn-sm" onclick="startChatWithFarmer('${order.farmerId}','${order.farmerName}')">Message Farmer</button>` : ''}
+      ${viewAs==='buyer' && order.paymentStatus !== 'paid' ? `<button class="btn btn-amber btn-sm" onclick="openPaymentModal(DB.getOrderById('${order.id}'))">💳 Pay Now</button>` : ''}
+      ${viewAs==='buyer' && order.paymentStatus === 'paid' ? `<span class="badge badge-green" style="padding:8px 14px">✅ Payment Confirmed</span>` : ''}
     </div>
   `;
   return card;
@@ -1915,7 +1994,9 @@ function openOrderDetail(orderId) {
       <div class="order-detail"><div class="order-detail-label">Quantity</div><div class="order-detail-value">${escHtml(order.qty)}</div></div>
       <div class="order-detail"><div class="order-detail-label">Unit Price</div><div class="order-detail-value">GHS ${Number(order.unitPrice||0).toLocaleString()}</div></div>
       <div class="order-detail"><div class="order-detail-label">Total Amount</div><div class="order-detail-value" style="color:var(--green-dark);font-size:18px">GHS ${Number(order.total).toLocaleString()}</div></div>
-      <div class="order-detail"><div class="order-detail-label">Payment</div><div class="order-detail-value">${order.paymentStatus||'pending'}</div></div>
+      <div class="order-detail"><div class="order-detail-label">Payment</div><div class="order-detail-value" style="color:${order.paymentStatus==='paid'?'var(--green-mid)':'var(--amber-dark)'}">${order.paymentStatus==='paid'?'✅ Paid':'⏳ Pending'}</div></div>
+      ${order.paymentRef ? `<div class="order-detail"><div class="order-detail-label">Ref ID</div><div class="order-detail-value" style="font-size:12px">${order.paymentRef}</div></div>` : ''}
+      ${order.totalWithFee ? `<div class="order-detail"><div class="order-detail-label">Total Paid</div><div class="order-detail-value" style="color:var(--green-dark)">GHS ${Number(order.totalWithFee).toLocaleString()}</div></div>` : ''}
       <div class="order-detail"><div class="order-detail-label">Date Placed</div><div class="order-detail-value">${new Date(order.createdAt).toLocaleDateString()}</div></div>
       ${order.address ? `<div class="order-detail"><div class="order-detail-label">Delivery Address</div><div class="order-detail-value">${escHtml(order.address)}</div></div>` : ''}
     </div>
@@ -1948,7 +2029,14 @@ function openOrderDetail(orderId) {
       <button class="btn btn-primary" onclick="updateOrderStatus('${order.id}','completed');closeModal('modal-order-detail')">Mark as Completed</button>
     `;
   } else {
-    footer.innerHTML = `<button class="btn btn-primary" onclick="closeModal('modal-order-detail')">Close</button>`;
+    if (currentUser.role === 'buyer' && order.paymentStatus !== 'paid') {
+      footer.innerHTML = `
+        <button class="btn btn-ghost" onclick="closeModal('modal-order-detail')">Close</button>
+        <button class="btn btn-amber" onclick="closeModal('modal-order-detail');openPaymentModal(DB.getOrderById('${order.id}'))">💳 Complete Payment</button>
+      `;
+    } else {
+      footer.innerHTML = `<button class="btn btn-primary" onclick="closeModal('modal-order-detail')">Close</button>`;
+    }
   }
 
   openModal('modal-order-detail');
@@ -2249,6 +2337,101 @@ function trackVisitAndLoadStats() {
 function formatStatNum(n) {
   if (n >= 1000) return (n / 1000).toFixed(1) + 'k';
   return n.toString();
+}
+
+
+// ===================================================
+// PAYMENT & SUBSCRIPTION SYSTEM
+// ===================================================
+const PLATFORM_FEE_PCT = 10; // 10% added on top for buyer
+function openPaymentModal(order) {
+  currentPaymentOrder = order;
+  selectedMomoNetwork = null;
+
+  const fee = (order.total * PLATFORM_FEE_PCT / 100).toFixed(2);
+  const totalWithFee = (parseFloat(order.total) + parseFloat(fee)).toFixed(2);
+  order.totalWithFee = totalWithFee;
+  order.platformFee = fee;
+
+  document.getElementById('payment-modal-title').textContent = 'Pay for ' + order.productName;
+  document.getElementById('payment-summary').innerHTML = `
+    <div style="font-weight:700;font-size:15px;color:var(--gray-900);margin-bottom:12px">${escHtml(order.productName)}</div>
+    <div style="display:flex;flex-direction:column;gap:6px">
+      <div style="display:flex;justify-content:space-between;font-size:13px;color:var(--gray-600)">
+        <span>Order Amount</span><span style="font-weight:600">GHS ${Number(order.total).toLocaleString()}</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;font-size:13px;color:var(--gray-600)">
+        <span>Platform Fee (10%)</span><span style="font-weight:600;color:var(--amber-dark)">+ GHS ${fee}</span>
+      </div>
+      <div style="height:1px;background:var(--gray-200);margin:4px 0"></div>
+      <div style="display:flex;justify-content:space-between;font-size:16px;font-weight:800;color:var(--green-dark)">
+        <span>Total to Pay</span><span>GHS ${totalWithFee}</span>
+      </div>
+      <div style="font-size:12px;color:var(--gray-500);margin-top:4px">Send to: <b>${ADMIN_MOMO}</b> (AgroTrade)</div>
+    </div>
+  `;
+
+  // Reset momo options
+  document.querySelectorAll('.momo-option').forEach(el => {
+    el.style.borderColor = 'var(--gray-200)';
+    el.style.background = 'white';
+  });
+  document.getElementById('payment-instructions').classList.add('hidden');
+  document.getElementById('payer-phone').value = currentUser.phone || '';
+  document.getElementById('payment-ref').value = '';
+
+  openModal('modal-payment');
+}
+
+function confirmPayment() {
+  if (!selectedMomoNetwork) { showToast('Please select a payment method', 'error'); return; }
+  const ref = document.getElementById('payment-ref').value.trim();
+  const payerPhone = document.getElementById('payer-phone').value.trim();
+  if (!ref) { showToast('Please enter the transaction reference ID', 'error'); return; }
+  if (!payerPhone) { showToast('Please enter your mobile money number', 'error'); return; }
+
+  const btn = document.getElementById('confirm-payment-btn');
+  btn.disabled = true;
+  btn.textContent = 'Confirming...';
+
+  // Save payment record to Firebase
+  const paymentRecord = {
+    id: DB.generateId(),
+    orderId: currentPaymentOrder.id,
+    productName: currentPaymentOrder.productName,
+    buyerId: currentUser.id,
+    buyerName: currentUser.name,
+    farmerId: currentPaymentOrder.farmerId,
+    orderAmount: currentPaymentOrder.total,
+    platformFee: currentPaymentOrder.platformFee,
+    totalPaid: currentPaymentOrder.totalWithFee,
+    network: selectedMomoNetwork,
+    payerPhone,
+    reference: ref,
+    status: 'pending_verification',
+    createdAt: Date.now()
+  };
+
+  db.ref('payments/' + paymentRecord.id).set(paymentRecord).then(() => {
+    // Update order payment status
+    return DB.updateOrder(currentPaymentOrder.id, {
+      paymentStatus: 'paid',
+      paymentRef: ref,
+      paymentNetwork: selectedMomoNetwork,
+      totalWithFee: currentPaymentOrder.totalWithFee
+    });
+  }).then(() => {
+    btn.disabled = false;
+    btn.textContent = '✅ Confirm Payment';
+    closeModal('modal-payment');
+    showToast('Payment received! We will contact you soon to arrange delivery. 🚚', 'success');
+    renderBuyerOrders();
+  }).catch(err => {
+    btn.disabled = false;
+    btn.textContent = '✅ Confirm Payment';
+    showToast('Error recording payment', 'error');
+    console.error(err);
+  });
 }
 
 // ===================================================
