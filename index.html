@@ -435,6 +435,90 @@
 <body>
 
 <!-- ===================== AUTH SCREEN ===================== -->
+
+<!-- ===================================================== -->
+<!-- PUBLIC LANDING PAGE — shown to visitors before login  -->
+<!-- ===================================================== -->
+<div id="public-page" style="display:none;flex-direction:column;min-height:100vh;background:var(--gray-50)">
+
+  <!-- Public Header -->
+  <header style="background:linear-gradient(135deg,var(--green-dark),var(--green-mid));padding:0 20px;height:60px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50;box-shadow:0 2px 12px rgba(0,0,0,0.2)">
+    <div style="display:flex;align-items:center;gap:10px">
+      <div style="width:34px;height:34px;background:var(--amber);border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:16px">🌿</div>
+      <div style="font-family:var(--font-display);color:white;font-size:18px;font-weight:800">AgroTrade</div>
+    </div>
+    <div style="display:flex;gap:8px;align-items:center">
+      <div id="public-stats-bar" style="display:flex;gap:8px;margin-right:8px"></div>
+      <button onclick="showPublicAuth('signin')" style="background:rgba(255,255,255,0.15);color:white;border:1px solid rgba(255,255,255,0.3);padding:8px 16px;border-radius:20px;cursor:pointer;font-size:13px;font-weight:600;font-family:var(--font-body)">Login</button>
+      <button onclick="showPublicAuth('signup')" style="background:var(--amber);color:var(--green-dark);border:none;padding:8px 16px;border-radius:20px;cursor:pointer;font-size:13px;font-weight:700;font-family:var(--font-body)">Sign Up</button>
+    </div>
+  </header>
+
+  <!-- Hero Banner -->
+  <div style="background:linear-gradient(135deg,var(--green-dark) 0%,var(--green-mid) 100%);padding:40px 20px;text-align:center;color:white">
+    <div style="font-family:var(--font-display);font-size:28px;font-weight:800;margin-bottom:8px;line-height:1.2">Fresh Farm Products<br>Delivered to You 🚚</div>
+    <div style="font-size:14px;opacity:0.85;margin-bottom:24px">Order directly from local farmers across Ghana</div>
+    <div id="public-hero-stats" style="display:flex;justify-content:center;gap:20px;flex-wrap:wrap"></div>
+  </div>
+
+  <!-- Search + Categories -->
+  <div style="padding:16px 20px;background:white;border-bottom:1px solid var(--gray-200);position:sticky;top:60px;z-index:40">
+    <div style="position:relative;margin-bottom:12px">
+      <svg style="position:absolute;left:12px;top:50%;transform:translateY(-50%);width:16px;height:16px;stroke:var(--gray-400);fill:none;stroke-width:2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      <input id="public-search" type="text" placeholder="Search products, categories..." oninput="renderPublicProducts()" style="width:100%;padding:10px 14px 10px 38px;border:2px solid var(--gray-200);border-radius:25px;font-family:var(--font-body);font-size:14px;outline:none;transition:border-color 0.2s" onfocus="this.style.borderColor='var(--green-mid)'" onblur="this.style.borderColor='var(--gray-200)'">
+    </div>
+    <div style="display:flex;gap:8px;overflow-x:auto;padding-bottom:4px" id="public-cats">
+      <button class="pub-cat active" onclick="setPublicCat('all',this)">🌿 All</button>
+      <button class="pub-cat" onclick="setPublicCat('vegetables',this)">🥬 Vegetables</button>
+      <button class="pub-cat" onclick="setPublicCat('fruits',this)">🍎 Fruits</button>
+      <button class="pub-cat" onclick="setPublicCat('grains',this)">🌾 Grains</button>
+      <button class="pub-cat" onclick="setPublicCat('livestock',this)">🐄 Livestock</button>
+      <button class="pub-cat" onclick="setPublicCat('dairy',this)">🥛 Dairy</button>
+      <button class="pub-cat" onclick="setPublicCat('other',this)">📦 Other</button>
+    </div>
+  </div>
+
+  <!-- Products Grid -->
+  <div style="padding:16px 20px;flex:1">
+    <div id="public-products-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:14px"></div>
+    <div id="public-empty" style="display:none;text-align:center;padding:60px 20px;color:var(--gray-400)">
+      <div style="font-size:48px;margin-bottom:12px">🌿</div>
+      <div style="font-size:16px;font-weight:600;color:var(--gray-600)">No products found</div>
+      <div style="font-size:13px;margin-top:6px">Try a different category or search</div>
+    </div>
+  </div>
+
+  <!-- Sell on AgroTrade Banner -->
+  <div style="margin:0 20px 24px;background:linear-gradient(135deg,var(--green-dark),var(--green-mid));border-radius:16px;padding:24px;color:white;text-align:center">
+    <div style="font-size:24px;margin-bottom:8px">🌾</div>
+    <div style="font-family:var(--font-display);font-size:18px;font-weight:800;margin-bottom:6px">Are you a Farmer or Seller?</div>
+    <div style="font-size:13px;opacity:0.85;margin-bottom:16px">List your products and reach buyers across Ghana for free</div>
+    <button onclick="showPublicAuth('signup-seller')" style="background:var(--amber);color:var(--green-dark);border:none;padding:12px 28px;border-radius:25px;font-size:14px;font-weight:700;cursor:pointer;font-family:var(--font-body)">Start Selling Today →</button>
+  </div>
+</div>
+
+<!-- Public Product Detail Sheet -->
+<div id="public-product-sheet" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:100;align-items:flex-end;justify-content:center" onclick="if(event.target===this)closePublicSheet()">
+  <div style="background:white;border-radius:20px 20px 0 0;width:100%;max-width:600px;max-height:90vh;overflow-y:auto;animation:slideUp 0.3s ease" onclick="event.stopPropagation()">
+    <div id="public-sheet-content" style="padding:24px"></div>
+  </div>
+</div>
+
+<style>
+.pub-cat {
+  padding:7px 14px;border-radius:20px;border:2px solid var(--gray-200);background:white;
+  cursor:pointer;font-size:12px;font-weight:600;color:var(--gray-600);white-space:nowrap;
+  font-family:var(--font-body);transition:all 0.2s;flex-shrink:0;
+}
+.pub-cat:hover { border-color:var(--green-mid);color:var(--green-mid); }
+.pub-cat.active { border-color:var(--green-mid);background:var(--green-pale);color:var(--green-dark); }
+.pub-product-card {
+  background:white;border-radius:12px;border:1px solid var(--gray-200);
+  overflow:hidden;cursor:pointer;transition:all 0.2s;box-shadow:0 1px 4px rgba(0,0,0,0.06);
+}
+.pub-product-card:hover { box-shadow:0 4px 16px rgba(0,0,0,0.12);transform:translateY(-2px); }
+</style>
+
 <div id="auth-screen">
   <div class="auth-card" id="auth-card">
     <div class="auth-logo">
@@ -444,6 +528,7 @@
       <div>
         <div class="auth-logo-text">AgroTrade</div>
         <div class="auth-logo-sub" onclick="handleSecretAdminTap()" style="cursor:default;user-select:none">Farm Direct Marketplace</div>
+        <button onclick="showPublicPage()" style="background:none;border:none;color:var(--green-mid);font-size:12px;font-weight:600;cursor:pointer;font-family:var(--font-body);margin-top:4px;padding:0">← Browse products without signing in</button>
       </div>
     </div>
 
@@ -592,7 +677,8 @@
     </div>
     <nav class="header-nav" id="header-nav"></nav>
     <div class="header-right">
-      <div class="user-pill">
+      <button id="role-switch-btn" onclick="switchRole()" title="Switch Role" style="background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.2);color:white;padding:6px 12px;border-radius:20px;cursor:pointer;font-size:11px;font-weight:700;font-family:var(--font-body);display:flex;align-items:center;gap:5px;transition:all 0.2s"></button>
+      <div class="user-pill" style="cursor:pointer" onclick="showPage('profile')">
         <div class="user-avatar" id="header-avatar"></div>
         <div>
           <div class="user-name" id="header-name"></div>
@@ -1083,8 +1169,8 @@ const DB = {
     const done = () => { if (++count === 4) onReady(); };
     db.ref('users').on('value',    s => { this._users    = s.val() || {}; done(); renderCurrentPage(); });
     db.ref('products').on('value', s => { this._products = s.val() || {}; done(); renderCurrentPage(); });
-    db.ref('orders').on('value',   s => { this._orders   = s.val() || {}; done(); renderCurrentPage(); });
-    db.ref('messages').on('value', s => { this._messages = s.val() || {}; done(); if(activeChatWith) renderChatMessages(); renderConversations(); });
+    db.ref('orders').on('value',   s => { this._orders   = s.val() || {}; done(); renderCurrentPage(); checkNotifications(); });
+    db.ref('messages').on('value', s => { this._messages = s.val() || {}; done(); if(activeChatWith) renderChatMessages(); renderConversations(); checkNotifications(); });
   }
 };
 
@@ -1267,7 +1353,8 @@ function logout() {
   activeChatWithName = null;
   DB.clearCurrentUser();
   document.getElementById('app').classList.add('hidden');
-  document.getElementById('auth-screen').style.display = '';
+  document.getElementById('auth-screen').style.display = 'none';
+  showPublicPage();
   document.getElementById('auth-role-step').classList.remove('hidden');
   document.getElementById('auth-signin-step').classList.add('hidden');
   document.getElementById('auth-signup-step').classList.add('hidden');
@@ -1312,6 +1399,8 @@ function launchApp() {
   }
 
   // Firebase listeners handle real-time updates — no polling needed
+  requestNotifPermission();
+  updateRoleSwitchBtn();
 }
 
 function buildNav() {
@@ -1379,11 +1468,11 @@ function showPage(id) {
 
   // Render page-specific content
   if (id === 'browse') renderBrowse();
-  if (id === 'buyer-orders') renderBuyerOrders();
+  if (id === 'buyer-orders') { renderBuyerOrders(); markOrdersRead(); }
   if (id === 'farmer-dashboard') renderFarmerDashboard();
   if (id === 'farmer-products') renderFarmerProducts();
-  if (id === 'farmer-orders') renderFarmerOrders();
-  if (id === 'messages') { renderConversations(); }
+  if (id === 'farmer-orders') { renderFarmerOrders(); markOrdersRead(); }
+  if (id === 'messages') { renderConversations(); markMessagesRead(); }
   if (id === 'profile') renderProfile();
 }
 
@@ -2585,7 +2674,10 @@ function renderAdminOrders(el) {
                   ${o.status==='accepted'?`<button class="admin-action-btn" style="background:var(--blue-light);color:var(--blue)" onclick="adminUpdateOrder('${o.id}','completed')">✅ Delivered</button>`:''}
                   ${o.status!=='rejected'&&o.status!=='completed'?`<button class="admin-action-btn" style="background:var(--red-light);color:var(--red)" onclick="adminUpdateOrder('${o.id}','rejected')">Reject</button>`:''}
                   <button class="admin-action-btn" style="background:var(--gray-100);color:var(--gray-600)" onclick="adminContactBuyer('${o.buyerPhone||''}')">📞 Call Buyer</button>
-                  <button class="admin-action-btn" style="background:var(--green-pale);color:var(--green-dark)" onclick="adminContactFarmer('${o.farmerId}')">📞 Call Farmer</button>
+                  <a href="https://wa.me/${(o.buyerPhone||'').replace(/[^0-9]/g,'')}" target="_blank" class="admin-action-btn" style="background:#dcfce7;color:#166534;text-decoration:none">💬 WhatsApp Buyer</a>
+                  <button class="admin-action-btn" style="background:var(--gray-100);color:var(--gray-600)" onclick="adminContactFarmer('${o.farmerId}')">📞 Call Seller</button>
+                  <a href="https://wa.me/${adminGetFarmerPhone(o.farmerId).replace(/[^0-9]/g,'')}" target="_blank" class="admin-action-btn" style="background:#dcfce7;color:#166534;text-decoration:none">💬 WhatsApp Seller</a>
+                  <button class="admin-action-btn" style="background:var(--blue-light);color:var(--blue)" onclick="adminGoToChat('${o.buyerId}','${o.buyerName}')">💬 Chat Buyer</button>
                 </div>
               </td>
             </tr>
@@ -2751,16 +2843,20 @@ function renderAdminProducts(el) {
 }
 
 function renderAdminMessages(el) {
-  const messages = DB.getMessages().sort((a,b) => b.createdAt - a.createdAt);
+  // Get ALL messages involving agrotrade_admin OR between any users
+  const allMessages = DB.getMessages().sort((a,b) => b.createdAt - a.createdAt);
+  const adminMessages = allMessages.filter(m =>
+    m.senderId === 'agrotrade_admin' || m.receiverId === 'agrotrade_admin'
+  );
   // Group conversations
   const convMap = new Map();
-  messages.forEach(m => {
-    const key = [m.senderId, m.receiverId].sort().join('_');
+  adminMessages.forEach(m => {
+    const isFromUser = m.senderId !== 'agrotrade_admin';
+    const userId = isFromUser ? m.senderId : m.receiverId;
+    const userName = isFromUser ? m.senderName : m.receiverName;
+    const key = userId;
     if (!convMap.has(key) || m.createdAt > convMap.get(key).lastTime) {
-      const isFromUser = m.senderId !== 'agrotrade_admin';
-      const userId = isFromUser ? m.senderId : m.receiverId;
-      const userName = isFromUser ? m.senderName : m.receiverName;
-      convMap.set(key, { key, userId, userName, lastMsg: m.text, lastTime: m.createdAt, senderId: m.senderId, receiverId: m.receiverId });
+      convMap.set(key, { key, userId, userName, lastMsg: m.text, lastTime: m.createdAt });
     }
   });
 
@@ -2871,6 +2967,11 @@ function adminGetFarmerPhone(farmerId) {
   return farmer ? farmer.phone : '';
 }
 
+function adminGoToChat(userId, userName) {
+  showAdminTab('messages');
+  setTimeout(() => adminOpenConversation(userId, userName), 100);
+}
+
 function adminUpdateOrder(orderId, newStatus) {
   DB.updateOrder(orderId, { status: newStatus }).then(() => {
     showToast('Order ' + newStatus, 'success');
@@ -2918,10 +3019,322 @@ function handleSecretAdminTap() {
   }
 }
 
+
+
+// ===================================================
+// PUBLIC LANDING PAGE
+// ===================================================
+let publicCat = 'all';
+
+function showPublicPage() {
+  document.getElementById('public-page').style.display = 'flex';
+  document.getElementById('auth-screen').style.display = 'none';
+  document.getElementById('app').classList.add('hidden');
+  renderPublicStats();
+  renderPublicProducts();
+}
+
+function hidePublicPage() {
+  document.getElementById('public-page').style.display = 'none';
+}
+
+function renderPublicStats() {
+  const users    = DB.getUsers();
+  const farmers  = users.filter(u => u.role === 'farmer').length;
+  const buyers   = users.filter(u => u.role === 'buyer').length;
+  const products = DB.getProducts().length;
+  const visitors = DB._visitorCount || 0;
+
+  // Hero stats
+  const hero = document.getElementById('public-hero-stats');
+  if (hero) {
+    hero.innerHTML = [
+      ['🌍', visitors + '+ Visitors'],
+      ['🌾', farmers + ' Sellers'],
+      ['🛒', buyers + ' Buyers'],
+      ['📦', products + ' Products'],
+    ].map(([icon, label]) => `
+      <div style="background:rgba(255,255,255,0.15);border-radius:12px;padding:8px 16px;text-align:center">
+        <div style="font-size:18px">${icon}</div>
+        <div style="font-size:13px;font-weight:700;margin-top:2px">${label}</div>
+      </div>
+    `).join('');
+  }
+}
+
+function setPublicCat(cat, el) {
+  publicCat = cat;
+  document.querySelectorAll('.pub-cat').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+  renderPublicProducts();
+}
+
+function renderPublicProducts() {
+  const search = (document.getElementById('public-search')?.value || '').toLowerCase();
+  let products = DB.getProducts();
+  if (publicCat !== 'all') products = products.filter(p => p.category === publicCat);
+  if (search) products = products.filter(p =>
+    p.name.toLowerCase().includes(search) ||
+    (p.category||'').toLowerCase().includes(search) ||
+    (p.location||'').toLowerCase().includes(search) ||
+    (p.description||'').toLowerCase().includes(search)
+  );
+
+  const grid = document.getElementById('public-products-grid');
+  const empty = document.getElementById('public-empty');
+  if (!grid) return;
+  grid.innerHTML = '';
+
+  if (!products.length) {
+    empty.style.display = 'block';
+    return;
+  }
+  empty.style.display = 'none';
+
+  products.forEach(p => {
+    const card = document.createElement('div');
+    card.className = 'pub-product-card animate-in';
+    card.innerHTML = `
+      ${p.imageUrl
+        ? `<img src="${escHtml(p.imageUrl)}" style="width:100%;height:140px;object-fit:cover;display:block" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">`
+        : ''
+      }
+      <div style="width:100%;height:140px;background:linear-gradient(135deg,var(--green-xpale),var(--green-pale));display:${p.imageUrl?'none':'flex'};align-items:center;justify-content:center;font-size:36px">
+        ${{vegetables:'🥬',fruits:'🍎',grains:'🌾',livestock:'🐄',dairy:'🥛'}[p.category]||'📦'}
+      </div>
+      <div style="padding:10px">
+        <div style="font-weight:700;font-size:14px;color:var(--gray-900);margin-bottom:2px">${escHtml(p.name)}</div>
+        <div style="font-size:11px;color:var(--gray-400);margin-bottom:6px">${escHtml(p.location||'')}</div>
+        <div style="display:flex;align-items:center;justify-content:space-between">
+          <div style="font-family:var(--font-display);font-size:16px;font-weight:800;color:var(--green-dark)">GHS ${Number(p.price).toLocaleString()}<span style="font-size:10px;font-weight:400;color:var(--gray-400)">/${escHtml(p.unit||'unit')}</span></div>
+          <span style="background:var(--green-pale);color:var(--green-dark);font-size:9px;font-weight:700;padding:2px 7px;border-radius:10px;text-transform:uppercase">${escHtml(p.category)}</span>
+        </div>
+      </div>
+    `;
+    card.onclick = () => openPublicProductSheet(p.id);
+    grid.appendChild(card);
+  });
+}
+
+function openPublicProductSheet(productId) {
+  const p = DB.getProductById(productId);
+  if (!p) return;
+  const sheet = document.getElementById('public-product-sheet');
+  const emoji = {vegetables:'🥬',fruits:'🍎',grains:'🌾',livestock:'🐄',dairy:'🥛'}[p.category]||'📦';
+
+  document.getElementById('public-sheet-content').innerHTML = `
+    ${p.imageUrl
+      ? `<img src="${escHtml(p.imageUrl)}" style="width:100%;height:220px;object-fit:cover;border-radius:12px;margin-bottom:16px" onerror="this.style.display='none'">`
+      : `<div style="width:100%;height:160px;background:linear-gradient(135deg,var(--green-xpale),var(--green-pale));border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:56px;margin-bottom:16px">${emoji}</div>`
+    }
+    <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:12px">
+      <div>
+        <div style="font-family:var(--font-display);font-size:22px;font-weight:800;color:var(--gray-900)">${escHtml(p.name)}</div>
+        <span style="background:var(--green-pale);color:var(--green-dark);font-size:11px;font-weight:700;padding:3px 10px;border-radius:10px;text-transform:uppercase">${escHtml(p.category)}</span>
+      </div>
+      <div style="text-align:right">
+        <div style="font-family:var(--font-display);font-size:26px;font-weight:800;color:var(--green-dark)">GHS ${Number(p.price).toLocaleString()}</div>
+        <div style="font-size:12px;color:var(--gray-400)">per ${escHtml(p.unit||'unit')}</div>
+      </div>
+    </div>
+    ${p.description ? `<p style="font-size:14px;color:var(--gray-600);line-height:1.6;margin-bottom:14px">${escHtml(p.description)}</p>` : ''}
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px">
+      <div style="background:var(--gray-50);border-radius:10px;padding:10px">
+        <div style="font-size:10px;color:var(--gray-400);font-weight:700;text-transform:uppercase;margin-bottom:2px">Available</div>
+        <div style="font-weight:700;color:var(--gray-800)">${escHtml(p.qty||'In stock')}</div>
+      </div>
+      <div style="background:var(--gray-50);border-radius:10px;padding:10px">
+        <div style="font-size:10px;color:var(--gray-400);font-weight:700;text-transform:uppercase;margin-bottom:2px">Location</div>
+        <div style="font-weight:700;color:var(--gray-800)">${escHtml(p.location||'Ghana')}</div>
+      </div>
+    </div>
+    <div style="background:var(--green-pale);border-radius:12px;padding:14px;margin-bottom:16px;display:flex;gap:10px;align-items:center">
+      <span style="font-size:24px">🚚</span>
+      <div>
+        <div style="font-weight:700;font-size:13px;color:var(--green-dark)">Sold & Delivered by AgroTrade</div>
+        <div style="font-size:12px;color:var(--gray-500)">We handle all deliveries across Ghana • 0554737934</div>
+      </div>
+    </div>
+    <button onclick="closePublicSheet();showPublicAuth('signup-order','${p.id}')" style="width:100%;background:var(--green-mid);color:white;border:none;padding:16px;border-radius:12px;font-size:16px;font-weight:700;cursor:pointer;font-family:var(--font-body);margin-bottom:8px">
+      🛒 Order Now — Sign Up to Buy
+    </button>
+    <button onclick="closePublicSheet();showPublicAuth('signin')" style="width:100%;background:white;color:var(--green-mid);border:2px solid var(--green-mid);padding:14px;border-radius:12px;font-size:14px;font-weight:700;cursor:pointer;font-family:var(--font-body)">
+      Already have an account? Login
+    </button>
+    <button onclick="closePublicSheet()" style="width:100%;background:transparent;color:var(--gray-400);border:none;padding:10px;cursor:pointer;font-family:var(--font-body);margin-top:4px">Close</button>
+  `;
+  sheet.style.display = 'flex';
+}
+
+function closePublicSheet() {
+  document.getElementById('public-product-sheet').style.display = 'none';
+}
+
+function showPublicAuth(type, productId) {
+  hidePublicPage();
+  document.getElementById('auth-screen').style.display = '';
+  document.getElementById('app').classList.add('hidden');
+
+  if (type === 'signin') {
+    document.getElementById('auth-role-step').classList.add('hidden');
+    document.getElementById('auth-signup-step').classList.add('hidden');
+    document.getElementById('auth-forgot-step').classList.add('hidden');
+    document.getElementById('auth-signin-step').classList.remove('hidden');
+  } else if (type === 'signup' || type === 'signup-order') {
+    selectRole('buyer');
+    document.getElementById('auth-role-step').classList.add('hidden');
+    document.getElementById('auth-signin-step').classList.add('hidden');
+    document.getElementById('auth-forgot-step').classList.add('hidden');
+    document.getElementById('auth-signup-step').classList.remove('hidden');
+    document.getElementById('signup-subtitle').textContent = 'Create your buyer account';
+    document.getElementById('signup-location-group').style.display = '';
+    document.getElementById('signup-farm-group').style.display = 'none';
+  } else if (type === 'signup-seller') {
+    selectRole('farmer');
+    document.getElementById('auth-role-step').classList.add('hidden');
+    document.getElementById('auth-signin-step').classList.add('hidden');
+    document.getElementById('auth-forgot-step').classList.add('hidden');
+    document.getElementById('auth-signup-step').classList.remove('hidden');
+    document.getElementById('signup-subtitle').textContent = 'Create your seller account';
+    document.getElementById('signup-location-group').style.display = 'none';
+    document.getElementById('signup-farm-group').style.display = 'block';
+  }
+}
+
+// ===================================================
+// ROLE SWITCHER
+// ===================================================
+function switchRole() {
+  const newRole = currentUser.role === 'buyer' ? 'farmer' : 'buyer';
+  if (!confirm('Switch to ' + (newRole === 'farmer' ? 'Seller' : 'Buyer') + ' mode?')) return;
+
+  DB.updateUser(currentUser.id, { role: newRole }).then(() => {
+    currentUser.role = newRole;
+    DB.setCurrentUser(currentUser);
+    currentRole = newRole;
+    showToast('Switched to ' + (newRole === 'farmer' ? 'Seller' : 'Buyer') + ' mode!', 'success');
+    // Rebuild nav and go to home
+    buildNav();
+    buildBottomNav();
+    updateRoleSwitchBtn();
+    if (newRole === 'buyer') {
+      showPage('browse');
+    } else {
+      showPage('farmer-dashboard');
+    }
+  });
+}
+
+function updateRoleSwitchBtn() {
+  const btn = document.getElementById('role-switch-btn');
+  if (!btn || !currentUser) return;
+  if (currentUser.role === 'buyer') {
+    btn.innerHTML = '🌾 Switch to Seller';
+    btn.title = 'Switch to Seller mode';
+  } else {
+    btn.innerHTML = '🛒 Switch to Buyer';
+    btn.title = 'Switch to Buyer mode';
+  }
+}
+
+// ===================================================
+// NOTIFICATION SYSTEM
+// ===================================================
+let lastSeenOrderCount  = parseInt(localStorage.getItem('at_last_orders') || '0');
+let lastSeenMsgCount    = parseInt(localStorage.getItem('at_last_msgs') || '0');
+let notifOrderCount     = 0;
+let notifMsgCount       = 0;
+
+function checkNotifications() {
+  if (!currentUser) return;
+
+  // Count unread messages (messages TO me that I haven't seen)
+  const myId = currentUser.id === 'agrotrade_admin' ? 'agrotrade_admin' : currentUser.id;
+  const myMessages = DB.getMessages().filter(m => m.receiverId === myId);
+  const myOrders = currentUser.role === 'buyer'
+    ? DB.getOrders().filter(o => o.buyerId === currentUser.id)
+    : DB.getOrders().filter(o => o.farmerId === currentUser.id);
+
+  const newMsgs   = myMessages.length - lastSeenMsgCount;
+  const newOrders = myOrders.length - lastSeenOrderCount;
+
+  notifMsgCount   = Math.max(0, newMsgs);
+  notifOrderCount = Math.max(0, newOrders);
+
+  updateNotifBadges();
+}
+
+function updateNotifBadges() {
+  // Update nav buttons with badges
+  updateNavBadge('messages', notifMsgCount);
+  if (currentUser && currentUser.role === 'buyer') {
+    updateNavBadge('buyer-orders', notifOrderCount);
+  } else {
+    updateNavBadge('farmer-orders', notifOrderCount);
+  }
+}
+
+function updateNavBadge(pageId, count) {
+  ['nav-', 'bnav-'].forEach(prefix => {
+    const btn = document.getElementById(prefix + pageId);
+    if (!btn) return;
+    // Remove old badge
+    const old = btn.querySelector('.notif-badge');
+    if (old) old.remove();
+    if (count > 0) {
+      const badge = document.createElement('span');
+      badge.className = 'notif-badge';
+      badge.style.cssText = 'position:absolute;top:4px;right:4px;width:16px;height:16px;background:var(--red);color:white;border-radius:50%;font-size:9px;font-weight:800;display:flex;align-items:center;justify-content:center;font-family:var(--font-body)';
+      badge.textContent = count > 9 ? '9+' : count;
+      btn.style.position = 'relative';
+      btn.appendChild(badge);
+    }
+  });
+}
+
+function markMessagesRead() {
+  const myId = currentUser ? currentUser.id : null;
+  if (!myId) return;
+  const myMessages = DB.getMessages().filter(m => m.receiverId === myId);
+  lastSeenMsgCount = myMessages.length;
+  localStorage.setItem('at_last_msgs', lastSeenMsgCount);
+  notifMsgCount = 0;
+  updateNotifBadges();
+}
+
+function markOrdersRead() {
+  const myOrders = currentUser.role === 'buyer'
+    ? DB.getOrders().filter(o => o.buyerId === currentUser.id)
+    : DB.getOrders().filter(o => o.farmerId === currentUser.id);
+  lastSeenOrderCount = myOrders.length;
+  localStorage.setItem('at_last_orders', lastSeenOrderCount);
+  notifOrderCount = 0;
+  updateNotifBadges();
+}
+
+// Browser push notification (asks permission once)
+function requestNotifPermission() {
+  if ('Notification' in window && Notification.permission === 'default') {
+    Notification.requestPermission();
+  }
+}
+
+function sendBrowserNotif(title, body) {
+  if ('Notification' in window && Notification.permission === 'granted') {
+    new Notification(title, { body, icon: '/favicon.ico' });
+  }
+}
+
 // ===================================================
 // GLOBAL renderCurrentPage helper (called by Firebase listeners)
 // ===================================================
 function renderCurrentPage() {
+  // Always refresh public page products if visible
+  const pubPage = document.getElementById('public-page');
+  if (pubPage && pubPage.style.display !== 'none') {
+    renderPublicProducts();
+    renderPublicStats();
+  }
   if (!currentUser) return;
   const active = document.querySelector('.page.active');
   if (!active) return;
@@ -2964,12 +3377,14 @@ document.addEventListener('DOMContentLoaded', () => {
     // Restore session if user was already logged in
     const saved = DB.getCurrentUser();
     if (saved) {
-      // Refresh user data from Firebase in case it was updated
       const fresh = DB.getUserById(saved.id);
       currentUser = fresh || saved;
       currentRole = currentUser.role;
       DB.setCurrentUser(currentUser);
       launchApp();
+    } else {
+      // No session — show public landing page
+      showPublicPage();
     }
   });
 });
@@ -2990,6 +3405,19 @@ window.adminDeleteProduct = adminDeleteProduct;
 window.handleSecretAdminTap = handleSecretAdminTap;
 window.adminOpenConversation = adminOpenConversation;
 window.adminSendMessage = adminSendMessage;
+window.adminGoToChat = adminGoToChat;
+window.markMessagesRead = markMessagesRead;
+window.markOrdersRead = markOrdersRead;
+window.checkNotifications = checkNotifications;
+window.showPublicPage = showPublicPage;
+window.showPublicAuth = showPublicAuth;
+window.hidePublicPage = hidePublicPage;
+window.setPublicCat = setPublicCat;
+window.renderPublicProducts = renderPublicProducts;
+window.openPublicProductSheet = openPublicProductSheet;
+window.closePublicSheet = closePublicSheet;
+window.switchRole = switchRole;
+window.updateRoleSwitchBtn = updateRoleSwitchBtn;
 window.startChatWithAgrotrade = startChatWithAgrotrade;
 </script>
 
