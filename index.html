@@ -443,7 +443,7 @@
       </div>
       <div>
         <div class="auth-logo-text">AgroTrade</div>
-        <div class="auth-logo-sub">Farm Direct Marketplace</div>
+        <div class="auth-logo-sub" onclick="handleSecretAdminTap()" style="cursor:default;user-select:none">Farm Direct Marketplace</div>
       </div>
     </div>
 
@@ -2434,6 +2434,378 @@ function confirmPayment() {
   });
 }
 
+
+// ===================================================
+// ADMIN DASHBOARD
+// ===================================================
+const ADMIN_PASSWORD = 'agrotrade2024admin'; // Change this to your secret password
+let currentAdminTab = 'overview';
+
+function openAdminLogin() {
+  document.getElementById('admin-password-input').value = '';
+  document.getElementById('admin-login-error').style.display = 'none';
+  openModal('modal-admin-login');
+}
+
+function verifyAdminPassword() {
+  const pass = document.getElementById('admin-password-input').value;
+  if (pass === ADMIN_PASSWORD) {
+    closeModal('modal-admin-login');
+    openAdminDashboard();
+  } else {
+    document.getElementById('admin-login-error').style.display = 'block';
+  }
+}
+
+function openAdminDashboard() {
+  document.getElementById('admin-screen').classList.remove('hidden');
+  document.getElementById('admin-screen').style.display = 'flex';
+  showAdminTab('overview');
+}
+
+function closeAdmin() {
+  document.getElementById('admin-screen').classList.add('hidden');
+  document.getElementById('admin-screen').style.display = '';
+}
+
+function refreshAdminData() {
+  showAdminTab(currentAdminTab);
+  document.getElementById('admin-last-updated').textContent = 'Updated: ' + new Date().toLocaleTimeString();
+}
+
+function showAdminTab(tab) {
+  currentAdminTab = tab;
+  document.querySelectorAll('.admin-tab').forEach(t => t.classList.remove('active'));
+  const activeTab = document.getElementById('atab-' + tab);
+  if (activeTab) activeTab.classList.add('active');
+
+  const content = document.getElementById('admin-content');
+  if (tab === 'overview')  renderAdminOverview(content);
+  if (tab === 'orders')    renderAdminOrders(content);
+  if (tab === 'payments')  renderAdminPayments(content);
+  if (tab === 'farmers')   renderAdminFarmers(content);
+  if (tab === 'buyers')    renderAdminBuyers(content);
+  if (tab === 'products')  renderAdminProducts(content);
+}
+
+function renderAdminOverview(el) {
+  const users    = DB.getUsers();
+  const farmers  = users.filter(u => u.role === 'farmer');
+  const buyers   = users.filter(u => u.role === 'buyer');
+  const orders   = DB.getOrders();
+  const products = DB.getProducts();
+  const payments = Object.values(DB._payments || {});
+  const paidOrders   = orders.filter(o => o.paymentStatus === 'paid');
+  const totalRevenue = paidOrders.reduce((s, o) => s + (parseFloat(o.platformFee) || 0), 0);
+  const totalPaid    = paidOrders.reduce((s, o) => s + (parseFloat(o.totalWithFee) || 0), 0);
+  const pending      = orders.filter(o => o.status === 'pending').length;
+  const delivered    = orders.filter(o => o.status === 'completed').length;
+
+  el.innerHTML = `
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:16px;margin-bottom:28px">
+      ${adminStatCard('🌾', 'Farmers', farmers.length, '#e8f5e9', '#1a6b1a')}
+      ${adminStatCard('🛒', 'Buyers', buyers.length, '#dbeafe', '#2563eb')}
+      ${adminStatCard('📦', 'Products', products.length, '#fef3c7', '#d97706')}
+      ${adminStatCard('🧾', 'Total Orders', orders.length, '#f3f4f6', '#374151')}
+      ${adminStatCard('⏳', 'Pending Orders', pending, '#fee2e2', '#dc2626')}
+      ${adminStatCard('✅', 'Delivered', delivered, '#e8f5e9', '#1a6b1a')}
+      ${adminStatCard('💰', 'Money Received', 'GHS ' + totalPaid.toFixed(2), '#fef3c7', '#d97706')}
+      ${adminStatCard('🎯', 'Your Commission', 'GHS ' + totalRevenue.toFixed(2), '#e8f5e9', '#1a6b1a')}
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px">
+      <div class="card">
+        <div class="card-header"><span style="font-weight:700">🔥 Recent Orders</span></div>
+        <div class="card-body" style="padding:0">
+          ${orders.slice(-5).reverse().map(o => `
+            <div style="padding:12px 16px;border-bottom:1px solid var(--gray-100);display:flex;justify-content:space-between;align-items:center">
+              <div>
+                <div style="font-weight:600;font-size:13px">${escHtml(o.productName)}</div>
+                <div style="font-size:11px;color:var(--gray-400)">${escHtml(o.buyerName)} → ${escHtml(o.farmerName)}</div>
+              </div>
+              <div style="text-align:right">
+                <div style="font-weight:700;font-size:13px;color:var(--green-dark)">GHS ${Number(o.total).toFixed(2)}</div>
+                <span class="badge badge-${o.paymentStatus==='paid'?'green':'amber'}" style="font-size:10px">${o.paymentStatus==='paid'?'Paid':'Unpaid'}</span>
+              </div>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header"><span style="font-weight:700">👥 Recent Signups</span></div>
+        <div class="card-body" style="padding:0">
+          ${users.slice(-8).reverse().map(u => `
+            <div style="padding:10px 16px;border-bottom:1px solid var(--gray-100);display:flex;align-items:center;gap:10px">
+              <div style="width:32px;height:32px;border-radius:50%;background:${u.role==='farmer'?'var(--green-pale)':'var(--blue-light)'};display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;color:${u.role==='farmer'?'var(--green-dark)':'var(--blue)'};flex-shrink:0">${u.name.split(' ').map(n=>n[0]).join('').toUpperCase().slice(0,2)}</div>
+              <div style="flex:1;min-width:0">
+                <div style="font-weight:600;font-size:13px;truncate">${escHtml(u.name)}</div>
+                <div style="font-size:11px;color:var(--gray-400)">${u.role} • ${escHtml(u.phone)}</div>
+              </div>
+              <span class="badge badge-${u.role==='farmer'?'green':'blue'}" style="font-size:10px">${u.role}</span>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function adminStatCard(icon, label, value, bg, color) {
+  return `<div style="background:${bg};border-radius:var(--radius);padding:18px;border:1px solid rgba(0,0,0,0.06)">
+    <div style="font-size:24px;margin-bottom:6px">${icon}</div>
+    <div style="font-family:var(--font-display);font-size:22px;font-weight:800;color:${color}">${value}</div>
+    <div style="font-size:12px;color:var(--gray-500);font-weight:600;margin-top:2px">${label}</div>
+  </div>`;
+}
+
+function renderAdminOrders(el) {
+  const orders = DB.getOrders().sort((a,b) => b.createdAt - a.createdAt);
+  el.innerHTML = `
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+      <div style="font-family:var(--font-display);font-size:20px;font-weight:700">All Orders (${orders.length})</div>
+    </div>
+    <div class="card" style="overflow:auto">
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th>Product</th><th>Buyer</th><th>Farmer</th><th>Qty</th>
+            <th>Amount</th><th>Fee</th><th>Payment</th><th>Status</th><th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${orders.map(o => `
+            <tr>
+              <td><div style="font-weight:600">${escHtml(o.productName)}</div><div style="font-size:11px;color:var(--gray-400)">${new Date(o.createdAt).toLocaleDateString()}</div></td>
+              <td><div style="font-weight:600">${escHtml(o.buyerName)}</div><div style="font-size:11px;color:var(--blue)">${escHtml(o.buyerPhone||'')}</div></td>
+              <td><div style="font-weight:600">${escHtml(o.farmerName)}</div><div style="font-size:11px;color:var(--green-mid)">${adminGetFarmerPhone(o.farmerId)}</div></td>
+              <td>${escHtml(o.qty)}</td>
+              <td style="font-weight:700;color:var(--green-dark)">GHS ${Number(o.total).toFixed(2)}</td>
+              <td style="color:var(--amber-dark)">${o.platformFee ? 'GHS '+Number(o.platformFee).toFixed(2) : '-'}</td>
+              <td><span class="badge badge-${o.paymentStatus==='paid'?'green':'amber'}">${o.paymentStatus==='paid'?'✅ Paid':'⏳ Unpaid'}</span>${o.paymentRef?`<div style="font-size:10px;color:var(--gray-400);margin-top:2px">Ref: ${escHtml(o.paymentRef)}</div>`:''}</td>
+              <td><span class="badge badge-${o.status==='completed'?'green':o.status==='accepted'?'blue':o.status==='rejected'?'red':'amber'}">${o.status}</span></td>
+              <td>
+                <div style="display:flex;flex-direction:column;gap:4px">
+                  ${o.status==='pending'?`<button class="admin-action-btn" style="background:var(--green-pale);color:var(--green-dark)" onclick="adminUpdateOrder('${o.id}','accepted')">Accept</button>`:''}
+                  ${o.status==='accepted'?`<button class="admin-action-btn" style="background:var(--blue-light);color:var(--blue)" onclick="adminUpdateOrder('${o.id}','completed')">✅ Delivered</button>`:''}
+                  ${o.status!=='rejected'&&o.status!=='completed'?`<button class="admin-action-btn" style="background:var(--red-light);color:var(--red)" onclick="adminUpdateOrder('${o.id}','rejected')">Reject</button>`:''}
+                  <button class="admin-action-btn" style="background:var(--gray-100);color:var(--gray-600)" onclick="adminContactBuyer('${o.buyerPhone||''}')">📞 Call Buyer</button>
+                  <button class="admin-action-btn" style="background:var(--green-pale);color:var(--green-dark)" onclick="adminContactFarmer('${o.farmerId}')">📞 Call Farmer</button>
+                </div>
+              </td>
+            </tr>
+          `).join('')}
+        </tbody>
+      </table>
+    </div>
+  `;
+}
+
+function renderAdminPayments(el) {
+  const orders = DB.getOrders().filter(o => o.paymentStatus === 'paid').sort((a,b) => b.createdAt - a.createdAt);
+  const totalReceived = orders.reduce((s,o) => s + (parseFloat(o.totalWithFee)||0), 0);
+  const totalCommission = orders.reduce((s,o) => s + (parseFloat(o.platformFee)||0), 0);
+  const toPayFarmers = orders.filter(o=>o.status!=='completed').reduce((s,o) => s + (parseFloat(o.total)||0), 0);
+
+  el.innerHTML = `
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:24px">
+      <div style="background:var(--green-pale);border-radius:var(--radius);padding:20px;text-align:center">
+        <div style="font-family:var(--font-display);font-size:26px;font-weight:800;color:var(--green-dark)">GHS ${totalReceived.toFixed(2)}</div>
+        <div style="font-size:12px;color:var(--gray-500);font-weight:600;margin-top:4px">💰 Total Received</div>
+      </div>
+      <div style="background:var(--amber-light);border-radius:var(--radius);padding:20px;text-align:center">
+        <div style="font-family:var(--font-display);font-size:26px;font-weight:800;color:var(--amber-dark)">GHS ${totalCommission.toFixed(2)}</div>
+        <div style="font-size:12px;color:var(--gray-500);font-weight:600;margin-top:4px">🎯 Your Commission</div>
+      </div>
+      <div style="background:var(--blue-light);border-radius:var(--radius);padding:20px;text-align:center">
+        <div style="font-family:var(--font-display);font-size:26px;font-weight:800;color:var(--blue)">GHS ${toPayFarmers.toFixed(2)}</div>
+        <div style="font-size:12px;color:var(--gray-500);font-weight:600;margin-top:4px">🌾 To Pay Farmers</div>
+      </div>
+    </div>
+    <div class="card" style="overflow:auto">
+      <div class="card-header"><span style="font-weight:700">💳 Payment Records (${orders.length})</span></div>
+      <table class="admin-table">
+        <thead><tr><th>Date</th><th>Buyer</th><th>Product</th><th>Order</th><th>Fee(10%)</th><th>Total Paid</th><th>Network</th><th>Reference</th><th>Farmer Payout</th></tr></thead>
+        <tbody>
+          ${orders.map(o => `
+            <tr>
+              <td style="white-space:nowrap">${new Date(o.createdAt).toLocaleDateString()}</td>
+              <td><div style="font-weight:600">${escHtml(o.buyerName)}</div><div style="font-size:11px;color:var(--gray-400)">${escHtml(o.buyerPhone||'')}</div></td>
+              <td>${escHtml(o.productName)}</td>
+              <td>GHS ${Number(o.total).toFixed(2)}</td>
+              <td style="color:var(--amber-dark);font-weight:700">GHS ${Number(o.platformFee||0).toFixed(2)}</td>
+              <td style="color:var(--green-dark);font-weight:700">GHS ${Number(o.totalWithFee||o.total).toFixed(2)}</td>
+              <td>${o.paymentNetwork ? `<span class="badge badge-blue">${o.paymentNetwork.toUpperCase()}</span>` : '-'}</td>
+              <td style="font-size:11px;font-family:monospace">${escHtml(o.paymentRef||'-')}</td>
+              <td>
+                <div style="font-weight:700;color:var(--green-mid)">GHS ${Number(o.total).toFixed(2)}</div>
+                <div style="font-size:11px;color:var(--gray-400)">${adminGetFarmerPhone(o.farmerId)}</div>
+                ${o.status==='completed'?'<span style="font-size:10px;color:var(--green-mid)">✅ Paid out</span>':'<span style="font-size:10px;color:var(--amber-dark)">⏳ Pending</span>'}
+              </td>
+            </tr>
+          `).join('')}
+        </tbody>
+      </table>
+    </div>
+  `;
+}
+
+function renderAdminFarmers(el) {
+  const farmers = DB.getUsers().filter(u => u.role === 'farmer').sort((a,b) => b.createdAt - a.createdAt);
+  el.innerHTML = `
+    <div style="font-family:var(--font-display);font-size:20px;font-weight:700;margin-bottom:16px">🌾 All Farmers (${farmers.length})</div>
+    <div class="card" style="overflow:auto">
+      <table class="admin-table">
+        <thead><tr><th>Name</th><th>Phone</th><th>Email</th><th>Farm / Location</th><th>Products</th><th>Orders</th><th>Joined</th><th>Actions</th></tr></thead>
+        <tbody>
+          ${farmers.map(f => {
+            const myProducts = DB.getProducts().filter(p => p.farmerId === f.id).length;
+            const myOrders   = DB.getOrders().filter(o => o.farmerId === f.id).length;
+            return `<tr>
+              <td>
+                <div style="display:flex;align-items:center;gap:8px">
+                  <div style="width:32px;height:32px;border-radius:50%;background:var(--green-pale);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:11px;color:var(--green-dark);flex-shrink:0">${f.name.split(' ').map(n=>n[0]).join('').toUpperCase().slice(0,2)}</div>
+                  <div style="font-weight:600">${escHtml(f.name)}</div>
+                </div>
+              </td>
+              <td><a href="tel:${escHtml(f.phone)}" style="color:var(--green-mid);font-weight:600">${escHtml(f.phone)}</a></td>
+              <td style="font-size:12px">${escHtml(f.email)}</td>
+              <td>${escHtml(f.farmName||f.location||'-')}</td>
+              <td><span class="badge badge-green">${myProducts}</span></td>
+              <td><span class="badge badge-blue">${myOrders}</span></td>
+              <td style="font-size:11px;color:var(--gray-400)">${new Date(f.createdAt).toLocaleDateString()}</td>
+              <td>
+                <div style="display:flex;gap:4px;flex-wrap:wrap">
+                  <a href="tel:${escHtml(f.phone)}" class="admin-action-btn" style="background:var(--green-pale);color:var(--green-dark);text-decoration:none">📞 Call</a>
+                  <a href="https://wa.me/${f.phone.replace(/[^0-9]/g,'')}" target="_blank" class="admin-action-btn" style="background:#dcfce7;color:#166534;text-decoration:none">💬 WhatsApp</a>
+                  <button class="admin-action-btn" style="background:var(--red-light);color:var(--red)" onclick="adminDeleteUser('${f.id}','${escHtml(f.name)}')">🗑️ Remove</button>
+                </div>
+              </td>
+            </tr>`;
+          }).join('')}
+        </tbody>
+      </table>
+    </div>
+  `;
+}
+
+function renderAdminBuyers(el) {
+  const buyers = DB.getUsers().filter(u => u.role === 'buyer').sort((a,b) => b.createdAt - a.createdAt);
+  el.innerHTML = `
+    <div style="font-family:var(--font-display);font-size:20px;font-weight:700;margin-bottom:16px">🛒 All Buyers (${buyers.length})</div>
+    <div class="card" style="overflow:auto">
+      <table class="admin-table">
+        <thead><tr><th>Name</th><th>Phone</th><th>Email</th><th>Location</th><th>Orders</th><th>Total Spent</th><th>Joined</th><th>Actions</th></tr></thead>
+        <tbody>
+          ${buyers.map(b => {
+            const myOrders = DB.getOrders().filter(o => o.buyerId === b.id);
+            const spent = myOrders.filter(o=>o.paymentStatus==='paid').reduce((s,o)=>s+(parseFloat(o.totalWithFee)||0),0);
+            return `<tr>
+              <td>
+                <div style="display:flex;align-items:center;gap:8px">
+                  <div style="width:32px;height:32px;border-radius:50%;background:var(--blue-light);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:11px;color:var(--blue);flex-shrink:0">${b.name.split(' ').map(n=>n[0]).join('').toUpperCase().slice(0,2)}</div>
+                  <div style="font-weight:600">${escHtml(b.name)}</div>
+                </div>
+              </td>
+              <td><a href="tel:${escHtml(b.phone)}" style="color:var(--blue);font-weight:600">${escHtml(b.phone)}</a></td>
+              <td style="font-size:12px">${escHtml(b.email)}</td>
+              <td>${escHtml(b.location||'-')}</td>
+              <td><span class="badge badge-blue">${myOrders.length}</span></td>
+              <td style="font-weight:700;color:var(--green-dark)">GHS ${spent.toFixed(2)}</td>
+              <td style="font-size:11px;color:var(--gray-400)">${new Date(b.createdAt).toLocaleDateString()}</td>
+              <td>
+                <div style="display:flex;gap:4px;flex-wrap:wrap">
+                  <a href="tel:${escHtml(b.phone)}" class="admin-action-btn" style="background:var(--blue-light);color:var(--blue);text-decoration:none">📞 Call</a>
+                  <a href="https://wa.me/${b.phone.replace(/[^0-9]/g,'')}" target="_blank" class="admin-action-btn" style="background:#dcfce7;color:#166534;text-decoration:none">💬 WhatsApp</a>
+                  <button class="admin-action-btn" style="background:var(--red-light);color:var(--red)" onclick="adminDeleteUser('${b.id}','${escHtml(b.name)}')">🗑️ Remove</button>
+                </div>
+              </td>
+            </tr>`;
+          }).join('')}
+        </tbody>
+      </table>
+    </div>
+  `;
+}
+
+function renderAdminProducts(el) {
+  const products = DB.getProducts().sort((a,b) => b.createdAt - a.createdAt);
+  el.innerHTML = `
+    <div style="font-family:var(--font-display);font-size:20px;font-weight:700;margin-bottom:16px">📦 All Products (${products.length})</div>
+    <div class="card" style="overflow:auto">
+      <table class="admin-table">
+        <thead><tr><th>Product</th><th>Farmer</th><th>Category</th><th>Price</th><th>Qty</th><th>Location</th><th>Actions</th></tr></thead>
+        <tbody>
+          ${products.map(p => `
+            <tr>
+              <td style="font-weight:600">${escHtml(p.name)}</td>
+              <td><div style="font-weight:600">${escHtml(p.farmerName)}</div><div style="font-size:11px;color:var(--green-mid)">${escHtml(p.farmerPhone||'')}</div></td>
+              <td><span class="badge badge-green">${escHtml(p.category)}</span></td>
+              <td style="font-weight:700;color:var(--green-dark)">GHS ${Number(p.price).toFixed(2)}/${escHtml(p.unit||'unit')}</td>
+              <td>${escHtml(p.qty||'-')}</td>
+              <td style="font-size:12px">${escHtml(p.location||'-')}</td>
+              <td>
+                <button class="admin-action-btn" style="background:var(--red-light);color:var(--red)" onclick="adminDeleteProduct('${p.id}','${escHtml(p.name)}')">🗑️ Remove</button>
+              </td>
+            </tr>
+          `).join('')}
+        </tbody>
+      </table>
+    </div>
+  `;
+}
+
+function adminGetFarmerPhone(farmerId) {
+  const farmer = DB.getUserById(farmerId);
+  return farmer ? farmer.phone : '';
+}
+
+function adminUpdateOrder(orderId, newStatus) {
+  DB.updateOrder(orderId, { status: newStatus }).then(() => {
+    showToast('Order ' + newStatus, 'success');
+    showAdminTab('orders');
+  });
+}
+
+function adminContactBuyer(phone) {
+  if (phone) window.open('tel:' + phone);
+  else showToast('No phone number available', 'error');
+}
+
+function adminContactFarmer(farmerId) {
+  const farmer = DB.getUserById(farmerId);
+  if (farmer && farmer.phone) window.open('tel:' + farmer.phone);
+  else showToast('No phone number available', 'error');
+}
+
+function adminDeleteUser(userId, name) {
+  if (!confirm('Remove ' + name + ' from AgroTrade? This cannot be undone.')) return;
+  db.ref('users/' + userId).remove().then(() => {
+    showToast(name + ' removed', 'info');
+    refreshAdminData();
+  });
+}
+
+function adminDeleteProduct(productId, name) {
+  if (!confirm('Remove product "' + name + '"?')) return;
+  DB.deleteProduct(productId).then(() => {
+    showToast('Product removed', 'info');
+    showAdminTab('products');
+  });
+}
+
+
+// Secret admin access — tap "Farm Direct Marketplace" 5 times quickly
+let secretTapCount = 0, secretTapTimer = null;
+function handleSecretAdminTap() {
+  secretTapCount++;
+  clearTimeout(secretTapTimer);
+  secretTapTimer = setTimeout(() => { secretTapCount = 0; }, 2000);
+  if (secretTapCount >= 5) {
+    secretTapCount = 0;
+    openAdminLogin();
+  }
+}
+
 // ===================================================
 // GLOBAL renderCurrentPage helper (called by Firebase listeners)
 // ===================================================
@@ -2491,6 +2863,96 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 
+
+// Admin + misc functions exposed to global scope
+window.openAdminLogin = openAdminLogin;
+window.verifyAdminPassword = verifyAdminPassword;
+window.closeAdmin = closeAdmin;
+window.showAdminTab = showAdminTab;
+window.refreshAdminData = refreshAdminData;
+window.adminUpdateOrder = adminUpdateOrder;
+window.adminContactBuyer = adminContactBuyer;
+window.adminContactFarmer = adminContactFarmer;
+window.adminDeleteUser = adminDeleteUser;
+window.adminDeleteProduct = adminDeleteProduct;
+window.handleSecretAdminTap = handleSecretAdminTap;
 </script>
+
+<!-- ===================================================== -->
+<!-- ADMIN DASHBOARD — Only accessible with admin password -->
+<!-- ===================================================== -->
+<div id="admin-screen" class="hidden" style="position:fixed;inset:0;background:var(--gray-50);z-index:200;display:flex;flex-direction:column;overflow:hidden">
+
+  <!-- Admin Header -->
+  <div style="background:linear-gradient(135deg,#1a1a2e,#16213e);padding:0 24px;height:64px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;box-shadow:0 2px 12px rgba(0,0,0,0.3)">
+    <div style="display:flex;align-items:center;gap:12px">
+      <div style="width:36px;height:36px;background:var(--amber);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px">⚙️</div>
+      <div>
+        <div style="font-family:var(--font-display);color:white;font-size:18px;font-weight:800">AgroTrade Admin</div>
+        <div style="font-size:11px;color:rgba(255,255,255,0.5)">Control Panel</div>
+      </div>
+    </div>
+    <div style="display:flex;gap:8px;align-items:center">
+      <div style="font-size:12px;color:rgba(255,255,255,0.5)" id="admin-last-updated"></div>
+      <button onclick="refreshAdminData()" style="background:rgba(255,255,255,0.1);border:none;color:white;padding:8px 14px;border-radius:8px;cursor:pointer;font-size:12px;font-weight:600;font-family:var(--font-body)">🔄 Refresh</button>
+      <button onclick="closeAdmin()" style="background:rgba(255,0,0,0.2);border:none;color:white;padding:8px 14px;border-radius:8px;cursor:pointer;font-size:12px;font-weight:600;font-family:var(--font-body)">✕ Exit</button>
+    </div>
+  </div>
+
+  <!-- Admin Nav Tabs -->
+  <div style="background:white;border-bottom:1px solid var(--gray-200);padding:0 24px;display:flex;gap:4px;overflow-x:auto">
+    <button class="admin-tab active" id="atab-overview" onclick="showAdminTab('overview')">📊 Overview</button>
+    <button class="admin-tab" id="atab-orders" onclick="showAdminTab('orders')">📦 Orders</button>
+    <button class="admin-tab" id="atab-payments" onclick="showAdminTab('payments')">💰 Payments</button>
+    <button class="admin-tab" id="atab-farmers" onclick="showAdminTab('farmers')">🌾 Farmers</button>
+    <button class="admin-tab" id="atab-buyers" onclick="showAdminTab('buyers')">🛒 Buyers</button>
+    <button class="admin-tab" id="atab-products" onclick="showAdminTab('products')">📦 Products</button>
+  </div>
+
+  <!-- Admin Content -->
+  <div style="flex:1;overflow-y:auto;padding:24px" id="admin-content">
+    <div style="text-align:center;padding:60px;color:var(--gray-400)">Loading...</div>
+  </div>
+</div>
+
+<!-- Admin Login Modal -->
+<div id="modal-admin-login" class="modal-overlay hidden" onclick="closeModalOnOverlay(event,'modal-admin-login')">
+  <div class="modal" onclick="event.stopPropagation()" style="max-width:360px">
+    <div class="modal-header">
+      <span class="modal-title">⚙️ Admin Access</span>
+      <button class="btn btn-ghost btn-icon" onclick="closeModal('modal-admin-login')">
+        <svg style="width:18px;height:18px;stroke:var(--gray-600);fill:none;stroke-width:2" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <p style="font-size:14px;color:var(--gray-500);margin-bottom:20px">Enter your admin password to access the control panel</p>
+      <div class="form-group">
+        <label class="form-label">Admin Password</label>
+        <input class="form-input" id="admin-password-input" type="password" placeholder="Enter admin password" onkeydown="if(event.key==='Enter')verifyAdminPassword()">
+      </div>
+      <div id="admin-login-error" style="color:var(--red);font-size:13px;margin-top:-8px;display:none">❌ Wrong password. Try again.</div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('modal-admin-login')">Cancel</button>
+      <button class="btn btn-primary" onclick="verifyAdminPassword()">Enter Admin Panel</button>
+    </div>
+  </div>
+</div>
+
+<style>
+.admin-tab {
+  padding: 16px 18px; border: none; background: transparent; cursor: pointer;
+  font-family: var(--font-body); font-size: 13px; font-weight: 600; color: var(--gray-500);
+  border-bottom: 3px solid transparent; transition: var(--transition); white-space: nowrap;
+}
+.admin-tab:hover { color: var(--gray-800); }
+.admin-tab.active { color: var(--green-mid); border-bottom-color: var(--green-mid); }
+.admin-table { width: 100%; border-collapse: collapse; }
+.admin-table th { background: var(--gray-50); padding: 10px 14px; text-align: left; font-size: 11px; font-weight: 700; color: var(--gray-500); text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid var(--gray-200); }
+.admin-table td { padding: 12px 14px; border-bottom: 1px solid var(--gray-100); font-size: 13px; color: var(--gray-700); vertical-align: middle; }
+.admin-table tr:hover td { background: var(--gray-50); }
+.admin-action-btn { padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 700; border: none; cursor: pointer; font-family: var(--font-body); }
+</style>
+
 </body>
 </html>
